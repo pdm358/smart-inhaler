@@ -34,9 +34,8 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
-#include <BLE2902.h>
+#include <BLE2902.h> //TODO: delete after you confirm notification is unnecessary.
 #include "DHT.h"
-#include <string>
 
 #define SERVICE_UUID "25380284-e1b6-489a-bbcf-97d8f7470aa4"
 #define TEMP_CHARACTERISTIC_UUID "c3856cfa-4af6-4d0d-a9a0-5ed875d937cc"
@@ -57,7 +56,7 @@ BLECharacteristic *HumidityCharacteristicPtr = nullptr;
 BLECharacteristic *DigitPtr = nullptr;
 BLECharacteristic *AlphabetPtr = nullptr;
 
-
+//TODO: delete after you confirm notification is unnecessary.
 bool deviceConnected = false;
 
 // The temperature and humidity sensor I used (DHT11).
@@ -77,6 +76,7 @@ uint8_t doubleToCharArray(double num, uint8_t* arr){
 
 
 //Classes
+//TODO: delete after you confirm notification is unnecessary.
 class ServerCallbacks : public BLEServerCallbacks
 {
   void onConnect(BLEServer *serverPtr)
@@ -155,7 +155,7 @@ void setup()
 
   // Create the BLE Server
   serverPtr = BLEDevice::createServer();
-  serverPtr->setCallbacks(new ServerCallbacks());
+  serverPtr->setCallbacks(new ServerCallbacks()); //TODO: delete after you confirm notification is unnecessary.
 
   // Create the BLE Service
   BLEService *pService = serverPtr->createService(SERVICE_UUID);

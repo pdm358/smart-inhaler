@@ -13,6 +13,8 @@
     I also recommend reading the header files of the BLE libraries.
     
    This program creates a BLE server that provides temperature, humidity, and two dummy characterists in a GATT server service.
+   One of the two dummy characterisitcs returns values in the range ['A','Z'] and loops through them.
+   The other dummy characteristic does the same but with values in the range of ['0','9']
    The service advertises itself with UUID of: 25380284-e1b6-489a-bbcf-97d8f7470aa4
    The service has a temperature characteristic UUID of: c3856cfa-4af6-4d0d-a9a0-5ed875d937cc
    The service has a humidity characteristic UUID of:e36d8858-cac3-4b03-9356-98b40fdd122e
@@ -209,6 +211,9 @@ void setup()
 
   DigitCharacteristicPtr->setCallbacks(new CharacteristicCallBackHandler(
         [](uint8_t * ptr)->uint8_t{
+          
+          //Loop through '0'-'9' and back again to '0'
+
           if(*ptr < 48 || *ptr > 57) *ptr = 48;
           else
             *ptr = (*ptr - 48 + 1)%10 + 48;
@@ -225,6 +230,9 @@ void setup()
 
   AlphabetCharacteristicPtr->setCallbacks(new CharacteristicCallBackHandler(
         [](uint8_t * ptr)->uint8_t{
+
+          //Loop through 'A'-'Z' and back again to 'A'
+          
           if(*ptr < 65 || *ptr > 90) *ptr = 65;
           else
             *ptr = (*ptr - 65 + 1)%26 + 65;

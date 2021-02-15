@@ -17,7 +17,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="419dp"
+        android:layout_width="match_parent"
         android:layout_height="145dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
@@ -38,16 +38,16 @@
         app:layout_constraintVertical_bias="0.394" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/determinateProgressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="171dp"
-        android:layout_height="42dp"
+        android:layout_height="46dp"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.145"
+        app:layout_constraintHorizontal_bias="0.308"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.459" />
+        app:layout_constraintVertical_bias="0.64" />
 
     <View
         android:id="@+id/divider2"
@@ -71,15 +71,14 @@
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.761"
-        app:layout_constraintStart_toEndOf="@+id/progressBar"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/determinateProgressBar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textView4"
         style="@style/pane_header"
-        android:layout_width="417dp"
         android:text="@string/breath_forecast_label"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,5 +97,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/doses_taken_label"
+        style="@style/generic_word_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="22dp"
+        android:text="@string/null_medicine_label"
+        app:layout_constraintBottom_toTopOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/determinateProgressBar"
+        app:layout_constraintHorizontal_bias="0.888"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

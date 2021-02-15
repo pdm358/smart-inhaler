@@ -3,4 +3,5 @@
     <string name="nebulizer_label">Nebulizer</string>
     <string name="diary_label">Diary</string>
     <string name="breath_forecast_label">Breath Forecast</string>
+    <string name="null_medicine_label">00/00</string>
 </resources>

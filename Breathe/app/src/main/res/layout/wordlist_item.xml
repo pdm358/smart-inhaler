@@ -7,6 +7,6 @@
 
     <TextView
         android:id="@+id/word"
-        style="@style/word_title" />
+        style="@style/generic_word_content" />
 
 </LinearLayout>

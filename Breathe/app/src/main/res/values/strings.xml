@@ -4,4 +4,9 @@
     <string name="diary_label">Diary</string>
     <string name="breath_forecast_label">Breath Forecast</string>
     <string name="null_medicine_label">00/00</string>
+    <string name="null_diary_entry_screen_date">Entry for -- -- --, 00:00 -M</string>
+    <string name="rescue_button_label">Rescue</string>
+    <string name="preventative_button_label">Preventative</string>
+    <string name="save_button_label">Save</string>
+    <string name="edit_diary_entry_text_hint">Enter message here</string>
 </resources>

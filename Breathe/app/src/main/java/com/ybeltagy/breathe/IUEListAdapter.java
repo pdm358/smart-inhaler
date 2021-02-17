@@ -1,6 +1,8 @@
 package com.ybeltagy.breathe;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Date;
 import java.util.LinkedList;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 public class IUEListAdapter
         extends RecyclerView.Adapter<IUEListAdapter.IUEViewHolder> {
 
@@ -20,6 +24,11 @@ public class IUEListAdapter
     private final LinkedList<String> iueEntries;
     // Inflater
     private LayoutInflater iueInflater;
+
+    // for sending date string to diary entry activity
+
+    // logging
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     public IUEListAdapter(Context context, LinkedList<String> iueEntryList) {
         iueInflater = LayoutInflater.from(context);
@@ -67,11 +76,11 @@ public class IUEListAdapter
             int position = getLayoutPosition();
             // use that to access the affected item in mWordList
             String element = iueEntries.get(position);
-            // change the word in the mWordList
-            iueEntries.set(position, "Clicked! " + element);
-            // notify the adapter, that the data has changed -> update the RecyclerView to display
-            // the new data
-            iueListAdapter.notifyDataSetChanged();
+
+            Intent intent = new Intent(this.iueItemView.getContext(), DiaryEntryActivity.class);
+            this.iueItemView.getContext().startActivity(intent);
+
+            Log.d(LOG_TAG, "Diary entry activity launched!");
         }
     }
 }

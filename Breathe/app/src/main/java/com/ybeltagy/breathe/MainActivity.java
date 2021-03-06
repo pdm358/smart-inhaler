@@ -4,7 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +36,12 @@ public class MainActivity extends AppCompatActivity {
     // fake data for RecyclerView
     private final LinkedList<String> eventList = new LinkedList<>();
 
+    // TODO!: move this to the data connection service ---------------------------------------------
+    // BroadcastReceiver for Bluetooth
+    // TODO: Change to BLE
+    private final BLEConnectionReceiver bleBroadcastReceiver = new BLEConnectionReceiver();
+    // move end ------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +58,24 @@ public class MainActivity extends AppCompatActivity {
 
         // ProgressBar -----------------------------------------------------------------------------
         renderMedStatusView();
+
+        // BroadcastReceiver for Bluetooth
+        // TODO: (1) Create service to instantiate and deal with this BroadcastReceiver
+        //       (2) Change to BLE
+        IntentFilter filterConnection = new IntentFilter();
+        filterConnection.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filterConnection.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+
+        this.registerReceiver(bleBroadcastReceiver, filterConnection);
+
+    }
+
+    @Override
+    protected void onDestroy(){
+        // TODO: move to data connection service
+        this.unregisterReceiver(bleBroadcastReceiver);
+
+        super.onDestroy();
     }
 
     // render the Progress Bar for the medicine status

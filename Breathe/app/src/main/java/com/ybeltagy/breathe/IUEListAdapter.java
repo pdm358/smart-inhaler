@@ -11,23 +11,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Date;
 import java.util.LinkedList;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
+/**
+ * This class prepares and updates the IUE data to be displayed in the RecyclerView in the Main
+ * Activity.
+ *
+ * @author Sarah Panther
+ */
 public class IUEListAdapter
         extends RecyclerView.Adapter<IUEListAdapter.IUEViewHolder> {
 
     // Placeholder list
-    // -> TODO: to be replaced with data source of inhaler usage event (IUE) objects
+    // TODO: to be replaced with data source of inhaler usage event (IUE) objects
     private final LinkedList<String> iueEntries;
+
     // Inflater
-    private LayoutInflater iueInflater;
+    private final LayoutInflater iueInflater;
 
-    // for sending date string to diary entry activity
-
-    // logging
+    // Logging
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     public IUEListAdapter(Context context, LinkedList<String> iueEntryList) {
@@ -46,7 +48,6 @@ public class IUEListAdapter
     public void onBindViewHolder(@NonNull IUEViewHolder holder, int position) {
         String current = iueEntries.get(position);
         holder.iueItemView.setText(current);
-
     }
 
     @Override
@@ -54,11 +55,10 @@ public class IUEListAdapter
         return iueEntries.size();
     }
 
-
     // Class that holds View information for displaying one item from the item's layout
-    class IUEViewHolder extends RecyclerView.ViewHolder implements View
-            .OnClickListener{
-        // may want to change TextView into something that displays the IUE's in a better way
+    static class IUEViewHolder extends RecyclerView.ViewHolder implements View
+            .OnClickListener {
+        // we may want to change TextView into something that displays the IUE's in a better way
         public final TextView iueItemView;
         final IUEListAdapter iueListAdapter;
 
@@ -72,11 +72,6 @@ public class IUEListAdapter
 
         @Override
         public void onClick(View v) {
-            // get the position of the item that was clicked
-            int position = getLayoutPosition();
-            // use that to access the affected item in mWordList
-            String element = iueEntries.get(position);
-
             Intent intent = new Intent(this.iueItemView.getContext(), DiaryEntryActivity.class);
             this.iueItemView.getContext().startActivity(intent);
 

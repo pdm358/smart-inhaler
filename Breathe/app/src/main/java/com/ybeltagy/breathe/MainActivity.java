@@ -4,43 +4,35 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import android.bluetooth.BluetoothDevice;
+import android.content.IntentFilter;
+import android.os.Bundle;
 
 import java.util.Date;
 import java.util.LinkedList;
 
+/**
+ * This activity contains the main logic of the Breathe app. It renders the UI and registers a
+ * Bluetooth Broadcast receiver to listen for Bluetooth connection and disconnection to the phone
+ * (to be changed to BLE).
+ *
+ * @author Sarah Panther
+ */
 public class MainActivity extends AppCompatActivity {
 
     // fake data - assumed number of doses in a canister
-    // Todo:: replace with real number of doses in a canister
+    // TODO: Replace with real number of doses in a canister
     final int TOTAL_DOSES_IN_CANISTER = 200;
-
-    // first pane (top of the screen) -> shows medicine left
-    private ProgressBar medicineStatusBar;
-    private TextView dosesTakenText;
-
-    // third pane (bottom of screen) -> shows diary timeline of events
-    private RecyclerView iueRecyclerView;
-    private IUEListAdapter iueListAdapter;
 
     // fake data for RecyclerView
     private final LinkedList<String> eventList = new LinkedList<>();
 
-    // TODO!: move this to the data connection service ---------------------------------------------
     // BroadcastReceiver for Bluetooth
     // TODO: Change to BLE
     private final BLEConnectionReceiver bleBroadcastReceiver = new BLEConnectionReceiver();
-    // move end ------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         // RecyclerView ----------------------------------------------------------------------------
         // populate the fake data for the RecyclerView
-        // Todo:: delete and replace with real data passed to renderDiaryView()
+        // TODO: Delete and replace with real data passed to renderDiaryView()
         for (int i = 1; i <= 20; i++) {
             Date date = new Date(2020, 10, i);
             eventList.addLast(date.toString());
@@ -59,46 +51,40 @@ public class MainActivity extends AppCompatActivity {
         // ProgressBar -----------------------------------------------------------------------------
         renderMedStatusView();
 
-        // BroadcastReceiver for Bluetooth
-        // TODO: (1) Create service to instantiate and deal with this BroadcastReceiver
-        //       (2) Change to BLE
+        // BroadcastReceiver for Bluetooth ---------------------------------------------------------
+        // TODO: Change to BLE
         IntentFilter filterConnection = new IntentFilter();
         filterConnection.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         filterConnection.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-
+        // register BroadcastReceiver with the Android OS
         this.registerReceiver(bleBroadcastReceiver, filterConnection);
-
     }
 
     @Override
-    protected void onDestroy(){
-        // TODO: move to data connection service
-        this.unregisterReceiver(bleBroadcastReceiver);
-
+    protected void onDestroy() {
         super.onDestroy();
     }
 
-    // render the Progress Bar for the medicine status
+    // render the Progress Bar for the medicine status in first pane (top of the screen)
     private void renderMedStatusView() {
-        // handle to the ProgressBar
-        medicineStatusBar = findViewById(R.id.determinateProgressBar);
+        ProgressBar medicineStatusBar = findViewById(R.id.determinateProgressBar);
         // update max amount of progress bar to number of doses in a full medicine canister
         medicineStatusBar.setMax(TOTAL_DOSES_IN_CANISTER);
         // set doses taken shown in the ProgressBar to fake data increment (20 fake IUE events)
-        // Todo:: delete fake data increment, replace with real increment (# of newly synced IUEs)
+        // TODO: Delete fake data increment, replace with real increment (# of newly synced IUEs)
         medicineStatusBar.setProgress(eventList.size());
 
         // set text to show how many doses have been taken
-        dosesTakenText = findViewById(R.id.doses_taken_label);
-        dosesTakenText.setText(medicineStatusBar.getProgress() + " / " + medicineStatusBar.getMax());
+        TextView dosesTakenText = findViewById(R.id.doses_taken_label);
+        dosesTakenText.setText(String.format("%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
     }
 
-    // render the diary RecyclerView for the diary timeline
+    // render the diary RecyclerView for the diary timeline of events in third pane
+    // (bottom of screen)
     private void renderDiaryView(LinkedList<String> eventList) {
-        // handle to the RecyclerView
-        iueRecyclerView = findViewById(R.id.recyclerView);
+        RecyclerView iueRecyclerView = findViewById(R.id.recyclerView);
         // make adapter and provide data to be displayed
-        iueListAdapter = new IUEListAdapter(this, eventList);
+        IUEListAdapter iueListAdapter = new IUEListAdapter(this, eventList);
         // connect adapter and recyclerView
         iueRecyclerView.setAdapter(iueListAdapter);
         // set layout manager for recyclerView

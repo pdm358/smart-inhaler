@@ -18,8 +18,8 @@ public interface IueDao {
     @Query("DELETE FROM IUE_table")
     void deleteAll();
 
-    // TODO: figure out how to return all IUE's in date_time order
-    // Returns all IUEs from the IUE_table
-    @Query("SELECT * from IUE_table")
+    // Returns all IUEs from the IUE_table in lexographical ascending order of string timestamp
+    // (because of UTC format, this is in chronological order)
+    @Query("SELECT * from IUE_table ORDER BY UTC_ISO_8601_date_time ASC")
     List<IUE> getallIUEs();
 }

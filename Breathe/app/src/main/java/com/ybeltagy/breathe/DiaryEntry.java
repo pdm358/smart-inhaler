@@ -13,7 +13,7 @@ enum Tag {
 /**
  * Encapsulates user-added information for a given IUE - comments and tags
  * - One IUE object contains one DiaryEntry object
- *
+ * <p>
  * TODO: write static DiaryEntry createDiaryEntry() to create a DiaryEntry object
  */
 public class DiaryEntry {

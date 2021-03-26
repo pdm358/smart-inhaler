@@ -4,10 +4,10 @@ package com.ybeltagy.breathe;
  * Encapsulates local environmental data gathered from the user's smart pin/wearable
  * - currently only contains one actual field of data (temperature)
  * - the other placeholder fields will be used by future teams when additional sensors are added to
- *   to the smart pin/wearable
- *
- *   TODO: write static WearableData createWearableData() to collect smart pin data
- *         and create a WearableData object
+ * to the smart pin/wearable
+ * <p>
+ * TODO: write static WearableData createWearableData() to collect smart pin data
+ * and create a WearableData object
  */
 public class WearableData {
     private int temperature;

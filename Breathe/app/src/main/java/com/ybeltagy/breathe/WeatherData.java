@@ -12,9 +12,9 @@ enum Level {
 /**
  * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given IUE
  * - One IUE object contains one WeatherData object
- *
+ * <p>
  * TODO: write static WeatherData createWeatherData() to gather conditions from ClimaCell API
- *       and create a WeatherData object
+ * and create a WeatherData object
  */
 public class WeatherData {
 

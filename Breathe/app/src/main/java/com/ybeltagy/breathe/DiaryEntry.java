@@ -18,7 +18,7 @@ enum Tag {
  */
 public class DiaryEntry {
     private List<Tag> tags; // categories this IUE falls into, as defined by the user
-    String message; // user entered message describing the IUE
+    private String message; // user entered message describing the IUE
 
     public DiaryEntry(List<Tag> tags, String message) {
         this.tags = tags;

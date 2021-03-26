@@ -11,26 +11,27 @@ enum Tag {
 }
 
 /**
- * Encapsulates user-added information for a given IUE - comments and tags
+ * Encapsulates user-added information for a given IUE - comments and tag
  * - One IUE object contains one DiaryEntry object
  * <p>
  * TODO: write static DiaryEntry createDiaryEntry() to create a DiaryEntry object
  */
 public class DiaryEntry {
-    private List<Tag> tags; // categories this IUE falls into, as defined by the user
+    // TODO: change to list of tags and add converter for database
+    private Tag tag; // category this IUE falls into, as defined by the user
     private String message; // user entered message describing the IUE
 
-    public DiaryEntry(List<Tag> tags, String message) {
-        this.tags = tags;
+    public DiaryEntry(Tag tag, String message) {
+        this.tag = tag;
         this.message = message;
     }
 
-    public List<Tag> getTags() {
-        return tags;
+    public Tag getTag() {
+        return tag;
     }
 
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
+    public void setTag(Tag tag) {
+        this.tag = tag;
     }
 
     public String getMessage() {

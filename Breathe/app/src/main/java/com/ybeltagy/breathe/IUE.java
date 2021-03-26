@@ -1,13 +1,12 @@
 package com.ybeltagy.breathe;
 
-// date-tme with an offset from UTC/Greenwich in the ISO-8601 calendar system
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+// date-time with an offset from UTC/Greenwich in the ISO-8601 calendar system
 import java.time.OffsetDateTime;
 
 /**

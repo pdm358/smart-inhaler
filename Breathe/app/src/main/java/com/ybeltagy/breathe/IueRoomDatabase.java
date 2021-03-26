@@ -5,10 +5,13 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
 // exportSchema keeps a history of schema versions (for migration)
 // TODO: add migration strategy
 @Database(entities = {IUE.class}, version = 1, exportSchema = true)
+@TypeConverters({Converters.class})
 public abstract class IueRoomDatabase extends RoomDatabase {
 
     public abstract IueDao iueDao();

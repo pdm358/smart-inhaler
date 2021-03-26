@@ -1,11 +1,21 @@
 package com.ybeltagy.breathe;
 
+/**
+ * 3 state level (used for pollen index)
+ */
 enum Level {
     LOW,
     MEDIUM,
     HIGH
 }
 
+/**
+ * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given IUE
+ * - One IUE object contains one WeatherData object
+ *
+ * TODO: write static WeatherData createWeatherData() to gather conditions from ClimaCell API
+ *       and create a WeatherData object
+ */
 public class WeatherData {
 
     private double temperature; // Celsius
@@ -18,11 +28,6 @@ public class WeatherData {
         this.humidity = humidity;
         this.pollen = pollen;
         this.aQI = aQI;
-    }
-
-    static WeatherData createWeatherData(double temperature, double humidity,
-                                         Level pollen, int aQI) {
-        return new WeatherData(temperature, humidity, pollen, aQI);
     }
 
     public double getTemperature() {

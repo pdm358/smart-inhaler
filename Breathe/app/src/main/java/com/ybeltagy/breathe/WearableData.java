@@ -10,25 +10,25 @@ package com.ybeltagy.breathe;
  * and create a WearableData object
  */
 public class WearableData {
-    private int temperature;
+    private int wearableTemperature;
     private int placeHolder1;
     private int placeHolder2;
     private int placeHolder3;
 
 
-    public WearableData(int temperature, int placeHolder1, int placeHolder2, int placeHolder3) {
-        this.temperature = temperature;
+    public WearableData(int wearableTemperature, int placeHolder1, int placeHolder2, int placeHolder3) {
+        this.wearableTemperature = wearableTemperature;
         this.placeHolder1 = placeHolder1;
         this.placeHolder2 = placeHolder2;
         this.placeHolder3 = placeHolder3;
     }
 
-    public int getTemperature() {
-        return temperature;
+    public int getWearableTemperature() {
+        return wearableTemperature;
     }
 
-    public void setTemperature(int temperature) {
-        this.temperature = temperature;
+    public void setWearableTemperature(int wearableTemperature) {
+        this.wearableTemperature = wearableTemperature;
     }
 
     public int getPlaceHolder1() {

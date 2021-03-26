@@ -18,47 +18,48 @@ enum Level {
  */
 public class WeatherData {
 
-    private double temperature; // Celsius
-    private double humidity; // percentage out of 100 - value should always be =< 1
-    private Level pollen; // LOW, MEDIUM, or HIGH
-    private int aQI; // Air quality index, as defined by the EPA
+    private double weatherTemperature; // Celsius
+    private double weatherHumidity; // percentage out of 100 - value should always be =< 1
+    private Level weatherPollen; // LOW, MEDIUM, or HIGH
+    private int weatherAQI; // Air quality index, as defined by the EPA
 
-    public WeatherData(double temperature, double humidity, Level pollen, int aQI) {
-        this.temperature = temperature;
-        this.humidity = humidity;
-        this.pollen = pollen;
-        this.aQI = aQI;
+    public WeatherData(double weatherTemperature, double weatherHumidity,
+                       Level weatherPollen, int weatherAQI) {
+        this.weatherTemperature = weatherTemperature;
+        this.weatherHumidity = weatherHumidity;
+        this.weatherPollen = weatherPollen;
+        this.weatherAQI = weatherAQI;
     }
 
-    public double getTemperature() {
-        return temperature;
+    public double getWeatherTemperature() {
+        return weatherTemperature;
     }
 
-    public void setTemperature(double temperature) {
-        this.temperature = temperature;
+    public void setWeatherTemperature(double weatherTemperature) {
+        this.weatherTemperature = weatherTemperature;
     }
 
-    public double getHumidity() {
-        return humidity;
+    public double getWeatherHumidity() {
+        return weatherHumidity;
     }
 
-    public void setHumidity(double humidity) {
-        this.humidity = humidity;
+    public void setWeatherHumidity(double weatherHumidity) {
+        this.weatherHumidity = weatherHumidity;
     }
 
-    public Level getPollen() {
-        return pollen;
+    public Level getWeatherPollen() {
+        return weatherPollen;
     }
 
-    public void setPollen(Level pollen) {
-        this.pollen = pollen;
+    public void setWeatherPollen(Level weatherPollen) {
+        this.weatherPollen = weatherPollen;
     }
 
-    public int getaQI() {
-        return aQI;
+    public int getWeatherAQI() {
+        return weatherAQI;
     }
 
-    public void setaQI(int aQI) {
-        this.aQI = aQI;
+    public void setWeatherAQI(int weatherAQI) {
+        this.weatherAQI = weatherAQI;
     }
 }

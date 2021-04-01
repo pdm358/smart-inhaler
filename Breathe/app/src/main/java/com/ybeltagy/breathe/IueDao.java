@@ -20,6 +20,8 @@ public interface IueDao {
 
     // Returns all IUEs from the IUE_table in lexographical ascending order of string timestamp
     // (because of UTC format, this is in chronological order)
-    @Query("SELECT * from IUE_table ORDER BY UTC_ISO_8601_date_time ASC")
+    @Query("SELECT * FROM IUE_table ORDER BY UTC_ISO_8601_date_time ASC")
     List<IUE> getallIUEs();
+
+    // TODO: query for between dates
 }

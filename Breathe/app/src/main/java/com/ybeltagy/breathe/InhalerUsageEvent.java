@@ -25,12 +25,15 @@ import java.time.OffsetDateTime;
  * <p>
  * TODO: create static InhalerUsageEvent createIUE() to collect all data for InhalerUsageEvent and return an InhalerUsageEvent object
  */
-@Entity(tableName = "IUE_table")
+@Entity(tableName = "InhalerUsageEvent_table")
 public class InhalerUsageEvent {
     @PrimaryKey // timeStamp is the unique identifier for each InhalerUsageEvent record
     @NonNull // this can never be null
     @ColumnInfo(name = "UTC_ISO_8601_date_time") // name of the column in Room that stores timeStamp
     private OffsetDateTime timeStamp;
+    // Note: the java.time package and the OffsetDateTime class seem like the correct way to store
+    // our dates for Java 8
+    // (https://medium.com/decisionbrain/dates-time-in-modern-java-4ed9d5848a3e)
 
     // I made these public because all of the Embedded examples I saw were public
     // For more info on Embedded objects within Entities,

@@ -10,8 +10,8 @@ enum Level {
 }
 
 /**
- * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given IUE
- * - One IUE object contains one WeatherData object
+ * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given InhalerUsageEvent
+ * - One InhalerUsageEvent object contains one WeatherData object
  * <p>
  * TODO: write static WeatherData createWeatherData() to gather conditions from ClimaCell API
  * and create a WeatherData object

@@ -3,7 +3,7 @@ package com.ybeltagy.breathe;
 import java.util.List;
 
 /**
- * Categories of IUE's, as annotated by the user
+ * Categories of InhalerUsageEvent's, as annotated by the user
  */
 enum Tag {
     PREVENTATIVE, // tag used proactively before any symptoms are experienced
@@ -11,15 +11,15 @@ enum Tag {
 }
 
 /**
- * Encapsulates user-added information for a given IUE - comments and tag
- * - One IUE object contains one DiaryEntry object
+ * Encapsulates user-added information for a given InhalerUsageEvent - comments and tag
+ * - One InhalerUsageEvent object contains one DiaryEntry object
  * <p>
  * TODO: write static DiaryEntry createDiaryEntry() to create a DiaryEntry object
  */
 public class DiaryEntry {
     // TODO: change to list of tags and add converter for database
-    private Tag tag; // category this IUE falls into, as defined by the user
-    private String message; // user entered message describing the IUE
+    private Tag tag; // category this InhalerUsageEvent falls into, as defined by the user
+    private String message; // user entered message describing the InhalerUsageEvent
 
     public DiaryEntry(Tag tag, String message) {
         this.tag = tag;

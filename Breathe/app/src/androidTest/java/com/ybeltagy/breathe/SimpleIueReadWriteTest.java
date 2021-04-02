@@ -17,29 +17,29 @@ import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class SimpleIueReadWriteTest {
-    private IueDao tIueDao;
-    private IueRoomDatabase tIueRoomDatabase;
+    private BreatheDao tBreatheDao;
+    private BreatheRoomDatabase tBreatheRoomDatabase;
 
     @Before
     public void createDB() {
         Context context = ApplicationProvider.getApplicationContext();
-        tIueRoomDatabase = Room.inMemoryDatabaseBuilder(context, IueRoomDatabase.class).build();
-        tIueDao = tIueRoomDatabase.iueDao();
+        tBreatheRoomDatabase = Room.inMemoryDatabaseBuilder(context, BreatheRoomDatabase.class).build();
+        tBreatheDao = tBreatheRoomDatabase.iueDao();
     }
 
     @After
     public void closeDB() throws IOException {
-        tIueDao.deleteAll(); // delete the records in the test database
-        tIueRoomDatabase.close();
+        tBreatheDao.deleteAll(); // delete the records in the test database
+        tBreatheRoomDatabase.close();
     }
 
     @Test
     public void writeTrivialIueAndReadInList() throws Exception {
         OffsetDateTime rightNow = OffsetDateTime.now();
-        IUE tIue = new IUE(rightNow, null, null, null);
+        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow, null, null, null);
 
-        tIueDao.insert(tIue);
-        List<IUE> byTimeStamp = tIueDao.getallIUEs();
+        tBreatheDao.insert(tInhalerUsageEvent);
+        List<InhalerUsageEvent> byTimeStamp = tBreatheDao.getallIUEs();
 
         assert(byTimeStamp.get(0).getTimeStamp().equals(rightNow));
     }

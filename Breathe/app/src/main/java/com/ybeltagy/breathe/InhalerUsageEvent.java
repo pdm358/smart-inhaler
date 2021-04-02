@@ -15,19 +15,19 @@ import java.time.OffsetDateTime;
  * <p>
  * The following objects are "embedded" (represents an object we would like to decompose into its
  * sub-fields within a table) ->
- * - a WearableData object: environmental conditions from smart pin/wearable at the time of the IUE
+ * - a WearableData object: environmental conditions from smart pin/wearable at the time of the InhalerUsageEvent
  * , if the information is available
  * <p>
- * - a DiaryEntry object: user comments and tags for the IUE, if the info is available
+ * - a DiaryEntry object: user comments and tags for the InhalerUsageEvent, if the info is available
  * <p>
- * - a WeatherData object: weather data from the Climacell API at the time of the IUE, if the
+ * - a WeatherData object: weather data from the Climacell API at the time of the InhalerUsageEvent, if the
  * information is available
  * <p>
- * TODO: create static IUE createIUE() to collect all data for IUE and return an IUE object
+ * TODO: create static InhalerUsageEvent createIUE() to collect all data for InhalerUsageEvent and return an InhalerUsageEvent object
  */
 @Entity(tableName = "IUE_table")
-public class IUE {
-    @PrimaryKey // timeStamp is the unique identifier for each IUE record
+public class InhalerUsageEvent {
+    @PrimaryKey // timeStamp is the unique identifier for each InhalerUsageEvent record
     @NonNull // this can never be null
     @ColumnInfo(name = "UTC_ISO_8601_date_time") // name of the column in Room that stores timeStamp
     private OffsetDateTime timeStamp;
@@ -40,15 +40,15 @@ public class IUE {
     @Embedded public WearableData wearableData;
 
     // @NonNull annotation means timeStamp parameter can never be null
-    public IUE(@NonNull OffsetDateTime timeStamp, WeatherData weatherData,
-               DiaryEntry diaryEntry, WearableData wearableData) {
+    public InhalerUsageEvent(@NonNull OffsetDateTime timeStamp, WeatherData weatherData,
+                             DiaryEntry diaryEntry, WearableData wearableData) {
         this.timeStamp = timeStamp;
         this.weatherData = weatherData;
         this.diaryEntry = diaryEntry;
         this.wearableData = wearableData;
     }
 
-    // Note: getter methods are required by Room so it can instantiate IUE objects
+    // Note: getter methods are required by Room so it can instantiate InhalerUsageEvent objects
     public OffsetDateTime getTimeStamp() {
         return timeStamp;
     }

@@ -19,7 +19,7 @@ public class BreatheRepository {
     }
 
     // wrapper for BreatheDao insert method
-    // - we must use AsyncTask on a non-UI thread (or the app will crash)
+    // - we must do this on a non-UI thread (or the app will crash)
     public void insert(final InhalerUsageEvent inhalerUsageEvent) {
         BreatheRoomDatabase.dbWriteExecutor.execute( () -> {
             breatheDao.insert(inhalerUsageEvent);

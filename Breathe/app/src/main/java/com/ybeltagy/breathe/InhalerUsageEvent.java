@@ -29,7 +29,8 @@ import java.time.OffsetDateTime;
 public class InhalerUsageEvent {
     @PrimaryKey // timeStamp is the unique identifier for each InhalerUsageEvent record
     @NonNull // this can never be null
-    @ColumnInfo(name = "UTC_ISO_8601_date_time") // name of the column in Room that stores timeStamp
+    // name of the column in Room that stores timeStamp
+    @ColumnInfo(name = "Inhaler_Usage_Event_UTC_ISO_8601_date_time")
     private OffsetDateTime inhalerUsageEventTimeStamp;
     // Note: the java.time package and the OffsetDateTime class seem like the correct way to store
     // our dates for Java 8
@@ -56,7 +57,8 @@ public class InhalerUsageEvent {
     public OffsetDateTime getInhalerUsageEventTimeStamp() {
         return inhalerUsageEventTimeStamp;
     }
-
+    // Although this function is "unused", the database needs it to exist (or else the compiler
+    // complains)
     public void setInhalerUsageEventTimeStamp(@NonNull OffsetDateTime inhalerUsageEventTimeStamp) {
         this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
     }

@@ -7,6 +7,9 @@ import androidx.room.TypeConverter;
 
 import java.time.OffsetDateTime;
 
+/**
+ * Class for converting more complicated POJOs into types that can be stored in Room
+ */
 public class Converters {
 
     // Converts database stored timeStamp string into relevant OffsetDateTime (UTC)

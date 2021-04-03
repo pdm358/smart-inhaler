@@ -17,6 +17,9 @@ import org.junit.runner.RunWith;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/**
+ * A trivial test that checks if we can create, insert, and retrieve from the BreatheRoomDatabase
+ */
 @RunWith(AndroidJUnit4.class)
 public class SimpleIueReadWriteTest {
     private BreatheDao tBreatheDao;

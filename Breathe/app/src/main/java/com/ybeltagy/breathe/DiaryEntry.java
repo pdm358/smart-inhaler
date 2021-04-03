@@ -1,7 +1,5 @@
 package com.ybeltagy.breathe;
 
-import java.util.List;
-
 /**
  * Categories of InhalerUsageEvent's, as annotated by the user
  */
@@ -17,7 +15,6 @@ enum Tag {
  * TODO: write static DiaryEntry createDiaryEntry() to create a DiaryEntry object
  */
 public class DiaryEntry {
-    // TODO: change to list of tags and add converter for database
     private Tag tag; // category this InhalerUsageEvent falls into, as defined by the user
     private String message; // user entered message describing the InhalerUsageEvent
 

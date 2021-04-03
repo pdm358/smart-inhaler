@@ -1,6 +1,10 @@
 package com.ybeltagy.breathe;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -8,6 +12,7 @@ import java.time.OffsetDateTime;
 
 /**
  * Encapsulates local environmental data gathered from the user's smart pin/wearable
+ * - uses wearableDataTimeStamp (from when it was collected) as its primary key
  * - currently only contains one actual field of data (temperature)
  * - the other placeholder fields will be used by future teams when additional sensors are added to
  * to the smart pin/wearable
@@ -19,12 +24,23 @@ import java.time.OffsetDateTime;
 public class WearableData {
     @PrimaryKey
     @NonNull
+    @ColumnInfo(name = "Wearable_Data_UTC_ISO_8601_date_time")
     private OffsetDateTime wearableDataTimeStamp; // when this wearableData was collected
 
     private int wearableTemperature = 0;
     private int placeHolder1 = 0;
     private int placeHolder2 = 0;
     private int placeHolder3 = 0;
+
+    /**
+     * Added this constructor for our iteration.
+     * Perhaps in the future, the smart pin will send a timestamp with its data but for our current
+     * team, this is not necessary.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public WearableData() {
+        wearableDataTimeStamp = OffsetDateTime.now();
+    }
 
     public WearableData(@NonNull OffsetDateTime wearableDataTimeStamp) {
         this.wearableDataTimeStamp = wearableDataTimeStamp;
@@ -35,8 +51,8 @@ public class WearableData {
         return wearableDataTimeStamp;
     }
 
-    public void setWearableDataTimeStamp(@NonNull OffsetDateTime wearableDataTimeStamp) {
-        this.wearableDataTimeStamp = wearableDataTimeStamp;
+    public void setWearableDataTimeStamp(@NonNull OffsetDateTime wearableTimeStamp) {
+        this.wearableDataTimeStamp = wearableTimeStamp;
     }
 
     public int getWearableTemperature() {

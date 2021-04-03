@@ -26,7 +26,8 @@ public interface BreatheDao {
 
     // Returns all InhalerUsageEvents from the InhalerUsageEvent_table in lexographical
     // ascending order of string timestamp (because of UTC format, this is in chronological order)
-    @Query("SELECT * FROM InhalerUsageEvent_table ORDER BY UTC_ISO_8601_date_time ASC")
+    @Query("SELECT * FROM InhalerUsageEvent_table " +
+            "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time ASC")
     List<InhalerUsageEvent> getAllIUEs();
 
     // Update one or more InhalerUsageEvents
@@ -35,8 +36,9 @@ public interface BreatheDao {
 
 
     // Return InhalerUsageEvents between the parameter dates (inclusive)
-    @Query("SELECT * FROM InhalerUsageEvent_table WHERE UTC_ISO_8601_date_time " +
+    @Query("SELECT * FROM InhalerUsageEvent_table " +
+            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time " +
             "BETWEEN :firstDate AND :secondDate")
     List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDates(OffsetDateTime firstDate,
-                                                                         OffsetDateTime secondDate);
+                                                                  OffsetDateTime secondDate);
 }

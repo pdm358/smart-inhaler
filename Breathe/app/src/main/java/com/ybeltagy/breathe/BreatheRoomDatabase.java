@@ -10,6 +10,11 @@ import androidx.room.TypeConverters;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The single database of our Breathe application
+ * - contains the Inhaler_Usage_Event_table with InhalerUsageEvent entities
+ * - contains the Wearable_Data_table with WearableData entities
+ */
 @Database(entities = {InhalerUsageEvent.class, WearableData.class}, version = 1)
 @TypeConverters({Converters.class})
 public abstract class BreatheRoomDatabase extends RoomDatabase {
@@ -18,10 +23,11 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
 
     private static volatile BreatheRoomDatabase INSTANCE; // this BreatheRoomDatabase is a singleton
     private static final int NUMBER_OF_THREADS = 4;
+    // Executor Service is used (replaced AsyncTask) so inserts may happen concurrently
     static final ExecutorService dbWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    // creates a singleton BreatheRoomDatabase (singleton to prevent multiple instances of the database
-    // being opened)
+    // creates a singleton BreatheRoomDatabase
+    // (singleton to prevent multiple instances of the database being opened)
     public static BreatheRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (BreatheRoomDatabase.class) {

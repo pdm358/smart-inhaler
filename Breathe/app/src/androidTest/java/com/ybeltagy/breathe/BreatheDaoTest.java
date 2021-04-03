@@ -18,6 +18,12 @@ import org.junit.Before;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/**
+ * Simple tests for updating entities in the DAO and querying between dates
+ *
+ * Note: BreatheRepository is difficult to unit test (so this step has been skipped) as the
+ * application must be passed to its constructor
+ */
 @RunWith(AndroidJUnit4.class)
 public class BreatheDaoTest {
     private BreatheDao tBreatheDao;
@@ -75,7 +81,7 @@ public class BreatheDaoTest {
         int week = 7;
         List<InhalerUsageEvent> thisPastWeek =
                 tBreatheDao.loadAllInhalerUsageEventsBetweenDates(now.minusDays(week), now);
-        assertEquals(thisPastWeek.size(), week + 1);
+        assertEquals(thisPastWeek.size(), week + 1); // note: the range is inclusive
 
         tBreatheDao.deleteAll();
     }

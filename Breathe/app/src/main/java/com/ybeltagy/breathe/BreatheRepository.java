@@ -1,7 +1,6 @@
 package com.ybeltagy.breathe;
 
 import android.app.Application;
-import android.os.AsyncTask;
 
 /**
  * The BreatheRepository class:
@@ -20,10 +19,9 @@ public class BreatheRepository {
 
     // wrapper for BreatheDao insert method
     // - we must do this on a non-UI thread (or the app will crash)
+    // - Executor Service is used so this occurs concurrently
     public void insert(final InhalerUsageEvent inhalerUsageEvent) {
-        BreatheRoomDatabase.dbWriteExecutor.execute( () -> {
-            breatheDao.insert(inhalerUsageEvent);
-        });
+        BreatheRoomDatabase.dbWriteExecutor.execute( () -> breatheDao.insert(inhalerUsageEvent));
     }
 
 }

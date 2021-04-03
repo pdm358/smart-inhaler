@@ -7,15 +7,18 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-// exportSchema keeps a history of schema versions (for migration)
-// TODO: add migration strategy
-@Database(entities = {InhalerUsageEvent.class}, version = 1, exportSchema = true)
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@Database(entities = {InhalerUsageEvent.class, WearableData.class}, version = 1)
 @TypeConverters({Converters.class})
 public abstract class BreatheRoomDatabase extends RoomDatabase {
 
-    public abstract BreatheDao iueDao();
+    public abstract BreatheDao breatheDao();
 
-    private static BreatheRoomDatabase INSTANCE; // this BreatheRoomDatabase is a singleton
+    private static volatile BreatheRoomDatabase INSTANCE; // this BreatheRoomDatabase is a singleton
+    private static final int NUMBER_OF_THREADS = 4;
+    static final ExecutorService dbWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     // creates a singleton BreatheRoomDatabase (singleton to prevent multiple instances of the database
     // being opened)
@@ -25,8 +28,8 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     // create database
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            BreatheRoomDatabase.class, "IUE_database")
-                            // TODO: add migration strategy
+                            BreatheRoomDatabase.class, "Breathe_database")
+                            // Note: leaving implementation of migration strategy to future teams
                             .build();
                 }
             }

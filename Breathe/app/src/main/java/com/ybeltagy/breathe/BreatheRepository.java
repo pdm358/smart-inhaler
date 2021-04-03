@@ -14,29 +14,16 @@ public class BreatheRepository {
     private final BreatheDao breatheDao;
 
     BreatheRepository(Application app) {
-        BreatheRoomDatabase iueDB = BreatheRoomDatabase.getDatabase(app); // get handle to database
-        breatheDao = iueDB.iueDao();
+        BreatheRoomDatabase breatheDB = BreatheRoomDatabase.getDatabase(app); // get handle to database
+        breatheDao = breatheDB.breatheDao();
     }
 
     // wrapper for BreatheDao insert method
     // - we must use AsyncTask on a non-UI thread (or the app will crash)
-    public void insert(InhalerUsageEvent inhalerUsageEvent) {
-        new insertAsyncTask(breatheDao).execute(inhalerUsageEvent);
-    }
-
-    private static class insertAsyncTask extends AsyncTask<InhalerUsageEvent, Void, Void> {
-        private final BreatheDao iueAsyncTaskDao;
-
-        // TODO: find out the not-deprecated way of doing things here
-        insertAsyncTask(BreatheDao dao) {
-            iueAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final InhalerUsageEvent... params) {
-            iueAsyncTaskDao.insert(params[0]);
-            return null;
-        }
+    public void insert(final InhalerUsageEvent inhalerUsageEvent) {
+        BreatheRoomDatabase.dbWriteExecutor.execute( () -> {
+            breatheDao.insert(inhalerUsageEvent);
+        });
     }
 
 }

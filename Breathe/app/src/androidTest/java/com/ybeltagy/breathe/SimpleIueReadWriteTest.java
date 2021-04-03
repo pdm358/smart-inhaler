@@ -3,15 +3,17 @@ package com.ybeltagy.breathe;
 import android.content.Context;
 
 import androidx.room.Room;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -24,23 +26,23 @@ public class SimpleIueReadWriteTest {
     public void createDB() {
         Context context = ApplicationProvider.getApplicationContext();
         tBreatheRoomDatabase = Room.inMemoryDatabaseBuilder(context, BreatheRoomDatabase.class).build();
-        tBreatheDao = tBreatheRoomDatabase.iueDao();
+        tBreatheDao = tBreatheRoomDatabase.breatheDao();
     }
 
     @After
-    public void closeDB() throws IOException {
+    public void closeDB() {
         tBreatheDao.deleteAll(); // delete the records in the test database
         tBreatheRoomDatabase.close();
     }
 
     @Test
-    public void writeTrivialIueAndReadInList() throws Exception {
+    public void writeTrivialIueAndReadInList() {
         OffsetDateTime rightNow = OffsetDateTime.now();
         InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow, null, null, null);
 
         tBreatheDao.insert(tInhalerUsageEvent);
-        List<InhalerUsageEvent> byTimeStamp = tBreatheDao.getallIUEs();
+        List<InhalerUsageEvent> byTimeStamp = tBreatheDao.getAllIUEs();
 
-        assert(byTimeStamp.get(0).getTimeStamp().equals(rightNow));
+        assertEquals(byTimeStamp.get(0).getInhalerUsageEventTimeStamp(), rightNow);
     }
 }

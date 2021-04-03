@@ -30,7 +30,7 @@ public class InhalerUsageEvent {
     @PrimaryKey // timeStamp is the unique identifier for each InhalerUsageEvent record
     @NonNull // this can never be null
     @ColumnInfo(name = "UTC_ISO_8601_date_time") // name of the column in Room that stores timeStamp
-    private OffsetDateTime timeStamp;
+    private OffsetDateTime inhalerUsageEventTimeStamp;
     // Note: the java.time package and the OffsetDateTime class seem like the correct way to store
     // our dates for Java 8
     // (https://medium.com/decisionbrain/dates-time-in-modern-java-4ed9d5848a3e)
@@ -43,21 +43,22 @@ public class InhalerUsageEvent {
     @Embedded public WearableData wearableData;
 
     // @NonNull annotation means timeStamp parameter can never be null
-    public InhalerUsageEvent(@NonNull OffsetDateTime timeStamp, WeatherData weatherData,
+    public InhalerUsageEvent(@NonNull OffsetDateTime inhalerUsageEventTimeStamp, WeatherData weatherData,
                              DiaryEntry diaryEntry, WearableData wearableData) {
-        this.timeStamp = timeStamp;
+        this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
         this.weatherData = weatherData;
         this.diaryEntry = diaryEntry;
         this.wearableData = wearableData;
     }
 
     // Note: getter methods are required by Room so it can instantiate InhalerUsageEvent objects
-    public OffsetDateTime getTimeStamp() {
-        return timeStamp;
+    @NonNull
+    public OffsetDateTime getInhalerUsageEventTimeStamp() {
+        return inhalerUsageEventTimeStamp;
     }
 
-    public void setTimeStamp(OffsetDateTime timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setInhalerUsageEventTimeStamp(@NonNull OffsetDateTime inhalerUsageEventTimeStamp) {
+        this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
     }
 
     public WeatherData getWeatherData() {

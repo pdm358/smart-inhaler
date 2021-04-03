@@ -1,5 +1,11 @@
 package com.ybeltagy.breathe;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import java.time.OffsetDateTime;
+
 /**
  * Encapsulates local environmental data gathered from the user's smart pin/wearable
  * - currently only contains one actual field of data (temperature)
@@ -9,18 +15,28 @@ package com.ybeltagy.breathe;
  * TODO: write static WearableData createWearableData() to collect smart pin data
  * and create a WearableData object
  */
+@Entity(tableName = "WearableData_table")
 public class WearableData {
-    private int wearableTemperature;
-    private int placeHolder1;
-    private int placeHolder2;
-    private int placeHolder3;
+    @PrimaryKey
+    @NonNull
+    private OffsetDateTime wearableDataTimeStamp; // when this wearableData was collected
 
+    private int wearableTemperature = 0;
+    private int placeHolder1 = 0;
+    private int placeHolder2 = 0;
+    private int placeHolder3 = 0;
 
-    public WearableData(int wearableTemperature, int placeHolder1, int placeHolder2, int placeHolder3) {
-        this.wearableTemperature = wearableTemperature;
-        this.placeHolder1 = placeHolder1;
-        this.placeHolder2 = placeHolder2;
-        this.placeHolder3 = placeHolder3;
+    public WearableData(@NonNull OffsetDateTime wearableDataTimeStamp) {
+        this.wearableDataTimeStamp = wearableDataTimeStamp;
+    }
+
+    @NonNull
+    public OffsetDateTime getWearableDataTimeStamp() {
+        return wearableDataTimeStamp;
+    }
+
+    public void setWearableDataTimeStamp(@NonNull OffsetDateTime wearableDataTimeStamp) {
+        this.wearableDataTimeStamp = wearableDataTimeStamp;
     }
 
     public int getWearableTemperature() {

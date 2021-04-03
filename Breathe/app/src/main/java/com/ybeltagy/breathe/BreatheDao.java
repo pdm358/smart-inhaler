@@ -8,6 +8,10 @@ import androidx.room.Update;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/**
+ * Data access object for the BreatheRoomDatabase; allows Android to auto-generate queries without
+ * having to use SQL
+ */
 @Dao
 public interface BreatheDao {
 
@@ -20,18 +24,17 @@ public interface BreatheDao {
     @Query("DELETE FROM InhalerUsageEvent_table")
     void deleteAll();
 
-    // Returns all InhalerUsageEvents from the InhalerUsageEvent_table in lexographical ascending order
-    // of string timestamp (because of UTC format, this is in chronological order)
+    // Returns all InhalerUsageEvents from the InhalerUsageEvent_table in lexographical
+    // ascending order of string timestamp (because of UTC format, this is in chronological order)
     @Query("SELECT * FROM InhalerUsageEvent_table ORDER BY UTC_ISO_8601_date_time ASC")
-    List<InhalerUsageEvent> getallIUEs();
+    List<InhalerUsageEvent> getAllIUEs();
 
     // Update one or more InhalerUsageEvents
-    // @return : number of entries updated
     @Update
-    int updateInhalerUsageEvent(InhalerUsageEvent... inhalerUsageEvents);
+    void updateInhalerUsageEvent(InhalerUsageEvent... inhalerUsageEvents);
 
 
-    // Return InhalerUsageEvents between the parameter dates
+    // Return InhalerUsageEvents between the parameter dates (inclusive)
     @Query("SELECT * FROM InhalerUsageEvent_table WHERE UTC_ISO_8601_date_time " +
             "BETWEEN :firstDate AND :secondDate")
     List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDates(OffsetDateTime firstDate,

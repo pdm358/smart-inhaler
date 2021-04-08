@@ -33,10 +33,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'androidx.room:room-runtime:2.2.6'
 
     // Test dependencies
+    implementation 'androidx.room:room-runtime:2.2.6'
     testImplementation "com.google.truth:truth:1.1.2"
     testImplementation 'junit:junit:4.13.1'
 
@@ -59,4 +58,8 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion" // TODO: confirm necessity: The app compiles and runs without this dependency.
     androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion" //TODO: confirm necessity: The app compiles and runs without this dependency.
     annotationProcessor 'androidx.room:room-compiler:2.2.6'
+
+    // UI dependencies
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 }

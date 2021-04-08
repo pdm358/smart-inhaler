@@ -20,9 +20,8 @@ import java.util.List;
 public class IUEListAdapter
         extends RecyclerView.Adapter<IUEListAdapter.IUEViewHolder> {
 
-    // Placeholder list
-    // TODO: to be replaced with data source of inhaler usage event (IUE) objects
-    private final List<String> iueEntries;
+    // Cached copy of InhalerUsageEvents
+    private List<InhalerUsageEvent> iueEntries;
 
     // Inflater
     private final LayoutInflater iueInflater;
@@ -30,10 +29,7 @@ public class IUEListAdapter
     // Logging
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    public IUEListAdapter(Context context, List<String> iueEntryList) {
-        iueInflater = LayoutInflater.from(context);
-        this.iueEntries = iueEntryList;
-    }
+    public IUEListAdapter(Context context) { iueInflater = LayoutInflater.from(context); }
 
     @NonNull
     @Override
@@ -44,13 +40,24 @@ public class IUEListAdapter
 
     @Override
     public void onBindViewHolder(@NonNull IUEViewHolder holder, int position) {
-        // Will probably use a custom set method in the future, so I abstracted that into the holder.
-        holder.updateView(iueEntries.get(position));
+        if (iueEntries != null) {
+            // Will probably use a custom set method in the future, so I abstracted that into the holder.
+            holder.updateView(iueEntries.get(position));
+        }
+        else {
+            // covers the case of data not being ready yet
+            holder.iueItemView.setText("- - -");
+        }
+    }
+
+    void setWords(List<InhalerUsageEvent> inhalerUsageEvents) {
+        iueEntries = inhalerUsageEvents;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return iueEntries.size();
+        return iueEntries != null ? iueEntries.size() : 0;
     }
 
     // Class that holds View information for displaying one item from the item's layout

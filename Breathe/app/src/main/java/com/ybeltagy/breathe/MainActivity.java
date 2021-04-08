@@ -1,6 +1,7 @@
 package com.ybeltagy.breathe;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +21,9 @@ import java.util.List;
  */
 public class MainActivity extends AppCompatActivity {
 
-
+    // MainActivity's interactions with the data layer are through BreatheViewModel alone
+    // Note: did not make this local because we might reference this when updating other UI fields
+    private BreatheViewModel breatheViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         // fake data - assumed number of doses in a canister
         // TODO: Replace with real number of doses in a canister
         // todo: or put that in the resources folder if we will continue using it.
-        int totalDosesInCaniser = 200;
+        int totalDosesInCanister = 200;
 
         // todo: replace with dynamically loaded data from the database
         LinkedList<String> eventList = new LinkedList<>();
@@ -41,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
             Date date = new Date(2020, 10, i); // todo: avoid using Date because it is partially deprecated.
             eventList.addLast(date.toString());
         }
-        renderDiaryView(eventList);
+        renderDiaryView();
 
         // ProgressBar -----------------------------------------------------------------------------
-        renderMedStatusView(eventList, totalDosesInCaniser);
+        renderMedStatusView(eventList, totalDosesInCanister);
     }
 
     @Override
@@ -68,13 +71,23 @@ public class MainActivity extends AppCompatActivity {
 
     // render the diary RecyclerView for the diary timeline of events in third pane
     // (bottom of screen)
-    private void renderDiaryView(List<String> eventList) { // Use interfaces instead of actual classes
+    private void renderDiaryView() {
         RecyclerView iueRecyclerView = findViewById(R.id.diary_recyclerview);
         // make adapter and provide data to be displayed
-        IUEListAdapter iueListAdapter = new IUEListAdapter(this, eventList);
+        IUEListAdapter iueListAdapter = new IUEListAdapter(this);
         // connect adapter and recyclerView
         iueRecyclerView.setAdapter(iueListAdapter);
         // set layout manager for recyclerView
         iueRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // get handle to the BreatheViewModel
+        // Note: constructor in codelab did not work; searched for a long time and this fixed it:
+        // https://github.com/googlecodelabs/android-room-with-a-view/issues/145#issuecomment-739756244
+        breatheViewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(BreatheViewModel.class);
+
+        // Updated cached copy of InhalerUsageEvents
+        breatheViewModel.getAllInhalerUsageEvents().observe(this, iueListAdapter::setWords);
     }
 }

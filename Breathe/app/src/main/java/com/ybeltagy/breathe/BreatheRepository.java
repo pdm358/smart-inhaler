@@ -2,6 +2,11 @@ package com.ybeltagy.breathe;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import java.util.List;
+
 /**
  * The BreatheRepository class:
  * - Handles data operations -> provides clean API for app data
@@ -11,10 +16,17 @@ import android.app.Application;
  */
 public class BreatheRepository {
     private final BreatheDao breatheDao;
+    private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents; // TODO: IDE wants to make this final, does this cause problems?
+
 
     BreatheRepository(Application app) {
         BreatheRoomDatabase breatheDB = BreatheRoomDatabase.getDatabase(app); // get handle to database
         breatheDao = breatheDB.breatheDao();
+        allInhalerUsageEvents = breatheDao.getAllIUEs();
+    }
+
+    LiveData<List<InhalerUsageEvent>> getAllInhalerUsageEvents() {
+        return allInhalerUsageEvents;
     }
 
     // wrapper for BreatheDao insert method

@@ -44,7 +44,8 @@ public class SimpleIueReadWriteTest {
         InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow, null, null, null);
 
         tBreatheDao.insert(tInhalerUsageEvent);
-        List<InhalerUsageEvent> byTimeStamp = tBreatheDao.getAllIUEs();
+        // TODO: this does not work; figure out how ot test LiveData
+        List<InhalerUsageEvent> byTimeStamp = tBreatheDao.getAllIUEs().getValue();
 
         assertEquals(byTimeStamp.get(0).getInhalerUsageEventTimeStamp(), rightNow);
     }

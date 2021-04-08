@@ -2,6 +2,7 @@ package com.ybeltagy.breathe;
 
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -19,9 +20,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+// TODO: how to test LiveData type?
 /**
  * Simple tests for updating entities in the DAO and querying between dates
- *
+ * <p>
  * Note: BreatheRepository is difficult to unit test (so this step has been skipped) as the
  * application must be passed to its constructor
  */
@@ -61,8 +63,12 @@ public class BreatheDaoTest {
         tInhalerUsageEvent.setWearableData(wearableData);
         tBreatheDao.updateInhalerUsageEvent(tInhalerUsageEvent);
 
-        List<InhalerUsageEvent> allEvents = tBreatheDao.getAllIUEs();
-        assertEquals(allEvents.get(0).getWearableData().getTemperature(), testTemp, 0);
+        LiveData<List<InhalerUsageEvent>> liveAllEvents = tBreatheDao.getAllIUEs();
+        List<InhalerUsageEvent> allEvents = liveAllEvents.getValue();
+        assert allEvents != null;
+        assertEquals(allEvents.get(0).getWearableData().getTemperature(),
+                testTemp,
+                0);
 
         tBreatheDao.deleteAll();
     }
@@ -81,8 +87,10 @@ public class BreatheDaoTest {
         // query between dates
         int week = 7;
         List<InhalerUsageEvent> thisPastWeek =
-                tBreatheDao.loadAllInhalerUsageEventsBetweenDates(now.minus(week, ChronoUnit.DAYS), now);
-        assertEquals(thisPastWeek.size(), week + 1); // note: the range is inclusive
+                tBreatheDao.loadAllInhalerUsageEventsBetweenDates(now.minus(week, ChronoUnit.DAYS), now).getValue();
+        assert thisPastWeek != null;
+        assertEquals(thisPastWeek.size(),
+                week + 1); // note: the range is inclusive
 
         tBreatheDao.deleteAll();
     }

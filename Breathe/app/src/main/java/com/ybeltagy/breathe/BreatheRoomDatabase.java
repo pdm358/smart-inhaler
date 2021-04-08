@@ -22,9 +22,9 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
     public abstract BreatheDao breatheDao();
 
     private static volatile BreatheRoomDatabase INSTANCE; // this BreatheRoomDatabase is a singleton
-    private static final int NUMBER_OF_THREADS = 4;
+
     // Executor Service is used (replaced AsyncTask) so inserts may happen concurrently
-    static final ExecutorService dbWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+    static final ExecutorService dbWriteExecutor = Executors.newCachedThreadPool();
 
     // creates a singleton BreatheRoomDatabase
     // (singleton to prevent multiple instances of the database being opened)

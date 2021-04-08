@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class SimpleIueReadWriteTest {
 
     @Test
     public void writeTrivialIueAndReadInList() {
-        OffsetDateTime rightNow = OffsetDateTime.now();
+        Instant rightNow = Instant.now();
         InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow, null, null, null);
 
         tBreatheDao.insert(tInhalerUsageEvent);

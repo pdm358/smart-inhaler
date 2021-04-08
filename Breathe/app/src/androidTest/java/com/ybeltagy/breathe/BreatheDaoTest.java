@@ -15,7 +15,8 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class BreatheDaoTest {
 
     @Test
     public void updateInhalerUsageEventTest() {
-        OffsetDateTime rightNow = OffsetDateTime.now();
+        Instant rightNow = Instant.now();
 
         // original InhalerUsageEvent
         InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow,
@@ -54,33 +55,33 @@ public class BreatheDaoTest {
         // updated InhalerUsageEvent
 
         // simulating we gathered the wearableData 3 minutes later
-        WearableData wearableData = new WearableData(rightNow.plusMinutes(3));
-        int testTemp = 100;
-        wearableData.setWearableTemperature(testTemp);
+        WearableData wearableData = new WearableData(rightNow.plus(3, ChronoUnit.MINUTES));
+        float testTemp = 100;
+        wearableData.setTemperature(testTemp);
         tInhalerUsageEvent.setWearableData(wearableData);
         tBreatheDao.updateInhalerUsageEvent(tInhalerUsageEvent);
 
         List<InhalerUsageEvent> allEvents = tBreatheDao.getAllIUEs();
-        assertEquals(allEvents.get(0).getWearableData().getWearableTemperature(), testTemp);
+        assertEquals(allEvents.get(0).getWearableData().getTemperature(), testTemp, 0);
 
         tBreatheDao.deleteAll();
     }
 
     @Test
     public void eventsBetweenDatesTest() {
-        OffsetDateTime now = OffsetDateTime.now();
+        Instant now = Instant.now();
         // create some inhaler usage events
         for (int i = 0; i < 10; i++) {
-            OffsetDateTime aTime = now.minusDays(i);
+            Instant aTime = now.minus(i, ChronoUnit.DAYS);
             InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
-                    null, new WearableData(now.minusDays(i).plusMinutes(3)));
+                    null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)));
             tBreatheDao.insert(tInhalerUsageEvent);
         }
 
         // query between dates
         int week = 7;
         List<InhalerUsageEvent> thisPastWeek =
-                tBreatheDao.loadAllInhalerUsageEventsBetweenDates(now.minusDays(week), now);
+                tBreatheDao.loadAllInhalerUsageEventsBetweenDates(now.minus(week, ChronoUnit.DAYS), now);
         assertEquals(thisPastWeek.size(), week + 1); // note: the range is inclusive
 
         tBreatheDao.deleteAll();

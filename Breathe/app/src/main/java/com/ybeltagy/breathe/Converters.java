@@ -5,29 +5,38 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.room.TypeConverter;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 /**
  * Class for converting more complicated POJOs into types that can be stored in Room
  */
 public class Converters {
 
-    // Converts database stored timeStamp string into relevant OffsetDateTime (UTC)
+    /**
+     * Converts database stored timeStamp string into relevant Instant (UTC)
+     * @param timeStamp
+     * @return parsed Instant
+     */
     @TypeConverter
-    public static OffsetDateTime fromTimeStampString(String timeStamp) {
+    public static Instant fromTimeStampString(String timeStamp) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return timeStamp == null ? null : OffsetDateTime.parse(timeStamp);
+            return timeStamp == null ? null : Instant.parse(timeStamp);
         }
         else {
-            // TODO: implement date time formatting from string to OffsetDateTime
+            // TODO: implement date time formatting from string to Instant.
             //  for API < 26 (Oreo)
+            // FIXME: This is really important.
             return null;
         }
     }
 
-    // Converts OffsetDateTime timeStamp to string to be stored in database
+    /**
+     * Converts Instant timeStamp to string to be stored in database
+     * @param timeStamp
+     * @return timestamp as a string
+     */
     @TypeConverter
-    public static String toTimeStampString(OffsetDateTime timeStamp) {
+    public static String toTimeStampString(Instant timeStamp) {
         return timeStamp == null ? null : timeStamp.toString();
     }
 

@@ -8,7 +8,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 /**
  * Encapsulates local environmental data gathered from the user's smart pin/wearable
@@ -25,12 +25,12 @@ public class WearableData {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "Wearable_Data_UTC_ISO_8601_date_time")
-    private OffsetDateTime wearableDataTimeStamp; // when this wearableData was collected
+    private Instant wearableDataTimeStamp; // when this wearableData was collected
 
-    private int wearableTemperature = 0;
-    private int placeHolder1 = 0;
-    private int placeHolder2 = 0;
-    private int placeHolder3 = 0;
+    private float temperature = 0;
+    private float humidity = 0;
+    private char character = 0;
+    private char digit = 0;
 
     /**
      * Added this constructor for our iteration.
@@ -39,51 +39,51 @@ public class WearableData {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public WearableData() {
-        wearableDataTimeStamp = OffsetDateTime.now();
+        wearableDataTimeStamp = Instant.now();
     }
 
-    public WearableData(@NonNull OffsetDateTime wearableDataTimeStamp) {
+    public WearableData(@NonNull Instant wearableDataTimeStamp) {
         this.wearableDataTimeStamp = wearableDataTimeStamp;
     }
 
     @NonNull
-    public OffsetDateTime getWearableDataTimeStamp() {
+    public Instant getWearableDataTimeStamp() {
         return wearableDataTimeStamp;
     }
 
-    public void setWearableDataTimeStamp(@NonNull OffsetDateTime wearableTimeStamp) {
+    public void setWearableDataTimeStamp(@NonNull Instant wearableTimeStamp) {
         this.wearableDataTimeStamp = wearableTimeStamp;
     }
 
-    public int getWearableTemperature() {
-        return wearableTemperature;
+    public float getTemperature() {
+        return temperature;
     }
 
-    public void setWearableTemperature(int wearableTemperature) {
-        this.wearableTemperature = wearableTemperature;
+    public void setTemperature(float temperature) {
+        this.temperature = temperature;
     }
 
-    public int getPlaceHolder1() {
-        return placeHolder1;
+    public float getHumidity() {
+        return humidity;
     }
 
-    public void setPlaceHolder1(int placeHolder1) {
-        this.placeHolder1 = placeHolder1;
+    public void setHumidity(float humidity) {
+        this.humidity = humidity;
     }
 
-    public int getPlaceHolder2() {
-        return placeHolder2;
+    public char getCharacter() {
+        return character;
     }
 
-    public void setPlaceHolder2(int placeHolder2) {
-        this.placeHolder2 = placeHolder2;
+    public void setCharacter(char character) {
+        this.character = character;
     }
 
-    public int getPlaceHolder3() {
-        return placeHolder3;
+    public char getDigit() {
+        return digit;
     }
 
-    public void setPlaceHolder3(int placeHolder3) {
-        this.placeHolder3 = placeHolder3;
+    public void setDigit(char digit) {
+        this.digit = digit;
     }
 }

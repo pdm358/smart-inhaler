@@ -6,8 +6,8 @@ import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-// date-time with an offset from UTC/Greenwich in the ISO-8601 calendar system
-import java.time.OffsetDateTime;
+// UTC/Greenwich ISO-8601 Timestamp
+import java.time.Instant;
 
 /**
  * Entity (used in Room database) that represents an inhaler usage event.  Contains:
@@ -31,20 +31,21 @@ public class InhalerUsageEvent {
     @NonNull // this can never be null
     // name of the column in Room that stores timeStamp
     @ColumnInfo(name = "Inhaler_Usage_Event_UTC_ISO_8601_date_time")
-    private OffsetDateTime inhalerUsageEventTimeStamp;
-    // Note: the java.time package and the OffsetDateTime class seem like the correct way to store
+    private Instant inhalerUsageEventTimeStamp;
+    // Note: the java.time package and the Instant class seem like the correct way to store
     // our dates for Java 8
     // (https://medium.com/decisionbrain/dates-time-in-modern-java-4ed9d5848a3e)
 
     // I made these public because all of the Embedded examples I saw were public
     // For more info on Embedded objects within Entities,
     // see https://developer.android.com/training/data-storage/room/relationships
-    @Embedded public WeatherData weatherData;
-    @Embedded public DiaryEntry diaryEntry;
-    @Embedded public WearableData wearableData;
+    // TODO: it should be possible to make them private as long as we provide setters and getters. Consider this when refactoring.
+    @Embedded private WeatherData weatherData;
+    @Embedded private DiaryEntry diaryEntry;
+    @Embedded private WearableData wearableData;
 
     // @NonNull annotation means timeStamp parameter can never be null
-    public InhalerUsageEvent(@NonNull OffsetDateTime inhalerUsageEventTimeStamp, WeatherData weatherData,
+    public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp, WeatherData weatherData,
                              DiaryEntry diaryEntry, WearableData wearableData) {
         this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
         this.weatherData = weatherData;
@@ -54,12 +55,12 @@ public class InhalerUsageEvent {
 
     // Note: getter methods are required by Room so it can instantiate InhalerUsageEvent objects
     @NonNull
-    public OffsetDateTime getInhalerUsageEventTimeStamp() {
+    public Instant getInhalerUsageEventTimeStamp() {
         return inhalerUsageEventTimeStamp;
     }
     // Although this function is "unused", the database needs it to exist (or else the compiler
     // complains)
-    public void setInhalerUsageEventTimeStamp(@NonNull OffsetDateTime inhalerUsageEventTimeStamp) {
+    public void setInhalerUsageEventTimeStamp(@NonNull Instant inhalerUsageEventTimeStamp) {
         this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
     }
 

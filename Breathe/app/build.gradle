@@ -55,8 +55,8 @@ dependencies {
     // Android Architecture Component libraries
 
     // Room components
-    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
-    androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
+    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion" // TODO: confirm necessity: The app compiles and runs without this dependency.
+    androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion" //TODO: confirm necessity: The app compiles and runs without this dependency.
     annotationProcessor 'androidx.room:room-compiler:2.2.6'
 
     // UI dependencies

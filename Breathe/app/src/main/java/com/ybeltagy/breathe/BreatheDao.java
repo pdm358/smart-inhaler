@@ -5,7 +5,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -25,9 +25,10 @@ public interface BreatheDao {
     void deleteAll();
 
     // Returns all InhalerUsageEvents from the InhalerUsageEvent_table in lexographical
-    // ascending order of string timestamp (because of UTC format, this is in chronological order)
+    // descending order of string timestamp (because of UTC format, this is in chronological order)
+    // All the timestamp string representations must be of the same size for this method to work correctly.
     @Query("SELECT * FROM InhalerUsageEvent_table " +
-            "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time ASC")
+            "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time DESC")
     List<InhalerUsageEvent> getAllIUEs();
 
     // Update one or more InhalerUsageEvents
@@ -39,6 +40,6 @@ public interface BreatheDao {
     @Query("SELECT * FROM InhalerUsageEvent_table " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time " +
             "BETWEEN :firstDate AND :secondDate")
-    List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDates(OffsetDateTime firstDate,
-                                                                  OffsetDateTime secondDate);
+    List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDates(Instant firstDate,
+                                                                  Instant secondDate);
 }

@@ -5,7 +5,6 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
@@ -14,8 +13,8 @@ import java.util.List;
  * data and survives configuration changes
  */
 public class BreatheViewModel extends AndroidViewModel {
-    private final BreatheRepository breatheRepository; // TODO: should this be final?
-    private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents; // TODO: should this be final?
+    private final BreatheRepository breatheRepository;
+    private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents;
 
 
     public BreatheViewModel(@NonNull Application application) {

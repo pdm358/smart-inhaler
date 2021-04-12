@@ -57,11 +57,11 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
      *
      *      Please delete this code after the inhaler can successfully send IUEs to the app.
      */
-    private static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
+    private static final RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
+        public void onOpen(@NonNull SupportSQLiteDatabase db) {
+            super.onOpen(db);
 
             dbWriteExecutor.execute(() -> {
                 // Populate the database with placeholder IUEs in the background.

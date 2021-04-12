@@ -1,7 +1,6 @@
 package com.ybeltagy.breathe;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -91,12 +90,9 @@ public class MainActivity extends AppCompatActivity {
                 .get(BreatheViewModel.class);
 
         // Updated cached copy of InhalerUsageEvents
-        breatheViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
-            @Override
-            public void onChanged(List<InhalerUsageEvent> inhalerUsageEvents1) {
-                iueListAdapter.setWords(inhalerUsageEvents1);
-                Log.d("MainActivity", "database changed - added IUEs");
-            }
+        breatheViewModel.getAllInhalerUsageEvents().observe(this, inhalerUsageEvents1 -> {
+            iueListAdapter.setWords(inhalerUsageEvents1);
+            Log.d("MainActivity", "database changed - added IUEs");
         });
     }
 }

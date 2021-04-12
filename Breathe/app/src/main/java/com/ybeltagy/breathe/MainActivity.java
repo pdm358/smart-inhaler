@@ -1,8 +1,9 @@
 package com.ybeltagy.breathe;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "DiaryView starting to render...");
 
         // make adapter and provide data to be displayed
-        IUEListAdapter iueListAdapter = new IUEListAdapter(this);
+        final IUEListAdapter iueListAdapter = new IUEListAdapter(this);
         // connect adapter and recyclerView
         iueRecyclerView.setAdapter(iueListAdapter);
         // set layout manager for recyclerView
@@ -86,6 +87,20 @@ public class MainActivity extends AppCompatActivity {
         // get handle to the BreatheViewModel
         // Note: constructor in codelab did not work; searched for a long time and this fixed it:
         // https://github.com/googlecodelabs/android-room-with-a-view/issues/145#issuecomment-739756244
+        breatheViewModel = ViewModelProviders.of(this).get(BreatheViewModel.class);
+
+        // Add an observer on the LiveData returned by getAlphabetizedWords.
+        // The onChanged() method fires when the observed data changes and the activity is
+        // in the foreground.
+        breatheViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
+            @Override
+            public void onChanged(@Nullable final List<InhalerUsageEvent> inhalerUsageEvents) {
+                // Update the cached copy of the words in the adapter.
+                iueListAdapter.setInhalerUsageEvents(inhalerUsageEvents);
+            }
+        });
+
+/**
         breatheViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
                 .get(BreatheViewModel.class);
@@ -98,5 +113,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MainActivity", "database changed - added IUEs");
             }
         });
+ **/
     }
 }

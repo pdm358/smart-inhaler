@@ -81,7 +81,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
     // Saved state module for ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
-    implementation "android.arch.lifecycle:extensions:$rootProject.$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
 
     // Annotation processor
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"

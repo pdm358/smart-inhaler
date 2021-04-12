@@ -14,8 +14,8 @@ import java.util.List;
  * data and survives configuration changes
  */
 public class BreatheViewModel extends AndroidViewModel {
-    private final BreatheRepository breatheRepository; // TODO: should this be final?
-    private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents; // TODO: should this be final?
+    private BreatheRepository breatheRepository;
+    private LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents;
 
 
     public BreatheViewModel(@NonNull Application application) {

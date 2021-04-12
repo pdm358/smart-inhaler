@@ -20,47 +20,46 @@ import java.util.List;
 public class IUEListAdapter
         extends RecyclerView.Adapter<IUEListAdapter.IUEViewHolder> {
 
-    // Inflater
-    private final LayoutInflater iueInflater;
     // Cached copy of InhalerUsageEvents
     private List<InhalerUsageEvent> iueEntries;
+
+    // Inflater
+    private final LayoutInflater iueInflater;
 
     // Logging
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    IUEListAdapter(Context context) { iueInflater = LayoutInflater.from(context); }
+    public IUEListAdapter(Context context) { iueInflater = LayoutInflater.from(context); }
 
+    @NonNull
     @Override
-    public IUEViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public IUEViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = iueInflater.inflate(R.layout.iue_item, parent, false);
         return new IUEViewHolder(itemView, this);
     }
 
     @Override
-    public void onBindViewHolder(IUEViewHolder holder, int position) {
-//        if (iueEntries != null) {
+    public void onBindViewHolder(@NonNull IUEViewHolder holder, int position) {
+        if (iueEntries != null) {
             // Will probably use a custom set method in the future, so I abstracted that into the holder.
             InhalerUsageEvent current = iueEntries.get(position);
             Log.d("IUEListAdapter", "setting text to "
                     + current.getInhalerUsageEventTimeStamp().toString());
             holder.iueItemView.setText(current.getInhalerUsageEventTimeStamp().toString());
-//        }
-//        else {
-//            // covers the case of data not being ready yet
-//            holder.iueItemView.setText("- - -");
-//        }
+        }
+        else {
+            // covers the case of data not being ready yet
+            holder.iueItemView.setText("- - -");
+        }
     }
 
-    void setInhalerUsageEvents(List<InhalerUsageEvent> inhalerUsageEvents) {
+    void setWords(List<InhalerUsageEvent> inhalerUsageEvents) {
         iueEntries = inhalerUsageEvents;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        // debug
-        int size = iueEntries != null ? iueEntries.size() : 0;
-        Log.d("IUEListAdapter", "iue entries size = " + size);
         return iueEntries != null ? iueEntries.size() : 0;
     }
 
@@ -71,7 +70,7 @@ public class IUEListAdapter
         public final TextView iueItemView;
         final IUEListAdapter iueListAdapter;
 
-        public IUEViewHolder(View itemView, IUEListAdapter adapter) {
+        public IUEViewHolder(@NonNull View itemView, IUEListAdapter adapter) {
             super(itemView);
             iueItemView = itemView.findViewById(R.id.iue_textview);
             this.iueListAdapter = adapter;
@@ -81,6 +80,7 @@ public class IUEListAdapter
 
         @Override
         public void onClick(View v) {
+
             // In the future, we might want to start an activity for results.
             Intent intent = new Intent(this.iueItemView.getContext(), DiaryEntryActivity.class);
             this.iueItemView.getContext().startActivity(intent);

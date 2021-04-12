@@ -15,8 +15,8 @@ import java.util.List;
  * - Manages query threads and allows the use of multiple backends (for future teams)
  */
 public class BreatheRepository {
-    private BreatheDao breatheDao;
-    private LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents;
+    private final BreatheDao breatheDao;
+    private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents; // TODO: IDE wants to make this final, does this cause problems?
 
 
     BreatheRepository(Application app) {
@@ -32,7 +32,7 @@ public class BreatheRepository {
     // wrapper for BreatheDao insert method
     // - we must do this on a non-UI thread (or the app will crash)
     // - Executor Service is used so this occurs concurrently
-    public void insert(InhalerUsageEvent inhalerUsageEvent) {
+    public void insert(final InhalerUsageEvent inhalerUsageEvent) {
         BreatheRoomDatabase.dbWriteExecutor.execute( () -> breatheDao.insert(inhalerUsageEvent));
     }
 

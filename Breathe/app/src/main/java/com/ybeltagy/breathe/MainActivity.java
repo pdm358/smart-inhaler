@@ -1,6 +1,7 @@
 package com.ybeltagy.breathe;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,8 +12,6 @@ import android.widget.TextView;
 
 import android.os.Bundle;
 
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,17 +36,11 @@ public class MainActivity extends AppCompatActivity {
 
         // fake data - assumed number of doses in a canister
         // TODO: Replace with real number of doses in a canister
-        // todo: or put that in the resources folder if we will continue using it.
+        //  or put that in the resources folder if we will continue using it.
         int totalDosesInCanister = 200;
 
         // ProgressBar -----------------------------------------------------------------------------
-        // todo: replace with cached InhalerUsageEvent list
-        LinkedList<String> eventList = new LinkedList<>();
-        for (int i = 1; i <= 20; i++) {
-            Date date = new Date(2020, 10, i); // todo: avoid using Date because it is partially deprecated.
-            eventList.addLast(date.toString());
-        }
-        renderMedStatusView(eventList, totalDosesInCanister);
+        renderMedStatusView(totalDosesInCanister);
     }
 
     @Override
@@ -56,17 +49,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // render the Progress Bar for the medicine status in first pane (top of the screen)
-    private void renderMedStatusView(List<String> eventList, int totalDosesInCaniser) {
+    private void renderMedStatusView(int totalDosesInCaniser) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
         // update max amount of progress bar to number of doses in a full medicine canister
         medicineStatusBar.setMax(totalDosesInCaniser);
         // set doses taken shown in the ProgressBar to fake data increment (20 fake IUE events)
-        // TODO: Delete fake data increment, replace with real increment (# of newly synced IUEs)
-        medicineStatusBar.setProgress(eventList.size());
+        // TODO: Is it normal to use the same view model for both the diary timeline and the
+        //       progress bar? Will this cause problems later?
+        breatheViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
+            @Override
+            public void onChanged(List<InhalerUsageEvent> inhalerUsageEvents) {
+                Log.d("MainActivity", "setting progress to " + inhalerUsageEvents.size());
+                medicineStatusBar.setProgress(inhalerUsageEvents.size());
 
-        // set text to show how many doses have been taken
-        TextView dosesTakenText = findViewById(R.id.doses_textview);
-        dosesTakenText.setText(String.format("%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
+                // set text to show how many doses have been taken
+                TextView dosesTakenText = findViewById(R.id.doses_textview);
+                dosesTakenText.setText(String.format("%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
+            }
+        });
+        //medicineStatusBar.setProgress(eventList.size());
     }
 
     // render the diary RecyclerView for the diary timeline of events in third pane

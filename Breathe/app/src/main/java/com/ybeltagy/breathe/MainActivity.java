@@ -1,10 +1,12 @@
 package com.ybeltagy.breathe;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -32,21 +34,20 @@ public class MainActivity extends AppCompatActivity {
 
         // RecyclerView ----------------------------------------------------------------------------
         // populate the fake data for the RecyclerView
+        renderDiaryView();
 
         // fake data - assumed number of doses in a canister
         // TODO: Replace with real number of doses in a canister
         // todo: or put that in the resources folder if we will continue using it.
         int totalDosesInCanister = 200;
 
-        // todo: replace with dynamically loaded data from the database
+        // ProgressBar -----------------------------------------------------------------------------
+        // todo: replace with cached InhalerUsageEvent list
         LinkedList<String> eventList = new LinkedList<>();
         for (int i = 1; i <= 20; i++) {
             Date date = new Date(2020, 10, i); // todo: avoid using Date because it is partially deprecated.
             eventList.addLast(date.toString());
         }
-        renderDiaryView();
-
-        // ProgressBar -----------------------------------------------------------------------------
         renderMedStatusView(eventList, totalDosesInCanister);
     }
 
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     // (bottom of screen)
     private void renderDiaryView() {
         RecyclerView iueRecyclerView = findViewById(R.id.diary_recyclerview);
+        Log.d("MainActivity", "DiaryView starting to render...");
+
         // make adapter and provide data to be displayed
         IUEListAdapter iueListAdapter = new IUEListAdapter(this);
         // connect adapter and recyclerView
@@ -88,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
                 .get(BreatheViewModel.class);
 
         // Updated cached copy of InhalerUsageEvents
-        breatheViewModel.getAllInhalerUsageEvents().observe(this, iueListAdapter::setWords);
+        breatheViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
+            @Override
+            public void onChanged(List<InhalerUsageEvent> inhalerUsageEvents1) {
+                iueListAdapter.setWords(inhalerUsageEvents1);
+                Log.d("MainActivity", "database changed - added IUEs");
+            }
+        });
     }
 }

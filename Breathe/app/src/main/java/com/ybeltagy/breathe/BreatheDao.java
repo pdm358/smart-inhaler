@@ -20,11 +20,6 @@ public interface BreatheDao {
     @Insert
     void insert(InhalerUsageEvent inhalerUsageEvent);
 
-    // IMPORTANT: this is here for testing use only; it should not be used in the app itself
-    // This deletes all InhalerUsageEvents from the InhalerUsageEvent_table
-    @Query("DELETE FROM InhalerUsageEvent_table")
-    void deleteAll();
-
     /**
      * IMPORTANT: All the timestamp string representations must be of the same size for this
      * method to work correctly.
@@ -43,9 +38,6 @@ public interface BreatheDao {
     @Update
     void updateInhalerUsageEvent(InhalerUsageEvent... inhalerUsageEvents);
 
-
-    //
-
     /**
      * IMPORTANT: All the timestamp string representations must be of the same size for this
      * method to work correctly.
@@ -59,4 +51,23 @@ public interface BreatheDao {
             "BETWEEN :firstDate AND :secondDate")
     LiveData<List<InhalerUsageEvent>> loadAllInhalerUsageEventsBetweenDates(Instant firstDate,
                                                                                    Instant secondDate);
+
+    // Methods for testing ONLY --------------------------------------------------------------------
+
+    // Some duplicated methods used for unit testing the DAO / RoomDatabase without using LiveData
+    // wrapper
+    @Query("SELECT * FROM InhalerUsageEvent_table " +
+            "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time DESC")
+    List<InhalerUsageEvent> getAllIUEsTest();
+
+    @Query("SELECT * FROM InhalerUsageEvent_table " +
+            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time " +
+            "BETWEEN :firstDate AND :secondDate")
+    List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDatesTest (Instant firstDate,
+                                                                            Instant secondDate);
+
+    // IMPORTANT: this is here for testing use only; it should not be used in the app itself
+    // This deletes all InhalerUsageEvents from the InhalerUsageEvent_table
+    @Query("DELETE FROM InhalerUsageEvent_table")
+    void deleteAll();
 }

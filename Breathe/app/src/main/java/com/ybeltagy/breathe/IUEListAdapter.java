@@ -42,7 +42,10 @@ public class IUEListAdapter
     public void onBindViewHolder(@NonNull IUEViewHolder holder, int position) {
         if (iueEntries != null) {
             // Will probably use a custom set method in the future, so I abstracted that into the holder.
-            holder.updateView(iueEntries.get(position));
+            InhalerUsageEvent current = iueEntries.get(position);
+            Log.d("IUEListAdapter", "setting text to "
+                    + current.getInhalerUsageEventTimeStamp().toString());
+            holder.iueItemView.setText(current.getInhalerUsageEventTimeStamp().toString());
         }
         else {
             // covers the case of data not being ready yet
@@ -84,16 +87,6 @@ public class IUEListAdapter
 
             //todo delete later
             Log.d(LOG_TAG, "Diary entry activity launched!");
-        }
-
-        /**
-         * Updates the view using {@code obj}.
-         * @param obj
-         */
-        public void updateView(Object obj){
-
-            iueItemView.setText((String) obj);
-
         }
     }
 }

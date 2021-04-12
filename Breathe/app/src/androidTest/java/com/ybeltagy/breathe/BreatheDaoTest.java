@@ -63,8 +63,7 @@ public class BreatheDaoTest {
         tInhalerUsageEvent.setWearableData(wearableData);
         tBreatheDao.updateInhalerUsageEvent(tInhalerUsageEvent);
 
-        LiveData<List<InhalerUsageEvent>> liveAllEvents = tBreatheDao.getAllIUEs();
-        List<InhalerUsageEvent> allEvents = liveAllEvents.getValue();
+        List<InhalerUsageEvent> allEvents = tBreatheDao.getAllIUEsTest();
         assert allEvents != null;
         assertEquals(allEvents.get(0).getWearableData().getTemperature(),
                 testTemp,
@@ -87,7 +86,7 @@ public class BreatheDaoTest {
         // query between dates
         int week = 7;
         List<InhalerUsageEvent> thisPastWeek =
-                tBreatheDao.loadAllInhalerUsageEventsBetweenDates(now.minus(week, ChronoUnit.DAYS), now).getValue();
+                tBreatheDao.loadAllInhalerUsageEventsBetweenDatesTest(now.minus(week, ChronoUnit.DAYS), now);
         assert thisPastWeek != null;
         assertEquals(thisPastWeek.size(),
                 week + 1); // note: the range is inclusive

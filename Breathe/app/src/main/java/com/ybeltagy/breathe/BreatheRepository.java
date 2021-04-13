@@ -33,7 +33,16 @@ public class BreatheRepository {
     // - we must do this on a non-UI thread (or the app will crash)
     // - Executor Service is used so this occurs concurrently
     public void insert(final InhalerUsageEvent inhalerUsageEvent) {
-        BreatheRoomDatabase.dbWriteExecutor.execute( () -> breatheDao.insert(inhalerUsageEvent));
+        BreatheRoomDatabase.dbWriteExecutor.execute(() -> breatheDao.insert(inhalerUsageEvent));
     }
+
+    /**
+     *  IMPORTANT : This is for testing purposes ONLY -> to clear away placeholder IUEs we've created
+     *              as we develop and test the app.
+     */
+    public void deleteAllInhalerUsageEvents() {
+        BreatheRoomDatabase.dbWriteExecutor.execute(breatheDao::deleteAll);
+    }
+
 
 }

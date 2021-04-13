@@ -1,12 +1,16 @@
 package com.ybeltagy.breathe;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -24,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
     // MainActivity's interactions with the data layer are through BreatheViewModel alone
     // Note: did not make this local because we might reference this when updating other UI fields
     private BreatheViewModel breatheViewModel;
+
+    // Intent extra for Diary Entry Activity
+    // TODO: extract to string resource
+    public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT =
+            "extra_inhaler_usage_event_to_be_updated";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // render the Progress Bar for the medicine status in first pane (top of the screen)
-    private void renderMedStatusView(int totalDosesInCaniser) {
+    private void renderMedStatusView(int totalDosesInCanister) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
         // update max amount of progress bar to number of doses in a full medicine canister
-        medicineStatusBar.setMax(totalDosesInCaniser);
+        medicineStatusBar.setMax(totalDosesInCanister);
         // set doses taken shown in the ProgressBar to fake data increment (20 fake IUE events)
         // TODO: Is it normal to use the same view model for both the diary timeline and the
         //       progress bar? Will this cause problems later?
@@ -67,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 dosesTakenText.setText(String.format("%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
             }
         });
-        //medicineStatusBar.setProgress(eventList.size());
     }
 
     // render the diary RecyclerView for the diary timeline of events in third pane
@@ -80,6 +88,15 @@ public class MainActivity extends AppCompatActivity {
         IUEListAdapter iueListAdapter = new IUEListAdapter(this);
         // connect adapter and recyclerView
         iueRecyclerView.setAdapter(iueListAdapter);
+        // set an on-click listener so we can get the InhalerUsageEvent at the clicked positon and
+        // pass it to the DiaryEntryActivity
+        iueListAdapter.setOnItemClickListener(new IUEListAdapter.ClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onItemClick(View v, int position) {
+                launchDiaryEntryActivity(iueListAdapter.getInhalerUsageEventAtPosition(position));
+            }
+        });
         // set layout manager for recyclerView
         iueRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -95,5 +112,14 @@ public class MainActivity extends AppCompatActivity {
             iueListAdapter.setWords(inhalerUsageEvents1);
             Log.d("MainActivity", "database changed - added IUEs");
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    // TODO: if we change the primary key of the InhalerUsageEvent to a random id, the intent
+    //       will also need to include the InhalerUsageEvent's id
+    public void launchDiaryEntryActivity(InhalerUsageEvent inhalerUsageEvent) {
+        Intent intent = new Intent(this, DiaryEntryActivity.class);
+        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT, inhalerUsageEvent.getInhalerUsageEventTimeStamp());
+        startActivity(intent);
     }
 }

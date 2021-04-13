@@ -26,10 +26,14 @@ public class IUEListAdapter
     // Inflater
     private final LayoutInflater iueInflater;
 
+    private static ClickListener clickListener;
+
     // Logging
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    public IUEListAdapter(Context context) { iueInflater = LayoutInflater.from(context); }
+    public IUEListAdapter(Context context) {
+        iueInflater = LayoutInflater.from(context);
+    }
 
     @NonNull
     @Override
@@ -46,8 +50,7 @@ public class IUEListAdapter
             Log.d("IUEListAdapter", "setting text to "
                     + current.getInhalerUsageEventTimeStamp().toString());
             holder.iueItemView.setText(current.getInhalerUsageEventTimeStamp().toString());
-        }
-        else {
+        } else {
             // covers the case of data not being ready yet
             holder.iueItemView.setText("- - -");
         }
@@ -63,9 +66,26 @@ public class IUEListAdapter
         return iueEntries != null ? iueEntries.size() : 0;
     }
 
+    /**
+     * Identifies which InhalerUsageEvent was clicked for methods that handle user events
+     *
+     * @param position Position of InhalerUsageEvent in RecyclerView
+     * @return The InhalerUsageEvent at the input position
+     */
+    public InhalerUsageEvent getInhalerUsageEventAtPosition(int position) {
+        return iueEntries.get(position);
+    }
+
+    public interface ClickListener {
+        void onItemClick(View v, int position);
+    }
+
+    public void setOnItemClickListener(ClickListener clickListener) {
+        IUEListAdapter.clickListener = clickListener;
+    }
+
     // Class that holds View information for displaying one item from the item's layout
-    static class IUEViewHolder extends RecyclerView.ViewHolder implements View
-            .OnClickListener {
+    static class IUEViewHolder extends RecyclerView.ViewHolder {
         // we may want to change TextView into something that displays the IUE's in a better way
         public final TextView iueItemView;
         final IUEListAdapter iueListAdapter;
@@ -75,18 +95,12 @@ public class IUEListAdapter
             iueItemView = itemView.findViewById(R.id.iue_textview);
             this.iueListAdapter = adapter;
 
-            iueItemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-
-            // In the future, we might want to start an activity for results.
-            Intent intent = new Intent(this.iueItemView.getContext(), DiaryEntryActivity.class);
-            this.iueItemView.getContext().startActivity(intent);
-
-            //todo delete later
-            Log.d(LOG_TAG, "Diary entry activity launched!");
+            iueItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickListener.onItemClick(view, getAbsoluteAdapterPosition());
+                }
+            });
         }
     }
 }

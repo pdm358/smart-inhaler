@@ -39,6 +39,17 @@ public interface BreatheDao {
     void updateInhalerUsageEvent(InhalerUsageEvent... inhalerUsageEvents);
 
     /**
+     *
+     * Gets a single InhalerUsageEvent from the database.
+     * - This is used to query the database and check if its empty or not
+     * - Note: Does not return a LiveData-wrapped InhalerUsageEvent
+     *
+     * @return a list containing at most a single InhalerUsageEvent
+     */
+    @Query ("SELECT * FROM InhalerUsageEvent_table LIMIT 1")
+    List<InhalerUsageEvent> getAnySingleInhalerUsageEvent();
+
+    /**
      * IMPORTANT: All the timestamp string representations must be of the same size for this
      * method to work correctly.
      *

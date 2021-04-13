@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 public abstract class BreatheRoomDatabase extends RoomDatabase {
 
     public abstract BreatheDao breatheDao();
+
     private static volatile BreatheRoomDatabase INSTANCE; // this BreatheRoomDatabase is a singleton
 
     // Executor Service is used (replaced AsyncTask) so inserts may happen concurrently
@@ -51,11 +52,10 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
     }
 
     /**
-     * IMPORTANT: The code for the RoomDatabase.Callback is for testing only; this causes
-     *      the database to be cleared every time it is created and populates it with placeholder
-     *      Inhaler usage events.
-     *
-     *      Please delete this code after the inhaler can successfully send IUEs to the app.
+     * IMPORTANT: The code for the RoomDatabase.Callback is for TESTING ONLY; this causes
+     * the database to be populated with placeholder Inhaler usage events.
+     * <p>
+     * Please delete this code after the inhaler can successfully send IUEs to the app.
      */
     private static final RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
         @RequiresApi(api = Build.VERSION_CODES.O)
@@ -66,17 +66,19 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
             dbWriteExecutor.execute(() -> {
                 // Populate the database with placeholder IUEs in the background.
                 BreatheDao breatheDao = INSTANCE.breatheDao();
-                breatheDao.deleteAll();
 
-                // Make some placeholder IUEs and add them to the database
-                Instant now = Instant.now();
-                for (int i = 0; i < 10; i++) {
-                    Instant aTime = now.minus(i, ChronoUnit.DAYS);
-                    InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
-                            null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)));
-                    Log.d("BreatheRoomDatabase", "adding InhalerUsageEvent "
-                            + tInhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
-                    breatheDao.insert(tInhalerUsageEvent);
+                if (breatheDao.getAnySingleInhalerUsageEvent().size() < 1) {
+                    // Check if there are any placeholder IUEs in the database
+                    // If there are none, make some placeholder IUEs and add them to the database
+                    Instant now = Instant.now();
+                    for (int i = 0; i < 5; i++) {
+                        Instant aTime = now.minus(i, ChronoUnit.DAYS);
+                        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
+                                null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)));
+                        Log.d("BreatheRoomDatabase", "adding InhalerUsageEvent "
+                                + tInhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
+                        breatheDao.insert(tInhalerUsageEvent);
+                    }
                 }
             });
         }

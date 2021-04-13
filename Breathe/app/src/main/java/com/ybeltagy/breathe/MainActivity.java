@@ -118,8 +118,13 @@ public class MainActivity extends AppCompatActivity {
     // TODO: if we change the primary key of the InhalerUsageEvent to a random id, the intent
     //       will also need to include the InhalerUsageEvent's id
     public void launchDiaryEntryActivity(InhalerUsageEvent inhalerUsageEvent) {
+        Log.d("MainActivity", "Launching diary entry activity!");
         Intent intent = new Intent(this, DiaryEntryActivity.class);
-        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT, inhalerUsageEvent.getInhalerUsageEventTimeStamp());
+        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT,
+                inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
+        Log.d("MainActivity", "Added the following extra to the intent passed to the " +
+                "diary entry activity -> "
+                + inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
         startActivity(intent);
     }
 }

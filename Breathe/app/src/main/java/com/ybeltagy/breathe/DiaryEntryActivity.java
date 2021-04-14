@@ -13,10 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.time.Instant;
-
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE;
-import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP;
+import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY;
 
 public class DiaryEntryActivity extends AppCompatActivity {
 
@@ -25,7 +23,6 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
     // TODO: extract string resources
     public static final String EXTRA_DIARY_MESSAGE_REPLY = "DIARY_MESSAGE_REPLY";
-    public static final String EXTRA_DIARY_MESSAGE_REPLY_ID = "DIARY_MESSAGE_REPLY_ID";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -40,14 +37,13 @@ public class DiaryEntryActivity extends AppCompatActivity {
         final Bundle extras = getIntent().getExtras();
         if (extras != null) {
             // The clicked InhalerUsageEvent's Instant timestamp
-            String timeStampString = extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP);
+            String timeStampString = extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY);
             setHeaderDateForInhalerUsageEvent(timeStampString);
 
             String diaryEntryMessage = extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE);
 
-            Instant inhalerUsageEventTimestamp = Converters.fromTimeStampString(timeStampString);
             // if there is already a message for this IUE, display it so the user may edit it
-            if (!diaryEntryMessage.isEmpty()){
+            if (!diaryEntryMessage.isEmpty()) {
                 messageEditText.setText(diaryEntryMessage);
                 messageEditText.setSelection(diaryEntryMessage.length());
                 messageEditText.requestFocus();
@@ -68,10 +64,14 @@ public class DiaryEntryActivity extends AppCompatActivity {
                         String diaryMessage = messageEditText.getText().toString();
                         // Put the new diaryMessage in the extras for the reply Intent.
                         replyIntent.putExtra(EXTRA_DIARY_MESSAGE_REPLY, diaryMessage);
-                        if (extras != null && extras.containsKey(EXTRA_DIARY_MESSAGE_REPLY_ID)) {
-                            int id = extras.getInt(EXTRA_DIARY_MESSAGE_REPLY_ID, -1);
-                            if (id != -1) {
-                                replyIntent.putExtra(EXTRA_DIARY_MESSAGE_REPLY_ID, id);
+
+                        if (extras.containsKey(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY)) {
+                            String inhalerUsageEventTimeStamp =
+                                    extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY, "");
+                            if (inhalerUsageEventTimeStamp != null) {
+                                replyIntent.putExtra(
+                                        EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY,
+                                        inhalerUsageEventTimeStamp);
                             }
                         }
                         // Set the result status to indicate success.
@@ -80,7 +80,6 @@ public class DiaryEntryActivity extends AppCompatActivity {
                     finish();
                 }
             });
-
         }
     }
 

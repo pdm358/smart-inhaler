@@ -15,8 +15,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
+import java.time.Instant;
 import java.util.List;
+
+import static com.ybeltagy.breathe.Tag.*;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -33,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Intent extra for Diary Entry Activity
     // TODO: extract to string resources
-    public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP =
+    public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY =
             "extra_inhaler_usage_event_to_be_updated_timestamp";
     public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE =
             "extra_inhaler_usage_event_to_be_updated_existing_message";
@@ -125,11 +129,33 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "Launching diary entry activity!");
 
         Intent intent = new Intent(this, DiaryEntryActivity.class);
-        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP,
+        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY,
                 inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
         String existingMessage = inhalerUsageEvent.getDiaryEntry() != null ?
                 (inhalerUsageEvent.getDiaryEntry().getMessage()) : ("");
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE, existingMessage);
         startActivityForResult(intent, UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onActivityResult(int requestCode,
+                                 int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE
+                && resultCode == RESULT_OK) {
+            String message = data.getStringExtra(DiaryEntryActivity.EXTRA_DIARY_MESSAGE_REPLY);
+            String inhalerUsageEventTimeStampKey =
+                    data.getStringExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY);
+
+            if (inhalerUsageEventTimeStampKey != null) {
+                breatheViewModel.update(new InhalerUsageEvent(Instant.parse(inhalerUsageEventTimeStampKey),
+                        null, new DiaryEntry(PREVENTATIVE, message), null));
+            }
+            else {
+                Log.d("MainActivity", "DiaryEntryActivity returned no reply");
+            }
+        }
     }
 }

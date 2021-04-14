@@ -37,8 +37,19 @@ public class BreatheRepository {
     }
 
     /**
-     *  IMPORTANT : This is for testing purposes ONLY -> to clear away placeholder IUEs we've created
-     *              as we develop and test the app.
+     * wrapper for BreatheDao update method
+     * - uses Executor Service (non-UI thread)
+     *
+     * @param inhalerUsageEvent
+     */
+    public void update(InhalerUsageEvent inhalerUsageEvent) {
+        BreatheRoomDatabase.dbWriteExecutor.execute(()
+                -> breatheDao.updateInhalerUsageEvent(inhalerUsageEvent));
+    }
+
+    /**
+     * IMPORTANT : This is for testing purposes ONLY -> to clear away placeholder IUEs we've created
+     * as we develop and test the app.
      */
     public void deleteAllInhalerUsageEvents() {
         BreatheRoomDatabase.dbWriteExecutor.execute(breatheDao::deleteAll);

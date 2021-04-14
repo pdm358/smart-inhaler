@@ -29,10 +29,14 @@ public class MainActivity extends AppCompatActivity {
     // Note: did not make this local because we might reference this when updating other UI fields
     private BreatheViewModel breatheViewModel;
 
+    public static final int UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE = 1;
+
     // Intent extra for Diary Entry Activity
-    // TODO: extract to string resource
-    public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT =
-            "extra_inhaler_usage_event_to_be_updated";
+    // TODO: extract to string resources
+    public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP =
+            "extra_inhaler_usage_event_to_be_updated_timestamp";
+    public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE =
+            "extra_inhaler_usage_event_to_be_updated_existing_message";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,12 +123,13 @@ public class MainActivity extends AppCompatActivity {
     //       will also need to include the InhalerUsageEvent's id
     public void launchDiaryEntryActivity(InhalerUsageEvent inhalerUsageEvent) {
         Log.d("MainActivity", "Launching diary entry activity!");
+
         Intent intent = new Intent(this, DiaryEntryActivity.class);
-        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT,
+        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP,
                 inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
-        Log.d("MainActivity", "Added the following extra to the intent passed to the " +
-                "diary entry activity -> "
-                + inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
-        startActivity(intent);
+        String existingMessage = inhalerUsageEvent.getDiaryEntry() != null ?
+                (inhalerUsageEvent.getDiaryEntry().getMessage()) : ("");
+        intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE, existingMessage);
+        startActivityForResult(intent, UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE);
     }
 }

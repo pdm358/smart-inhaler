@@ -31,13 +31,18 @@ public class BreatheViewModel extends AndroidViewModel {
         breatheRepository.insert(inhalerUsageEvent);
     }
 
+    public void update(InhalerUsageEvent inhalerUsageEvent) {
+        breatheRepository.update(inhalerUsageEvent);
+    }
+
     /**
      * IMPORTANT : This is for testing purposes ONLY -> to clear away placeholder IUEs we've created
-     *             as we develop and test the app.
-     *
-     *             TODO: Create button in UI Main Activity to use this function and
-     *                   delete all placeholderIUEs so we can clearly test different behaviours
-     *                   in the future
+     * as we develop and test the app.
+     * <p>
+     * TODO: Create button in UI Main Activity to use this function and delete all
+     *        placeholderIUEs so we can clearly test different behaviours in the future
      */
-    public void deleteAll() {breatheRepository.deleteAllInhalerUsageEvents();}
+    public void deleteAll() {
+        breatheRepository.deleteAllInhalerUsageEvents();
+    }
 }

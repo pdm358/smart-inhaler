@@ -15,7 +15,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import java.time.Instant;
 import java.util.List;
@@ -30,8 +29,8 @@ import static com.ybeltagy.breathe.Tag.*;
 public class MainActivity extends AppCompatActivity {
 
     // MainActivity's interactions with the data layer are through BreatheViewModel alone
-    // Note: did not make this local because we might reference this when updating other UI fields
-    private BreatheViewModel breatheViewModel;
+    private BreatheViewModel diaryTimelineViewModel; // view model for the recyclerview
+    private BreatheViewModel progressBarViewModel;   // view model for the progressbar
 
     public static final int UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE = 1;
 
@@ -68,16 +67,19 @@ public class MainActivity extends AppCompatActivity {
     // render the Progress Bar for the medicine status in first pane (top of the screen)
     private void renderMedStatusView(int totalDosesInCanister) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
+
         // update max amount of progress bar to number of doses in a full medicine canister
         medicineStatusBar.setMax(totalDosesInCanister);
-        // set doses taken shown in the ProgressBar to fake data increment (20 fake IUE events)
-        // TODO: Is it normal to use the same view model for both the diary timeline and the
-        //       progress bar? Will this cause problems later?
-        breatheViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
+
+        // set doses taken shown in the ProgressBar
+        progressBarViewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(BreatheViewModel.class);
+        progressBarViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
             @Override
             public void onChanged(List<InhalerUsageEvent> inhalerUsageEvents) {
-                Log.d("MainActivity", "setting progress to " + inhalerUsageEvents.size());
-                medicineStatusBar.setProgress(inhalerUsageEvents.size());
+                // Medicine left is number of doses in a full container - doses used
+                medicineStatusBar.setProgress(medicineStatusBar.getMax() - inhalerUsageEvents.size());
 
                 // set text to show how many doses have been taken
                 TextView dosesTakenText = findViewById(R.id.doses_textview);
@@ -108,15 +110,14 @@ public class MainActivity extends AppCompatActivity {
         // set layout manager for recyclerView
         iueRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // get handle to the BreatheViewModel
         // Note: constructor in codelab did not work; searched for a long time and this fixed it:
         // https://github.com/googlecodelabs/android-room-with-a-view/issues/145#issuecomment-739756244
-        breatheViewModel = new ViewModelProvider(this,
+        diaryTimelineViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
                 .get(BreatheViewModel.class);
 
         // Updated cached copy of InhalerUsageEvents
-        breatheViewModel.getAllInhalerUsageEvents().observe(this, inhalerUsageEvents1 -> {
+        diaryTimelineViewModel.getAllInhalerUsageEvents().observe(this, inhalerUsageEvents1 -> {
             iueListAdapter.setWords(inhalerUsageEvents1);
             Log.d("MainActivity", "database changed - added IUEs");
         });
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     data.getStringExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY);
 
             if (inhalerUsageEventTimeStampKey != null) {
-                breatheViewModel.update(new InhalerUsageEvent(Instant.parse(inhalerUsageEventTimeStampKey),
+                diaryTimelineViewModel.update(new InhalerUsageEvent(Instant.parse(inhalerUsageEventTimeStampKey),
                         null, new DiaryEntry(PREVENTATIVE, message), null));
             }
             else {

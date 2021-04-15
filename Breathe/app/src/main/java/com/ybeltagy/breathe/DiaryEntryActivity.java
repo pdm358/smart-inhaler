@@ -2,6 +2,7 @@ package com.ybeltagy.breathe;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Build;
@@ -13,13 +14,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.time.Instant;
+
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE;
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY;
+import static com.ybeltagy.breathe.Tag.PREVENTATIVE;
 
 public class DiaryEntryActivity extends AppCompatActivity {
 
     // EditText view - where the user enters the diary entry message
     private EditText messageEditText;
+
+    // DiaryEntryActivity's interactions with the data layer are through BreatheViewModel alone
+    BreatheViewModel breatheViewModel;
 
     // TODO: extract string resources
     public static final String EXTRA_DIARY_MESSAGE_REPLY = "DIARY_MESSAGE_REPLY";
@@ -33,6 +40,11 @@ public class DiaryEntryActivity extends AppCompatActivity {
         Log.d("DiaryEntryActivity", "super.onCreate() and setContentView() finished");
 
         messageEditText = findViewById(R.id.edit_diary_edittext);
+
+        // construct the view model to the Breathe DB
+        breatheViewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(BreatheViewModel.class);
 
         final Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -54,29 +66,11 @@ public class DiaryEntryActivity extends AppCompatActivity {
             // The reply Intent will be sent back to the calling activity (in this case, MainActivity).
             saveButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    // Create a new Intent for the reply.
-                    Intent replyIntent = new Intent();
-                    if (TextUtils.isEmpty(messageEditText.getText())) {
-                        // No message was entered, set the result accordingly.
-                        setResult(RESULT_CANCELED, replyIntent);
-                    } else {
-                        // Get the new message that the user entered.
-                        String diaryMessage = messageEditText.getText().toString();
-                        // Put the new diaryMessage in the extras for the reply Intent.
-                        replyIntent.putExtra(EXTRA_DIARY_MESSAGE_REPLY, diaryMessage);
+                    // Instead of sending an intent back to the main activity for the main
+                    // activity to save to the database, let's save to the database directly here
+                    breatheViewModel.update(new InhalerUsageEvent(Instant.parse(timeStampString),
+                        null, new DiaryEntry(PREVENTATIVE, messageEditText.getText().toString()), null));
 
-                        if (extras.containsKey(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY)) {
-                            String inhalerUsageEventTimeStamp =
-                                    extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY, "");
-                            if (inhalerUsageEventTimeStamp != null) {
-                                replyIntent.putExtra(
-                                        EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY,
-                                        inhalerUsageEventTimeStamp);
-                            }
-                        }
-                        // Set the result status to indicate success.
-                        setResult(RESULT_OK, replyIntent);
-                    }
                     finish();
                 }
             });

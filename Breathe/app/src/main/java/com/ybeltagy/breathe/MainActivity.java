@@ -137,26 +137,4 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE, existingMessage);
         startActivityForResult(intent, UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE);
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    public void onActivityResult(int requestCode,
-                                 int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE
-                && resultCode == RESULT_OK) {
-            String message = data.getStringExtra(DiaryEntryActivity.EXTRA_DIARY_MESSAGE_REPLY);
-            String inhalerUsageEventTimeStampKey =
-                    data.getStringExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY);
-
-            if (inhalerUsageEventTimeStampKey != null) {
-                diaryTimelineViewModel.update(new InhalerUsageEvent(Instant.parse(inhalerUsageEventTimeStampKey),
-                        null, new DiaryEntry(PREVENTATIVE, message), null));
-            }
-            else {
-                Log.d("MainActivity", "DiaryEntryActivity returned no reply");
-            }
-        }
-    }
 }

@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/inhaler_usage_event_entry"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="6dp">
+    android:padding="@dimen/default_margin">
 
     <TextView
-        android:id="@+id/iue_textview"
+        android:id="@+id/timestamp_textview"
         style="@style/generic_word_content" />
+
+    <TextView
+        android:id="@+id/diary_entry"
+        android:layout_width="wrap_content"
+        android:layout_weight="1.0"
+        android:layout_height="0dp" />
 
 </LinearLayout>

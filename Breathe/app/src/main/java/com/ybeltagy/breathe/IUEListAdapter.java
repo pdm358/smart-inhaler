@@ -1,11 +1,12 @@
 package com.ybeltagy.breathe;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,7 +50,12 @@ public class IUEListAdapter
             InhalerUsageEvent current = iueEntries.get(position);
             Log.d("IUEListAdapter", "setting text to "
                     + current.getInhalerUsageEventTimeStamp().toString());
+            // show timestamp
             holder.iueItemView.setText(current.getInhalerUsageEventTimeStamp().toString());
+            // show diary entry for this inhaler usage event
+            if (current.getDiaryEntry() != null && current.getDiaryEntry().getMessage() != null) {
+                holder.diaryMessage.setText(current.getDiaryEntry().getMessage());
+            }
         } else {
             // covers the case of data not being ready yet
             holder.iueItemView.setText("- - -");
@@ -86,16 +92,19 @@ public class IUEListAdapter
 
     // Class that holds View information for displaying one item from the item's layout
     static class IUEViewHolder extends RecyclerView.ViewHolder {
-        // we may want to change TextView into something that displays the IUE's in a better way
-        public final TextView iueItemView;
+        public final LinearLayout inhalerUsageEventEntry; // the entire entry in the timeline
+        public final TextView iueItemView;  // text view of the timestamp
+        public final TextView diaryMessage; // text view of the diary entry
         final IUEListAdapter iueListAdapter;
 
         public IUEViewHolder(@NonNull View itemView, IUEListAdapter adapter) {
             super(itemView);
-            iueItemView = itemView.findViewById(R.id.iue_textview);
+            inhalerUsageEventEntry = itemView.findViewById(R.id.inhaler_usage_event_entry);
+            iueItemView = itemView.findViewById(R.id.timestamp_textview);
+            diaryMessage = itemView.findViewById(R.id.diary_entry);
             this.iueListAdapter = adapter;
 
-            iueItemView.setOnClickListener(new View.OnClickListener() {
+            inhalerUsageEventEntry.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     clickListener.onItemClick(view, getAbsoluteAdapterPosition());

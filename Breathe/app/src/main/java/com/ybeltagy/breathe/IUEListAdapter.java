@@ -52,9 +52,15 @@ public class IUEListAdapter
                     + current.getInhalerUsageEventTimeStamp().toString());
             // show timestamp
             holder.iueItemView.setText(current.getInhalerUsageEventTimeStamp().toString());
-            // show diary entry for this inhaler usage event
+            // show diary entry message for this inhaler usage event
             if (current.getDiaryEntry() != null && current.getDiaryEntry().getMessage() != null) {
                 holder.diaryMessage.setText(current.getDiaryEntry().getMessage());
+            }
+
+            // show tag
+            if (current.getDiaryEntry() != null && current.getDiaryEntry().getTag() != null) {
+                holder.diaryMessage.setText(String.format("Tagged as : %s",
+                        current.getDiaryEntry().getTag().toString()));
             }
         } else {
             // covers the case of data not being ready yet

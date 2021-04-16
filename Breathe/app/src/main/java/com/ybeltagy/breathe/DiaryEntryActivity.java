@@ -15,21 +15,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE;
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY;
 import static com.ybeltagy.breathe.Tag.PREVENTATIVE;
+import static com.ybeltagy.breathe.Tag.RESCUE;
 
 public class DiaryEntryActivity extends AppCompatActivity {
 
-    // EditText view - where the user enters the diary entry message
-    private EditText messageEditText;
-
     // DiaryEntryActivity's interactions with the data layer are through BreatheViewModel alone
-    BreatheViewModel breatheViewModel;
+    private BreatheViewModel breatheViewModel;
 
-    // TODO: extract string resources
-    public static final String EXTRA_DIARY_MESSAGE_REPLY = "DIARY_MESSAGE_REPLY";
+    // assumes there are only 2 mutually exclusive flags: Preventative and Rescue
+    private AtomicBoolean tagIsPreventative = null;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -39,7 +38,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
         Log.d("DiaryEntryActivity", "super.onCreate() and setContentView() finished");
 
-        messageEditText = findViewById(R.id.edit_diary_edittext);
+        EditText messageEditText = findViewById(R.id.edit_diary_edittext);
 
         // construct the view model to the Breathe DB
         breatheViewModel = new ViewModelProvider(this,
@@ -54,26 +53,12 @@ public class DiaryEntryActivity extends AppCompatActivity {
 
             String diaryEntryMessage = extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE);
 
-            // if there is already a message for this IUE, display it so the user may edit it
-            if (!diaryEntryMessage.isEmpty()) {
-                messageEditText.setText(diaryEntryMessage);
-                messageEditText.setSelection(diaryEntryMessage.length());
-                messageEditText.requestFocus();
-            }
+            setExistingDiaryMessage(diaryEntryMessage, messageEditText);
 
-            final Button saveButton = findViewById(R.id.diary_entry_save_button);
-            // When the user presses the Save button, create a new Intent for the reply.
-            // The reply Intent will be sent back to the calling activity (in this case, MainActivity).
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    // Instead of sending an intent back to the main activity for the main
-                    // activity to save to the database, let's save to the database directly here
-                    breatheViewModel.update(new InhalerUsageEvent(Instant.parse(timeStampString),
-                        null, new DiaryEntry(PREVENTATIVE, messageEditText.getText().toString()), null));
+            setUpSaveButton(timeStampString, messageEditText);
+            setUpPreventativeTagButton();
+            setUpRescueTagButton();
 
-                    finish();
-                }
-            });
         }
     }
 
@@ -81,5 +66,46 @@ public class DiaryEntryActivity extends AppCompatActivity {
         // set text to show which InhalerUsageEvent the user is adding/editing a message to
         TextView eventTimeStamp = findViewById(R.id.entry_date_textview);
         eventTimeStamp.setText(String.format("Entry for %s", timeStampString));
+    }
+
+    public void setExistingDiaryMessage(String diaryEntryMessage, EditText messageEditText) {
+        // if there is already a message for this IUE, display it so the user may edit it
+        if (!diaryEntryMessage.isEmpty()) {
+            messageEditText.setText(diaryEntryMessage);
+            messageEditText.setSelection(diaryEntryMessage.length());
+            messageEditText.requestFocus();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setUpSaveButton(String timeStampString, EditText messageEditText) {
+        // save button
+        final Button saveButton = findViewById(R.id.diary_entry_save_button);
+        // When the user presses the Save button, create a new Intent for the reply.
+        // The reply Intent will be sent back to the calling activity (in this case, MainActivity).
+        saveButton.setOnClickListener(view -> {
+            // get current tag
+            Tag tag = null;
+            if (tagIsPreventative != null) {
+                tag = tagIsPreventative.get() ? PREVENTATIVE : RESCUE;
+            }
+            // save to the database directly here
+            breatheViewModel.update(new InhalerUsageEvent(Instant.parse(timeStampString),
+                    null, new DiaryEntry(tag, messageEditText.getText().toString()), null));
+
+            finish(); // stop this activity
+        });
+    }
+
+    public void setUpPreventativeTagButton() {
+        // preventative tag button
+        final Button preventative = findViewById(R.id.preventative_button);
+        preventative.setOnClickListener(view -> tagIsPreventative = new AtomicBoolean(true));
+    }
+
+    public void setUpRescueTagButton() {
+        // rescue tag button
+        final Button rescue = findViewById(R.id.rescue_button);
+        rescue.setOnClickListener(view -> tagIsPreventative = new AtomicBoolean(false));
     }
 }

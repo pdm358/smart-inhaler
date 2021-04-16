@@ -3,8 +3,8 @@ package com.ybeltagy.breathe;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -29,9 +29,12 @@ public class BreatheRepository {
         return allInhalerUsageEvents;
     }
 
-    // wrapper for BreatheDao insert method
-    // - we must do this on a non-UI thread (or the app will crash)
-    // - Executor Service is used so this occurs concurrently
+    /**
+     * Wrapper for BreatheDao insert method
+     * - inserts a single InhalerUsageEvent
+     *
+     * @param inhalerUsageEvent
+     */
     public void insert(final InhalerUsageEvent inhalerUsageEvent) {
         BreatheRoomDatabase.dbWriteExecutor.execute(() -> breatheDao.insert(inhalerUsageEvent));
     }
@@ -46,6 +49,8 @@ public class BreatheRepository {
         BreatheRoomDatabase.dbWriteExecutor.execute(()
                 -> breatheDao.updateInhalerUsageEvent(inhalerUsageEvent));
     }
+
+    // Methods for TESTING PURPOSES ONLY------------------------------------------------------------
 
     /**
      * IMPORTANT : This is for testing purposes ONLY -> to clear away placeholder IUEs we've created

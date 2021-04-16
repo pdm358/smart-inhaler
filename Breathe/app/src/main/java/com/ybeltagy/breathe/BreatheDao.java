@@ -39,14 +39,13 @@ public interface BreatheDao {
     void updateInhalerUsageEvent(InhalerUsageEvent... inhalerUsageEvents);
 
     /**
-     *
      * Gets a single InhalerUsageEvent from the database.
      * - This is used to query the database and check if its empty or not
      * - Note: Does not return a LiveData-wrapped InhalerUsageEvent
      *
      * @return a list containing at most a single InhalerUsageEvent
      */
-    @Query ("SELECT * FROM InhalerUsageEvent_table LIMIT 1")
+    @Query("SELECT * FROM InhalerUsageEvent_table LIMIT 1")
     List<InhalerUsageEvent> getAnySingleInhalerUsageEvent();
 
     /**
@@ -61,7 +60,7 @@ public interface BreatheDao {
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time " +
             "BETWEEN :firstDate AND :secondDate")
     LiveData<List<InhalerUsageEvent>> loadAllInhalerUsageEventsBetweenDates(Instant firstDate,
-                                                                                   Instant secondDate);
+                                                                            Instant secondDate);
 
     // Methods for testing ONLY --------------------------------------------------------------------
 
@@ -74,8 +73,8 @@ public interface BreatheDao {
     @Query("SELECT * FROM InhalerUsageEvent_table " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time " +
             "BETWEEN :firstDate AND :secondDate")
-    List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDatesTest (Instant firstDate,
-                                                                            Instant secondDate);
+    List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDatesTest(Instant firstDate,
+                                                                      Instant secondDate);
 
     // IMPORTANT: this is here for testing use only; it should not be used in the app itself
     // This deletes all InhalerUsageEvents from the InhalerUsageEvent_table

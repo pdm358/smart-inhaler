@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, DiaryEntryActivity.class);
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY,
                 inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
+
         String existingMessage = inhalerUsageEvent.getDiaryEntry() != null ?
                 (inhalerUsageEvent.getDiaryEntry().getMessage()) : ("");
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE, existingMessage);

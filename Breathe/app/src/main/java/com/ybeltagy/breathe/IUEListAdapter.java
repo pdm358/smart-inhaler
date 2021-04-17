@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,7 +58,7 @@ public class IUEListAdapter
 
             // show tag
             if (current.getDiaryEntry() != null && current.getDiaryEntry().getTag() != null) {
-                holder.diaryMessage.setText(String.format("Tagged as : %s",
+                holder.tag.setText(String.format("Tagged as : %s",
                         current.getDiaryEntry().getTag().toString()));
             }
         } else {
@@ -101,13 +100,16 @@ public class IUEListAdapter
         public final LinearLayout inhalerUsageEventEntry; // the entire entry in the timeline
         public final TextView iueItemView;  // text view of the timestamp
         public final TextView diaryMessage; // text view of the diary entry
+        public final TextView tag;          // text view of the tag
         final IUEListAdapter iueListAdapter;
 
         public IUEViewHolder(@NonNull View itemView, IUEListAdapter adapter) {
             super(itemView);
             inhalerUsageEventEntry = itemView.findViewById(R.id.inhaler_usage_event_entry);
-            iueItemView = itemView.findViewById(R.id.timestamp_textview);
-            diaryMessage = itemView.findViewById(R.id.diary_entry);
+            iueItemView = itemView.findViewById(R.id.timestamp_textview_in_recycler_main);
+            diaryMessage = itemView.findViewById(R.id.diary_entry_textview_in_recycler_main);
+            tag = itemView.findViewById(R.id.tag_label_textview_in_recycler_main);
+
             this.iueListAdapter = adapter;
 
             inhalerUsageEventEntry.setOnClickListener(new View.OnClickListener() {

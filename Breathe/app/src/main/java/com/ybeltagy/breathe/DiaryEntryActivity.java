@@ -4,21 +4,18 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.time.Instant;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE;
+import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG;
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY;
 import static com.ybeltagy.breathe.Tag.PREVENTATIVE;
 import static com.ybeltagy.breathe.Tag.RESCUE;
@@ -28,7 +25,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     // DiaryEntryActivity's interactions with the data layer are through BreatheViewModel alone
     private BreatheViewModel breatheViewModel;
 
-    private AtomicBoolean tagIsPreventative;
+    private Tag tag;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -56,6 +53,9 @@ public class DiaryEntryActivity extends AppCompatActivity {
             setExistingDiaryMessage(diaryEntryMessage, messageEditText);
 
             setUpSaveButton(timeStampString, messageEditText);
+            if (extras.containsKey(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG)) {
+                tag = (Tag) extras.get(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG);
+            }
             setUpPreventativeTagButton();
             setUpRescueTagButton();
 
@@ -87,8 +87,8 @@ public class DiaryEntryActivity extends AppCompatActivity {
         saveButton.setOnClickListener(view -> {
             // get current tag
             Tag tag = null;
-            if (tagIsPreventative != null) {
-                tag = tagIsPreventative.get() ? PREVENTATIVE : RESCUE;
+            if (this.tag != null) {
+                tag = this.tag;
             }
             breatheViewModel.updateDiaryEntry(Instant.parse(timeStampString), tag, messageEditText.getText().toString());
             finish(); // stop this activity
@@ -98,12 +98,12 @@ public class DiaryEntryActivity extends AppCompatActivity {
     public void setUpPreventativeTagButton() {
         // preventative tag button
         final Button preventative = findViewById(R.id.preventative_button);
-        preventative.setOnClickListener(view -> tagIsPreventative = new AtomicBoolean(true));
+        preventative.setOnClickListener(view -> tag = PREVENTATIVE);
     }
 
     public void setUpRescueTagButton() {
         // rescue tag button
         final Button rescue = findViewById(R.id.rescue_button);
-        rescue.setOnClickListener(view -> tagIsPreventative = new AtomicBoolean(false));
+        rescue.setOnClickListener(view -> tag = RESCUE);
     }
 }

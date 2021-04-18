@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
             "extra_inhaler_usage_event_to_be_updated_timestamp";
     public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE =
             "extra_inhaler_usage_event_to_be_updated_existing_message";
+    public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG =
+            "extra_inhaler_usage_event_to_be_updated_existing_tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,11 +132,18 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "Launching diary entry activity!");
 
         Intent intent = new Intent(this, DiaryEntryActivity.class);
+        // add timestamp
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY,
                 inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
+        // add existing message
         String existingMessage = inhalerUsageEvent.getDiaryEntry() != null ?
                 (inhalerUsageEvent.getDiaryEntry().getMessage()) : ("");
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE, existingMessage);
+        // add existing tag, if any
+        if (inhalerUsageEvent.getDiaryEntry() != null &&
+                inhalerUsageEvent.getDiaryEntry().getTag() != null) {
+            intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG, inhalerUsageEvent.getDiaryEntry().getTag());
+        }
         startActivityForResult(intent, UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE);
     }
 }

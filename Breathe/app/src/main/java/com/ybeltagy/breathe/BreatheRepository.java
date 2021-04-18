@@ -6,8 +6,6 @@ import androidx.lifecycle.LiveData;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * The BreatheRepository class:
@@ -42,6 +40,10 @@ public class BreatheRepository {
     }
 
     /**
+     * TODO: maybe we should never use this because it "clobbers" our existing IUEs (unless we
+     * can also retrieve the existing inhalerUsageEvent, update the data and use the same
+     * inhalerUsageEvent object as the input to this function) (might want to delete it)
+     * <p>
      * wrapper for BreatheDao update method
      * - uses Executor Service (non-UI thread)
      *
@@ -52,25 +54,35 @@ public class BreatheRepository {
                 -> breatheDao.updateInhalerUsageEvent(inhalerUsageEvent));
     }
 
+    /**
+     * Note: Use this one to update an existing inhalerUsageEvent with DiaryEntry data so the
+     * existing other inner objects (WearableData, WeatherData) don't get "clobbered"
+     *
+     * @param timeStamp
+     * @param tag
+     * @param diaryMessage
+     */
     public void updateDiaryEntry(Instant timeStamp, Tag tag, String diaryMessage) {
         BreatheRoomDatabase.dbWriteExecutor.execute(()
                 -> breatheDao.updateDiaryEntry(timeStamp, tag, diaryMessage));
     }
 
-    public void updateWearableData(Instant timestamp, float temperature, float humidity, char character, char digit) {
-        BreatheRoomDatabase.dbWriteExecutor.execute(()
-        -> breatheDao.updateWearableData(timestamp, temperature, humidity, character, digit));
-    }
-
     /**
-     * Wrapper for BreatheDao getInhalerUsageEventWithTimeStamp() method
-     * TODO: does using the Dao directly without an executor cause issues? Should this be LiveData?
-     * - gets the single InhalerUsageEvent that has the input parameter Instant timestamp primary key
-     * @param timeStamp
-     * @return
+     * Note: Use this one to update an existing inhalerUsageEvent with WearableData data so the
+     * existing other inner objects (DiaryEntry, WeatherData) don't get "clobbered"
+     *
+     * @param inhalerUsageTimeStamp
+     * @param wearableDataTimeStamp
+     * @param temperature
+     * @param humidity
+     * @param character
+     * @param digit
      */
-    public List<InhalerUsageEvent> getInhalerUsageEventWithTimeStamp(Instant timeStamp) {
-        return breatheDao.getInhalerUsageEventWithTimeStamp(timeStamp);
+    public void updateWearableData(Instant inhalerUsageTimeStamp, Instant wearableDataTimeStamp, float temperature, float humidity, char character, char digit) {
+        BreatheRoomDatabase.dbWriteExecutor.execute(() ->
+                breatheDao.updateWearableData(
+                        inhalerUsageTimeStamp, wearableDataTimeStamp, temperature, humidity,
+                        character, digit));
     }
 
     // Methods for TESTING PURPOSES ONLY------------------------------------------------------------

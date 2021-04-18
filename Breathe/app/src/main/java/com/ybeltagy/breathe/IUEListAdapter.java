@@ -1,6 +1,7 @@
 package com.ybeltagy.breathe;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -26,10 +28,8 @@ public class IUEListAdapter
     // Inflater
     private final LayoutInflater iueInflater;
 
+    // Tells the recyclerview which item was clicked
     private static ClickListener clickListener;
-
-    // Logging
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     public IUEListAdapter(Context context) {
         iueInflater = LayoutInflater.from(context);
@@ -42,6 +42,7 @@ public class IUEListAdapter
         return new IUEViewHolder(itemView, this);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull IUEViewHolder holder, int position) {
         if (iueEntries != null) {
@@ -49,6 +50,7 @@ public class IUEListAdapter
             InhalerUsageEvent current = iueEntries.get(position);
             Log.d("IUEListAdapter", "setting text to "
                     + current.getInhalerUsageEventTimeStamp().toString());
+
             // show timestamp
             holder.iueItemView.setText(current.getInhalerUsageEventTimeStamp().toString());
             // show diary entry message for this inhaler usage event

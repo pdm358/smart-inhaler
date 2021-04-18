@@ -19,15 +19,14 @@ import java.time.Instant;
  * <p>
  * The following objects are "embedded" (represents an object we would like to decompose into its
  * sub-fields within a table) ->
- * - a WearableData object: environmental conditions from smart pin/wearable at the time of the InhalerUsageEvent
- * , if the information is available
+ * - a WearableData object: environmental conditions from smart pin/wearable at the time of
+ * the InhalerUsageEvent, if the information is available
  * <p>
  * - a DiaryEntry object: user comments and tags for the InhalerUsageEvent, if the info is available
  * <p>
- * - a WeatherData object: weather data from the Climacell API at the time of the InhalerUsageEvent, if the
- * information is available
+ * - a WeatherData object: weather data from the Climacell API at the time of the InhalerUsageEvent,
+ * if the information is available
  * <p>
- * TODO: create static InhalerUsageEvent createIUE() to collect all data for InhalerUsageEvent and return an InhalerUsageEvent object
  */
 @RequiresApi(api = Build.VERSION_CODES.O)
 @Entity(tableName = "InhalerUsageEvent_table")
@@ -41,18 +40,28 @@ public class InhalerUsageEvent {
     // our dates for Java 8
     // (https://medium.com/decisionbrain/dates-time-in-modern-java-4ed9d5848a3e)
 
-    // I made these public because all of the Embedded examples I saw were public
-    // For more info on Embedded objects within Entities,
-    // see https://developer.android.com/training/data-storage/room/relationships
-    // TODO: it should be possible to make them private as long as we provide setters and getters. Consider this when refactoring.
-    @Embedded private WeatherData weatherData = new WeatherData();
-    @Embedded private DiaryEntry diaryEntry = new DiaryEntry();
-    @Embedded private WearableData wearableData = new WearableData();
+    @Embedded
+    private WeatherData weatherData = new WeatherData();
+    @Embedded
+    private DiaryEntry diaryEntry = new DiaryEntry();
+    @Embedded
+    private WearableData wearableData = new WearableData();
 
     // @NonNull annotation means timeStamp parameter can never be null
-    // TODO: We should delete this and use the constructor with only the timestamp
-    //       because we would never realistically use this (unless we are overwriting all of our
-    //       objects at once for some reason).
+
+    /**
+     * TODO: We probably should delete this and use the constructor with only the timestamp
+     * because we would never realistically use this (unless we are overwriting all of our
+     * objects at once for some reason).
+     * - the @Ignore annotation is used so the Room database explicitly knows to use the
+     * constructor with only the Instant timeStamp input parameter to construct InhalerUsageEvents
+     * This annotation is necessary or the program will not compile.
+     *
+     * @param inhalerUsageEventTimeStamp
+     * @param weatherData
+     * @param diaryEntry
+     * @param wearableData
+     */
     @Ignore
     public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp, WeatherData weatherData,
                              DiaryEntry diaryEntry, WearableData wearableData) {
@@ -62,7 +71,11 @@ public class InhalerUsageEvent {
         this.wearableData = wearableData;
     }
 
-    // @NonNull annotation means timeStamp parameter can never be null
+    /**
+     * The Room database uses this constructor as it is not marked with an @Ignore annotation
+     *
+     * @param inhalerUsageEventTimeStamp
+     */
     public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp) {
         setInhalerUsageEventTimeStamp(inhalerUsageEventTimeStamp);
     }
@@ -72,8 +85,7 @@ public class InhalerUsageEvent {
     public Instant getInhalerUsageEventTimeStamp() {
         return inhalerUsageEventTimeStamp;
     }
-    // Although this function is "unused", the database needs it to exist (or else the compiler
-    // complains)
+
     public void setInhalerUsageEventTimeStamp(@NonNull Instant inhalerUsageEventTimeStamp) {
         this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
     }

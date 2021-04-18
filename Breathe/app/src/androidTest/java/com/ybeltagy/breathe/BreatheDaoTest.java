@@ -116,15 +116,22 @@ public class BreatheDaoTest {
         float testHumidity = 50;
         char testChar1 = '1';
         char testChar2 = '2';
-        tBreatheDao.updateWearableData(rightNow, testTemp, testHumidity, testChar1, testChar2);
+        tBreatheDao.updateWearableData(
+                rightNow, rightNow.plusSeconds(180), testTemp, testHumidity, testChar1, testChar2);
 
         List<InhalerUsageEvent> allEvents = tBreatheDao.getAllIUEsTest();
         assert allEvents != null;
         assertEquals(allEvents.size(), 1);
+
         // was the wearable data preserved when we updated the diary entry?
         assertEquals(allEvents.get(0).getWearableData().getTemperature(),
                 testTemp,
                 0);
+        assertEquals(
+                allEvents.get(0).getWearableData().getWearableDataTimeStamp(),
+                rightNow.plusSeconds(180));
+
+        // was the diary entry data preserved?
         assertEquals(allEvents.get(0).getDiaryEntry().getTag(), Tag.PREVENTATIVE);
         assertEquals(allEvents.get(0).getDiaryEntry().getMessage(), "test test");
         tBreatheDao.deleteAll();
@@ -153,14 +160,16 @@ public class BreatheDaoTest {
         for (int i = 0; i < 10; i++) {
             Instant aTime = now.minus(i, ChronoUnit.DAYS);
             InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
-                    null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)));
+                    null, new WearableData(
+                    aTime.plus(3, ChronoUnit.MINUTES)));
             tBreatheDao.insert(tInhalerUsageEvent);
         }
 
         // query between dates
         int week = 7;
         List<InhalerUsageEvent> thisPastWeek =
-                tBreatheDao.loadAllInhalerUsageEventsBetweenDatesTest(now.minus(week, ChronoUnit.DAYS), now);
+                tBreatheDao.loadAllInhalerUsageEventsBetweenDatesTest(
+                        now.minus(week, ChronoUnit.DAYS), now);
         assert thisPastWeek != null;
         assertEquals(thisPastWeek.size(),
                 week + 1); // note: the range is inclusive

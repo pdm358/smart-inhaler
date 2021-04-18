@@ -49,6 +49,7 @@
         android:layout_width="@dimen/diary_edit_text_box_width"
         android:layout_height="@dimen/diary_edit_text_box_height"
         android:layout_marginTop="@dimen/default_spacer"
+        android:autofillHints=""
         android:ems="10"
         android:gravity="top|start"
         android:hint="@string/edit_diary_entry_text_hint"
@@ -56,8 +57,7 @@
         android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rescue_button"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@+id/rescue_button" />
 
     <Button
         android:id="@+id/diary_entry_save_button"

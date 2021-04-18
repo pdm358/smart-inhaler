@@ -13,7 +13,7 @@ enum Tag {
  * Encapsulates user-added information for a given InhalerUsageEvent - comments and tag
  * - One InhalerUsageEvent object contains one DiaryEntry object
  * <p>
- * TODO: write static DiaryEntry createDiaryEntry() to create a DiaryEntry object
+ *
  */
 public class DiaryEntry {
     private Tag tag; // category this InhalerUsageEvent falls into, as defined by the user

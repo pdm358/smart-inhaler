@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Class whose role is to act as a communication center between the Repository and the UI; provides
@@ -33,7 +32,13 @@ public class BreatheViewModel extends AndroidViewModel {
         breatheRepository.insert(inhalerUsageEvent);
     }
 
-    // Todo:: decide if we should dete this or not - we should probably never use this
+    /**
+     * TODO: maybe we should never use this because it "clobbers" our existing IUEs (unless we
+     *      can also retrieve the existing inhalerUsageEvent, update the data and use the same
+     *      inhalerUsageEvent object as the input to this function) (might want to delete it)
+     *      <p>
+     * @param inhalerUsageEvent
+     */
     public void update(InhalerUsageEvent inhalerUsageEvent) {
         breatheRepository.update(inhalerUsageEvent);
     }
@@ -42,19 +47,11 @@ public class BreatheViewModel extends AndroidViewModel {
         breatheRepository.updateDiaryEntry(timeStamp,tag, diaryMessage);
     }
 
-    public void updateWearableData(Instant timeStamp, float temperature, float humidity, char character, char digit) {
-        breatheRepository.updateWearableData(timeStamp, temperature, humidity, character, digit);
-    }
-
-    /**
-     * Todo: fix - this needs to use the ExectorService; it crashes the UI
-     * @param timeStamp
-     * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
-     */
-    public List<InhalerUsageEvent> getInhalerUsageEventWithTimeStamp(Instant timeStamp) throws ExecutionException, InterruptedException {
-        return breatheRepository.getInhalerUsageEventWithTimeStamp(timeStamp);
+    public void updateWearableData(Instant inhalerUsageTimestamp, Instant wearableDataTimestamp,
+                                   float temperature, float humidity, char character, char digit) {
+        breatheRepository.updateWearableData(
+                inhalerUsageTimestamp, wearableDataTimestamp, temperature, humidity,
+                character, digit);
     }
 
     /**

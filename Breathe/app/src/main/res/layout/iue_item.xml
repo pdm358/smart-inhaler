@@ -5,29 +5,29 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/timestamp_textview_in_recycler_main"
+            style="@style/generic_word_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/timestamp_textview_in_recycler_main"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/generic_word_content"
-                android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tag_label_textview_in_recycler_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="italic" />
 
-            <TextView
-                android:id="@+id/tag_label_textview_in_recycler_main"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="italic"/>
-
-            <TextView
-                android:id="@+id/diary_entry_textview_in_recycler_main"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/diary_entry_textview_in_recycler_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 
 </LinearLayout>

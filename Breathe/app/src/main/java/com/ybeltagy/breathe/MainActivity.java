@@ -16,10 +16,7 @@ import android.widget.TextView;
 
 import android.os.Bundle;
 
-import java.time.Instant;
 import java.util.List;
-
-import static com.ybeltagy.breathe.Tag.*;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -35,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE = 1;
 
     // Intent extra for Diary Entry Activity
-    // TODO: extract to string resources
+    // TODO: extract these to string resources?
     public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY =
             "extra_inhaler_usage_event_to_be_updated_timestamp";
     public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE =
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         progressBarViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
             @Override
             public void onChanged(List<InhalerUsageEvent> inhalerUsageEvents) {
-                // Medicine left is number of doses in a full container - doses used
+                // medicine left is number of doses in a full container - doses used
                 medicineStatusBar.setProgress(medicineStatusBar.getMax() - inhalerUsageEvents.size());
 
                 // set text to show how many doses have been taken
@@ -98,8 +95,10 @@ public class MainActivity extends AppCompatActivity {
 
         // make adapter and provide data to be displayed
         IUEListAdapter iueListAdapter = new IUEListAdapter(this);
+
         // connect adapter and recyclerView
         iueRecyclerView.setAdapter(iueListAdapter);
+
         // set an on-click listener so we can get the InhalerUsageEvent at the clicked position and
         // pass it to the DiaryEntryActivity
         iueListAdapter.setOnItemClickListener(new IUEListAdapter.ClickListener() {
@@ -126,19 +125,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    // TODO: if we change the primary key of the InhalerUsageEvent to a random id, the intent
-    //       will also need to include the InhalerUsageEvent's id
     public void launchDiaryEntryActivity(InhalerUsageEvent inhalerUsageEvent) {
         Log.d("MainActivity", "Launching diary entry activity!");
-
         Intent intent = new Intent(this, DiaryEntryActivity.class);
+
         // add timestamp
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY,
                 inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
+
         // add existing message
         String existingMessage = inhalerUsageEvent.getDiaryEntry() != null ?
                 (inhalerUsageEvent.getDiaryEntry().getMessage()) : ("");
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE, existingMessage);
+
         // add existing tag, if any
         if (inhalerUsageEvent.getDiaryEntry() != null &&
                 inhalerUsageEvent.getDiaryEntry().getTag() != null) {

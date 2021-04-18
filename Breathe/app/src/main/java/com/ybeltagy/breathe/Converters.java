@@ -2,6 +2,7 @@ package com.ybeltagy.breathe;
 
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.room.TypeConverter;
 
 import java.time.Instant;
@@ -17,16 +18,10 @@ public class Converters {
      * @param timeStamp
      * @return parsed Instant
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @TypeConverter
     public static Instant fromTimeStampString(String timeStamp) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return timeStamp == null ? null : Instant.parse(timeStamp);
-        } else {
-            // TODO: implement date time formatting from string to Instant.
-            //  for API < 26 (Oreo)
-            // FIXME: This is really important.
-            return null;
-        }
     }
 
     /**
@@ -40,25 +35,41 @@ public class Converters {
         return timeStamp == null ? null : timeStamp.toString();
     }
 
-    //  Converts Tag int stored in database to relevant Tag enum
+    /**
+     * Converts Tag int stored in database to relevant Tag enum
+     * @param tagValue (ordinal value of tag)
+     * @return Enum Tag (NULL, PREVENTATIVE, or RESCUE)
+     */
     @TypeConverter
     public static Tag fromTagIntValue(int tagValue) {
         return Tag.values()[tagValue];
     }
 
-    // Converts Tag into int to be stored in database
+    /**
+     * Converts Tag into int to be stored in database
+     * @param tag
+     * @return ordinal value of enum TAG (NULL = 0, PREVENTATIVE = 1, or RESCUE = 2)
+     */
     @TypeConverter
     public static int toTagIntValue(Tag tag) {
         return tag != null ? tag.ordinal() : Tag.NULL.ordinal();
     }
 
-    // Converts Level int stored in database to relevant Level enum
+    /**
+     * Converts Level int stored in database to relevant Level enum
+     * @param level
+     * @return enum Level (NULL, LOW, MEDIUM, or HIGH)
+     */
     @TypeConverter
     public static Level fromLevelIntValue(int level) {
         return Level.values()[level];
     }
 
-    // Converts Level into int to be stored in database
+    /**
+     * Converts Level into int to be stored in database
+     * @param level
+     * @return ordinal value of level (NULL = 0, LOW = 1, MEDIUM = 2, or HIGH = 3)
+     */
     @TypeConverter
     public static int toLevelIntValue(Level level) {
         return level != null ? level.ordinal() : Level.NULL.ordinal();

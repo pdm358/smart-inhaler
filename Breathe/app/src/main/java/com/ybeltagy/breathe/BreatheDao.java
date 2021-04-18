@@ -34,8 +34,16 @@ public interface BreatheDao {
             "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time DESC")
     LiveData<List<InhalerUsageEvent>> getAllIUEs();
 
-    // Update one or more InhalerUsageEvents
-    // TODO: maybe we should never use this because it "clobbers" our existing IUEs
+
+    // TODO: maybe we should never use this because it overwites/"clobbers" our existing IUEs
+    //       (unless we can also retrieve the existing inhalerUsageEvent, update the data and use
+    //       the same inhalerUsageEvent object as the input to this function)
+
+    /**
+     * Updates an existing inhalerUsageEvent(s) with the input inhalerUsageEvent(s)
+     *
+     * @param inhalerUsageEvents one or more inhaler usage events
+     */
     @Update
     void updateInhalerUsageEvent(InhalerUsageEvent... inhalerUsageEvents);
 
@@ -49,15 +57,44 @@ public interface BreatheDao {
     @Query("SELECT * FROM InhalerUsageEvent_table LIMIT 1")
     List<InhalerUsageEvent> getAnySingleInhalerUsageEvent();
 
+    /**
+     * Note: Use this one to update an existing inhalerUsageEvent with DiaryEntry data so the
+     * existing other inner objects (WearableData, WeatherData) don't get "clobbered"
+     *
+     * @param timeStamp
+     * @param tag
+     * @param diaryMessage
+     * @return the number of records updated (should only be 1)
+     */
     @Query("UPDATE InhalerUsageEvent_table SET tag = :tag, message = :diaryMessage " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :timeStamp")
     int updateDiaryEntry(Instant timeStamp, Tag tag, String diaryMessage);
 
-    @Query("UPDATE InhalerUsageEvent_table SET temperature = :temp, humidity = :humid, character = :character, digit = :digit " +
-            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :timeStamp")
-    int updateWearableData(Instant timeStamp, float temp, float humid, char character, char digit);
+    /**
+     * Note: Use this one to update an existing inhalerUsageEvent with WearableData data so the
+     * existing other inner objects (DiaryEntry, WeatherData) don't get "clobbered"
+     *
+     * @param inhalerUsageTimeStamp - when the inhalerUsageEvent occurred
+     * @param wearableDataTimeStamp - when the wearableData was collected
+     * @param temp
+     * @param humid
+     * @param character
+     * @param digit
+     * @return the number of records updated (should only be 1)
+     */
+    @Query("UPDATE InhalerUsageEvent_table " +
+            "SET Wearable_Data_UTC_ISO_8601_date_time = :wearableDataTimeStamp, temperature = :temp, " +
+            "humidity = :humid, character = :character, " +
+            "digit = :digit " +
+            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :inhalerUsageTimeStamp")
+    int updateWearableData(Instant inhalerUsageTimeStamp, Instant wearableDataTimeStamp,
+                           float temp, float humid, char character, char digit);
 
     /**
+     * Note: This method alone is fine but there is no wrapper method for this in the Breathe
+     * repository.  This is because, currently, I (Sarah) could not find a good way to return
+     * an InhalerUsageEvent using an ExectorService
+     * <p>
      * Get the single InhalerUsageEvent that has the input parameter Instant timestamp primary key
      *
      * @param timeStamp timeStamp of the InhalerUsageEvent we want

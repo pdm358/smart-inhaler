@@ -42,34 +42,46 @@ public class DiaryEntryActivity extends AppCompatActivity {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
                 .get(BreatheViewModel.class);
 
+        // get extras passed from the main activity
         final Bundle extras = getIntent().getExtras();
         if (extras != null) {
             // The clicked InhalerUsageEvent's Instant timestamp
             String timeStampString = extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY);
             setHeaderDateForInhalerUsageEvent(timeStampString);
 
+            // The existing message for this inhalerUsageEvent from the database
             String diaryEntryMessage = extras.getString(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE);
-
             setExistingDiaryMessage(diaryEntryMessage, messageEditText);
 
-            setUpSaveButton(timeStampString, messageEditText);
+            // The exiting tag for this inhalerUsageEvent from the database
             if (extras.containsKey(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG)) {
                 tag = (Tag) extras.get(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG);
             }
+            setUpSaveButton(timeStampString, messageEditText);
             setUpPreventativeTagButton();
             setUpRescueTagButton();
 
         }
     }
 
+    /**
+     * Set text to show which InhalerUsageEvent the user is adding/editing a message to
+     * - called from onCreate()
+     *
+     * @param timeStampString
+     */
     public void setHeaderDateForInhalerUsageEvent(String timeStampString) {
-        // set text to show which InhalerUsageEvent the user is adding/editing a message to
         TextView eventTimeStamp = findViewById(R.id.entry_date_textview);
         eventTimeStamp.setText(String.format("Entry for %s", timeStampString));
     }
 
+    /**
+     * If there is already a message for this IUE, display it so the user may edit it
+     *
+     * @param diaryEntryMessage
+     * @param messageEditText
+     */
     public void setExistingDiaryMessage(String diaryEntryMessage, EditText messageEditText) {
-        // if there is already a message for this IUE, display it so the user may edit it
         if (!diaryEntryMessage.isEmpty()) {
             messageEditText.setText(diaryEntryMessage);
             messageEditText.setSelection(diaryEntryMessage.length());
@@ -96,13 +108,11 @@ public class DiaryEntryActivity extends AppCompatActivity {
     }
 
     public void setUpPreventativeTagButton() {
-        // preventative tag button
         final Button preventative = findViewById(R.id.preventative_button);
         preventative.setOnClickListener(view -> tag = PREVENTATIVE);
     }
 
     public void setUpRescueTagButton() {
-        // rescue tag button
         final Button rescue = findViewById(R.id.rescue_button);
         rescue.setOnClickListener(view -> tag = RESCUE);
     }

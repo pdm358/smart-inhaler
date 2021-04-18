@@ -73,8 +73,7 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
                     Instant now = Instant.now();
                     for (int i = 0; i < 5; i++) {
                         Instant aTime = now.minus(i, ChronoUnit.DAYS);
-                        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
-                                null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)));
+                        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime);
                         Log.d("BreatheRoomDatabase", "adding InhalerUsageEvent "
                                 + tInhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
                         breatheDao.insert(tInhalerUsageEvent);

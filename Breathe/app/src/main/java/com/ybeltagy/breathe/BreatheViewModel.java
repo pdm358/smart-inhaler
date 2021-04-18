@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Class whose role is to act as a communication center between the Repository and the UI; provides
@@ -32,8 +33,28 @@ public class BreatheViewModel extends AndroidViewModel {
         breatheRepository.insert(inhalerUsageEvent);
     }
 
+    // Todo:: decide if we should dete this or not - we should probably never use this
     public void update(InhalerUsageEvent inhalerUsageEvent) {
         breatheRepository.update(inhalerUsageEvent);
+    }
+
+    public void updateDiaryEntry(Instant timeStamp, Tag tag, String diaryMessage) {
+        breatheRepository.updateDiaryEntry(timeStamp,tag, diaryMessage);
+    }
+
+    public void updateWearableData(Instant timeStamp, float temperature, float humidity, char character, char digit) {
+        breatheRepository.updateWearableData(timeStamp, temperature, humidity, character, digit);
+    }
+
+    /**
+     * Todo: fix - this needs to use the ExectorService; it crashes the UI
+     * @param timeStamp
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public List<InhalerUsageEvent> getInhalerUsageEventWithTimeStamp(Instant timeStamp) throws ExecutionException, InterruptedException {
+        return breatheRepository.getInhalerUsageEventWithTimeStamp(timeStamp);
     }
 
     /**

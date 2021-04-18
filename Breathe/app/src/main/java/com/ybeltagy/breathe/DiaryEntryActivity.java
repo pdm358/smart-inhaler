@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.time.Instant;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.ybeltagy.breathe.MainActivity.EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE;
@@ -27,8 +28,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     // DiaryEntryActivity's interactions with the data layer are through BreatheViewModel alone
     private BreatheViewModel breatheViewModel;
 
-    // assumes there are only 2 mutually exclusive flags: Preventative and Rescue
-    private AtomicBoolean tagIsPreventative = null;
+    private AtomicBoolean tagIsPreventative;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -81,6 +81,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
     public void setUpSaveButton(String timeStampString, EditText messageEditText) {
         // save button
         final Button saveButton = findViewById(R.id.diary_entry_save_button);
+
         // When the user presses the Save button, create a new Intent for the reply.
         // The reply Intent will be sent back to the calling activity (in this case, MainActivity).
         saveButton.setOnClickListener(view -> {
@@ -89,10 +90,7 @@ public class DiaryEntryActivity extends AppCompatActivity {
             if (tagIsPreventative != null) {
                 tag = tagIsPreventative.get() ? PREVENTATIVE : RESCUE;
             }
-            // save to the database directly here
-            breatheViewModel.update(new InhalerUsageEvent(Instant.parse(timeStampString),
-                    null, new DiaryEntry(tag, messageEditText.getText().toString()), null));
-
+            breatheViewModel.updateDiaryEntry(Instant.parse(timeStampString), tag, messageEditText.getText().toString());
             finish(); // stop this activity
         });
     }

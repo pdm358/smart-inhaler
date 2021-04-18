@@ -2,10 +2,8 @@ package com.ybeltagy.breathe;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -100,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         IUEListAdapter iueListAdapter = new IUEListAdapter(this);
         // connect adapter and recyclerView
         iueRecyclerView.setAdapter(iueListAdapter);
-        // set an on-click listener so we can get the InhalerUsageEvent at the clicked positon and
+        // set an on-click listener so we can get the InhalerUsageEvent at the clicked position and
         // pass it to the DiaryEntryActivity
         iueListAdapter.setOnItemClickListener(new IUEListAdapter.ClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -111,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
         });
         // set layout manager for recyclerView
         iueRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(iueRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
-//        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.divider));
 
         // Note: constructor in codelab did not work; searched for a long time and this fixed it:
         // https://github.com/googlecodelabs/android-room-with-a-view/issues/145#issuecomment-739756244
@@ -136,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, DiaryEntryActivity.class);
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TIMESTAMP_KEY,
                 inhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
-
         String existingMessage = inhalerUsageEvent.getDiaryEntry() != null ?
                 (inhalerUsageEvent.getDiaryEntry().getMessage()) : ("");
         intent.putExtra(EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_EXISTING_MESSAGE, existingMessage);

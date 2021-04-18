@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * The BreatheRepository class:
@@ -48,6 +50,27 @@ public class BreatheRepository {
     public void update(InhalerUsageEvent inhalerUsageEvent) {
         BreatheRoomDatabase.dbWriteExecutor.execute(()
                 -> breatheDao.updateInhalerUsageEvent(inhalerUsageEvent));
+    }
+
+    public void updateDiaryEntry(Instant timeStamp, Tag tag, String diaryMessage) {
+        BreatheRoomDatabase.dbWriteExecutor.execute(()
+                -> breatheDao.updateDiaryEntry(timeStamp, tag, diaryMessage));
+    }
+
+    public void updateWearableData(Instant timestamp, float temperature, float humidity, char character, char digit) {
+        BreatheRoomDatabase.dbWriteExecutor.execute(()
+        -> breatheDao.updateWearableData(timestamp, temperature, humidity, character, digit));
+    }
+
+    /**
+     * Wrapper for BreatheDao getInhalerUsageEventWithTimeStamp() method
+     * TODO: does using the Dao directly without an executor cause issues? Should this be LiveData?
+     * - gets the single InhalerUsageEvent that has the input parameter Instant timestamp primary key
+     * @param timeStamp
+     * @return
+     */
+    public List<InhalerUsageEvent> getInhalerUsageEventWithTimeStamp(Instant timeStamp) {
+        return breatheDao.getInhalerUsageEventWithTimeStamp(timeStamp);
     }
 
     // Methods for TESTING PURPOSES ONLY------------------------------------------------------------

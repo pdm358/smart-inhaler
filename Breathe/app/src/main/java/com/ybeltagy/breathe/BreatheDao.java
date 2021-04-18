@@ -35,6 +35,7 @@ public interface BreatheDao {
     LiveData<List<InhalerUsageEvent>> getAllIUEs();
 
     // Update one or more InhalerUsageEvents
+    // TODO: maybe we should never use this because it "clobbers" our existing IUEs
     @Update
     void updateInhalerUsageEvent(InhalerUsageEvent... inhalerUsageEvents);
 
@@ -47,6 +48,25 @@ public interface BreatheDao {
      */
     @Query("SELECT * FROM InhalerUsageEvent_table LIMIT 1")
     List<InhalerUsageEvent> getAnySingleInhalerUsageEvent();
+
+    @Query("UPDATE InhalerUsageEvent_table SET tag = :tag, message = :diaryMessage " +
+            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :timeStamp")
+    int updateDiaryEntry(Instant timeStamp, Tag tag, String diaryMessage);
+
+    @Query("UPDATE InhalerUsageEvent_table SET temperature = :temp, humidity = :humid, character = :character, digit = :digit " +
+            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :timeStamp")
+    int updateWearableData(Instant timeStamp, float temp, float humid, char character, char digit);
+
+    /**
+     * Get the single InhalerUsageEvent that has the input parameter Instant timestamp primary key
+     *
+     * @param timeStamp timeStamp of the InhalerUsageEvent we want
+     * @return List of InhalerUsageEvents that have the input timeStamp; there should only be 1 as
+     * we are currently using the Instant timeStamp as the primary key
+     */
+    @Query("SELECT * FROM InhalerUsageEvent_table " +
+            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time == :timeStamp")
+    List<InhalerUsageEvent> getInhalerUsageEventWithTimeStamp(Instant timeStamp);
 
     /**
      * IMPORTANT: All the timestamp string representations must be of the same size for this

@@ -2,7 +2,6 @@ package com.ybeltagy.breathe;
 
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.room.TypeConverter;
 
 import java.time.Instant;
@@ -14,6 +13,7 @@ public class Converters {
 
     /**
      * Converts database stored timeStamp string into relevant Instant (UTC)
+     *
      * @param timeStamp
      * @return parsed Instant
      */
@@ -21,8 +21,7 @@ public class Converters {
     public static Instant fromTimeStampString(String timeStamp) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return timeStamp == null ? null : Instant.parse(timeStamp);
-        }
-        else {
+        } else {
             // TODO: implement date time formatting from string to Instant.
             //  for API < 26 (Oreo)
             // FIXME: This is really important.
@@ -32,6 +31,7 @@ public class Converters {
 
     /**
      * Converts Instant timeStamp to string to be stored in database
+     *
      * @param timeStamp
      * @return timestamp as a string
      */
@@ -40,27 +40,27 @@ public class Converters {
         return timeStamp == null ? null : timeStamp.toString();
     }
 
-    //  Converts Tag string stored in database to relevant Tag enum
+    //  Converts Tag int stored in database to relevant Tag enum
     @TypeConverter
-    public static Tag fromTagString(String tag){
-        return tag == null ? null : Tag.valueOf(tag.toUpperCase());
+    public static Tag fromTagIntValue(int tagValue) {
+        return Tag.values()[tagValue];
     }
 
-    // Converts Tag into string to be stored in database
+    // Converts Tag into int to be stored in database
     @TypeConverter
-    public static String toTagString(Tag tag){
-        return tag == null ? null : tag.toString();
+    public static int toTagIntValue(Tag tag) {
+        return tag != null ? tag.ordinal() : Tag.NULL.ordinal();
     }
 
-    // Converts Level string stored in database to relevant Level enum
+    // Converts Level int stored in database to relevant Level enum
     @TypeConverter
-    public static Level fromLevelString(String level) {
-        return level == null ? null : Level.valueOf(level.toUpperCase());
+    public static Level fromLevelIntValue(int level) {
+        return Level.values()[level];
     }
 
-    // Converts Level into string to be stored in database
+    // Converts Level into int to be stored in database
     @TypeConverter
-    public static String toLevelString(Level level) {
-        return level == null ? null : level.toString();
+    public static int toLevelIntValue(Level level) {
+        return level != null ? level.ordinal() : Level.NULL.ordinal();
     }
 }

@@ -4,6 +4,7 @@ package com.ybeltagy.breathe;
  * 3 state level (used for pollen index)
  */
 enum Level {
+    NULL,
     LOW,
     MEDIUM,
     HIGH
@@ -25,10 +26,17 @@ public class WeatherData {
 
     public WeatherData(double weatherTemperature, double weatherHumidity,
                        Level weatherPollen, int weatherAQI) {
-        this.weatherTemperature = weatherTemperature;
-        this.weatherHumidity = weatherHumidity;
-        this.weatherPollen = weatherPollen;
-        this.weatherAQI = weatherAQI;
+        setWeatherTemperature(weatherTemperature);
+        setWeatherHumidity(weatherHumidity);
+        setWeatherPollen(weatherPollen);
+        setWeatherAQI(weatherAQI);
+    }
+
+    public WeatherData() {
+        setWeatherTemperature(-1);
+        setWeatherHumidity(-1);
+        setWeatherPollen(Level.NULL);
+        setWeatherAQI(-1);
     }
 
     public double getWeatherTemperature() {

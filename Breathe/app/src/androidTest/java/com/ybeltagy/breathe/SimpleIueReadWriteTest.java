@@ -41,7 +41,7 @@ public class SimpleIueReadWriteTest {
     @Test
     public void writeTrivialIueAndReadInList() {
         Instant rightNow = Instant.now();
-        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow, null, null, null);
+        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow);
 
         tBreatheDao.insert(tInhalerUsageEvent);
 

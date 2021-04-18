@@ -1,9 +1,13 @@
 package com.ybeltagy.breathe;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 // UTC/Greenwich ISO-8601 Timestamp
@@ -25,6 +29,7 @@ import java.time.Instant;
  * <p>
  * TODO: create static InhalerUsageEvent createIUE() to collect all data for InhalerUsageEvent and return an InhalerUsageEvent object
  */
+@RequiresApi(api = Build.VERSION_CODES.O)
 @Entity(tableName = "InhalerUsageEvent_table")
 public class InhalerUsageEvent {
     @PrimaryKey // timeStamp is the unique identifier for each InhalerUsageEvent record
@@ -40,17 +45,26 @@ public class InhalerUsageEvent {
     // For more info on Embedded objects within Entities,
     // see https://developer.android.com/training/data-storage/room/relationships
     // TODO: it should be possible to make them private as long as we provide setters and getters. Consider this when refactoring.
-    @Embedded private WeatherData weatherData;
-    @Embedded private DiaryEntry diaryEntry;
-    @Embedded private WearableData wearableData;
+    @Embedded private WeatherData weatherData = new WeatherData();
+    @Embedded private DiaryEntry diaryEntry = new DiaryEntry();
+    @Embedded private WearableData wearableData = new WearableData();
 
     // @NonNull annotation means timeStamp parameter can never be null
+    // TODO: We should delete this and use the constructor with only the timestamp
+    //       because we would never realistically use this (unless we are overwriting all of our
+    //       objects at once for some reason).
+    @Ignore
     public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp, WeatherData weatherData,
                              DiaryEntry diaryEntry, WearableData wearableData) {
         this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
         this.weatherData = weatherData;
         this.diaryEntry = diaryEntry;
         this.wearableData = wearableData;
+    }
+
+    // @NonNull annotation means timeStamp parameter can never be null
+    public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp) {
+        setInhalerUsageEventTimeStamp(inhalerUsageEventTimeStamp);
     }
 
     // Note: getter methods are required by Room so it can instantiate InhalerUsageEvent objects

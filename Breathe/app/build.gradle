@@ -86,4 +86,7 @@ dependencies {
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     // alternately - if using Java8, use the following instead of lifecycle-compiler
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+
+    // FusedLocationProvider
+    implementation "com.google.android.gms:play-services-location:18.0.0"
 }

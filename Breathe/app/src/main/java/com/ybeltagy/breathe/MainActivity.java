@@ -2,16 +2,16 @@ package com.ybeltagy.breathe;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.BackoffPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -20,11 +20,8 @@ import android.widget.TextView;
 
 import android.os.Bundle;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -48,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG =
             "extra_inhaler_usage_event_to_be_updated_existing_tag";
 
-    // for GPS location
-    // TODO: move to data collection service that is triggered by receiving a timestamp
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
     // debug
     String MAIN_ACTIVITY_LOG_TAG = "MainActivity";
 
@@ -72,30 +65,17 @@ public class MainActivity extends AppCompatActivity {
         // ProgressBar -----------------------------------------------------------------------------
         renderMedStatusView(totalDosesInCanister);
 
-        // Location client
-        // TODO: move to data collection service that is triggered by receiving a timestamp
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        // TODO: request permissions if not granted
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    Log.d(MAIN_ACTIVITY_LOG_TAG, "Got location: "
-                            + location.getLatitude() + " " + location.getLongitude());
-                }
-            }
-        });
+        // FIXME: move to data collection flow (here for testing)
+        // WorkManager -> gets WeatherData
+        weatherDataFlow();
+    }
 
+    private void weatherDataFlow() {
+        WorkManager dataFlowManager = WorkManager.getInstance(getApplication());
+        WorkRequest weatherDataRequest = new OneTimeWorkRequest.Builder(WeatherDataWorker.class)
+                .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                        TimeUnit.MILLISECONDS).build();
+        dataFlowManager.enqueue(weatherDataRequest);
     }
 
     @Override

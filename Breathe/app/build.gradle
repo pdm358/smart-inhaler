@@ -107,5 +107,7 @@ dependencies {
     implementation "androidx.work:work-runtime:$work_version"
     // optional - test helper
     androidTestImplementation "androidx.work:work-testing:$work_version"
+    // for serializing POJOs to be input and output from Tasks
+    implementation 'com.google.code.gson:gson:2.8.6'
 
 }

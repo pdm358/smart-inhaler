@@ -2,11 +2,13 @@ package com.ybeltagy.breathe;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.BackoffPolicy;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
@@ -19,13 +21,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
 
 import java.util.Calendar;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import static com.ybeltagy.breathe.WeatherAPIWorker.KEY_WEATHER_DATA_RESULT;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -49,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_DATA_UPDATE_INHALER_USAGE_EVENT_TAG =
             "extra_inhaler_usage_event_to_be_updated_existing_tag";
 
+    // FIXME: find a better place to put this and a better way to do this (probably a map)
+    String levelValuesToText[] = {"None", "Very Low", "Low", "Medium", "High", "Very High", "--"};
+
     // debug
     String MAIN_ACTIVITY_LOG_TAG = "MainActivity";
 
@@ -69,26 +75,76 @@ public class MainActivity extends AppCompatActivity {
         // ProgressBar -----------------------------------------------------------------------------
         renderMedStatusView(totalDosesInCanister);
 
-        //fixme: find a better place to do this.
-        WeatherData.apiKey = getString(R.string.clima_cell_api_key);
-
-        (new Thread() {
-            public void run() {
-                WeatherData.syncGetWeatherData(Calendar.getInstance(), 47.6062,-122.3321);
-            }
-        }).start();
-
         // FIXME: move to data collection flow (here for testing)
         // WorkManager -> gets WeatherData
         weatherDataFlow();
     }
 
+    // FIXME: move to data collection flow (here for testing)
     private void weatherDataFlow() {
+        // create work request for GPS
         WorkManager dataFlowManager = WorkManager.getInstance(getApplication());
-        WorkRequest weatherDataRequest = new OneTimeWorkRequest.Builder(WeatherDataWorker.class)
-                .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+        OneTimeWorkRequest gpsRequest = new OneTimeWorkRequest.Builder(GPSWorker.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                         TimeUnit.MILLISECONDS).build();
-        dataFlowManager.enqueue(weatherDataRequest);
+
+        Data.Builder data = new Data.Builder();
+        double testArray[] = {47.622743, -122.2929146};
+        data.putDoubleArray(GPSWorker.KEY_GPS_RESULT, testArray);
+
+        //  create work request for online weather data for the GPS location
+        OneTimeWorkRequest weatherAPIRequest = new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
+                .setInputData(data.build()).build();
+
+        dataFlowManager.enqueue(gpsRequest);
+        dataFlowManager.enqueue(weatherAPIRequest);
+
+        displayWeatherData(weatherAPIRequest.getId());
+    }
+
+    private void displayWeatherData(UUID weatherAPIRequestID) {
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(weatherAPIRequestID)
+                .observe(this, info -> {
+                    if (info != null && info.getState().isFinished()) {
+                        Log.d(MAIN_ACTIVITY_LOG_TAG, "Got data back from WeatherAPITask");
+                        String serializedWeatherData = info.getOutputData().getString(KEY_WEATHER_DATA_RESULT);
+                        Log.d(MAIN_ACTIVITY_LOG_TAG,
+                                "Serialized object string: " + serializedWeatherData);
+                        if (serializedWeatherData != null) {
+                            WeatherData weatherData = TaskObjectSerializationHelper
+                                    .weatherDataDeserializeFromJson(serializedWeatherData);
+
+                            // display the current weather conditions to the UI
+                            TextView humidityText = findViewById(R.id.humidity_textview);
+                            humidityText.setText(weatherData.getWeatherHumidity() + "%");
+                            // max level between tree and grass pollen
+                            TextView pollen = findViewById(R.id.pollen_textview);
+                            Level maxPollen =
+                                    (weatherData.getWeatherGrassIndex().ordinal() >
+                                            weatherData.getWeatherTreeIndex().ordinal()) ?
+                                            (weatherData.getWeatherGrassIndex()) :
+                                            (weatherData.getWeatherTreeIndex());
+                            pollen.setText(levelValuesToText[maxPollen.ordinal()]);
+                            // precipitation (mm/hr)
+                            TextView precipitationText = findViewById(R.id.precipitation_textview);
+                            precipitationText
+                                    .setText(weatherData.getWeatherPrecipitationIntensity() + " mm/hr");
+                            Log.d(MAIN_ACTIVITY_LOG_TAG, "Set precipitation to -> " + precipitationText.getText());
+                            // temperature in Celsius
+                            TextView temperatureText = findViewById(R.id.temperature_textview);
+                            temperatureText.setText(weatherData.getWeatherTemperature() + " C");
+                            // AQI(a.k.a. EPA Index)
+                            TextView aqiText = findViewById(R.id.aqi_textview);
+                            aqiText.setText("Test");
+                            Log.d(MAIN_ACTIVITY_LOG_TAG, "AQI was -> " + weatherData.getWeatherEPAIndex());
+                            // Note: setText() fails if the input is not a String (a plain old int
+                            // or something)
+                            aqiText.setText("Index : "
+                                    + Integer.toString(weatherData.getWeatherEPAIndex()));
+                        }
+                    }
+
+                });
     }
 
     @Override

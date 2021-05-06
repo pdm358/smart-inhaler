@@ -19,6 +19,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+
+import java.util.Calendar;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +68,15 @@ public class MainActivity extends AppCompatActivity {
 
         // ProgressBar -----------------------------------------------------------------------------
         renderMedStatusView(totalDosesInCanister);
+
+        //fixme: find a better place to do this.
+        WeatherData.apiKey = getString(R.string.clima_cell_api_key);
+
+        (new Thread() {
+            public void run() {
+                WeatherData.syncGetWeatherData(Calendar.getInstance(), 47.6062,-122.3321);
+            }
+        }).start();
 
         // FIXME: move to data collection flow (here for testing)
         // WorkManager -> gets WeatherData

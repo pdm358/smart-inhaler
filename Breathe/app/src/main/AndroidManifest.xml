@@ -23,7 +23,11 @@
 
     But is an annoying permission to ask. for.-->
 
+    <!-- To check the network before making an HTTP request-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Needed for accessing the network-->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Permissions end -->
 

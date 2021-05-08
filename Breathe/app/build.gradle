@@ -36,7 +36,7 @@ dependencies {
 
     // Test dependencies
     testImplementation "com.google.truth:truth:1.1.2"
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     // Required for instrumented tests
     // Core library
@@ -59,10 +59,10 @@ dependencies {
     // Room components
     // - see https://developer.android.com/jetpack/androidx/releases/room#declaring_dependencies
     //   for reference
-    def room_version = "2.2.6"
+    def room_version = '2.3.0'
 
     implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor 'androidx.room:room-compiler:2.2.6'
+    annotationProcessor "androidx.room:room-compiler:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version" //TODO: confirm necessity: The app compiles and runs without this dependency.
 
     // UI dependencies

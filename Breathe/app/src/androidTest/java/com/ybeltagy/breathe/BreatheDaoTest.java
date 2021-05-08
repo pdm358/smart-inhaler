@@ -2,11 +2,20 @@ package com.ybeltagy.breathe;
 
 import android.content.Context;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.ybeltagy.breathe.data.DataFinals;
+import com.ybeltagy.breathe.data.Level;
+import com.ybeltagy.breathe.data.WeatherData;
+import com.ybeltagy.breathe.persistence.BreatheDao;
+import com.ybeltagy.breathe.persistence.BreatheRoomDatabase;
+import com.ybeltagy.breathe.data.InhalerUsageEvent;
+import com.ybeltagy.breathe.data.Tag;
+import com.ybeltagy.breathe.data.WearableData;
+import com.ybeltagy.breathe.data.DiaryEntry;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +28,9 @@ import org.junit.Before;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+// todo: as we add more testing methods, make helper methods to reduce code redundancy
+//  and make the code maintainable.
 
 /**
  * Simple tests for updating entities in the DAO and querying between dates
@@ -114,7 +126,7 @@ public class BreatheDaoTest {
         // simulating we gathered the wearableData 3 minutes later
         float testTemp = 100;
         float testHumidity = 50;
-        char testChar1 = '1';
+        char testChar1 = 'A';
         char testChar2 = '2';
         tBreatheDao.updateWearableData(
                 rightNow, rightNow.plusSeconds(180), testTemp, testHumidity, testChar1, testChar2);
@@ -138,6 +150,43 @@ public class BreatheDaoTest {
     }
 
     @Test
+    public void updateWeatherDataTest(){
+
+        Instant rightNow = Instant.now();
+        // original InhalerUsageEvent
+        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow);
+        tBreatheDao.insert(tInhalerUsageEvent);
+
+        List<InhalerUsageEvent> allEvents = tBreatheDao.getAllIUEsTest();
+        assert allEvents != null;
+        assertEquals(allEvents.size(), 1);
+
+        assertNotNull(allEvents.get(0).getWeatherData());
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherTemperature(), DataFinals.DEFAULT_FLOAT,0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherHumidity(), DataFinals.DEFAULT_FLOAT,0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherPollen(), DataFinals.DEFAULT_LEVEL);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherAQI(), DataFinals.DEFAULT_INTEGER);
+
+        float temp = 10;
+        float humidity = 20;
+        Level level = Level.HIGH;
+        int aqi = 200;
+        WeatherData weatherData = new WeatherData(temp,humidity, level, aqi);
+
+        tBreatheDao.updateWeatherData(tInhalerUsageEvent.getInhalerUsageEventTimeStamp(),temp, humidity, level, aqi);
+
+        allEvents = tBreatheDao.getAllIUEsTest();
+        assert allEvents != null;
+        assertEquals(allEvents.size(), 1);
+
+        // was the wearable data preserved when we updated the diary entry?
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherTemperature(), temp, 0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherHumidity(), humidity, 0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherPollen(), level);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherAQI(), aqi);
+    }
+
+    @Test
     public void getAnySingleInhalerUsageEventTest() {
         tBreatheDao.deleteAll();
         assertEquals(tBreatheDao.getAnySingleInhalerUsageEvent().size(), 0);
@@ -145,7 +194,7 @@ public class BreatheDaoTest {
         Instant now = Instant.now();
         // create some inhaler usage events
         for (int i = 0; i < 10; i++) {
-            Instant aTime = now.minus(i, ChronoUnit.DAYS);
+            Instant aTime = now.plus(i, ChronoUnit.DAYS);
             InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
                     null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)));
             tBreatheDao.insert(tInhalerUsageEvent);
@@ -159,8 +208,8 @@ public class BreatheDaoTest {
         // create some inhaler usage events
         for (int i = 0; i < 10; i++) {
             Instant aTime = now.minus(i, ChronoUnit.DAYS);
-            InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
-                    null, new WearableData(
+            InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent
+                    (aTime, null, null, new WearableData(
                     aTime.plus(3, ChronoUnit.MINUTES)));
             tBreatheDao.insert(tInhalerUsageEvent);
         }

@@ -1,10 +1,14 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.persistence;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import com.ybeltagy.breathe.data.InhalerUsageEvent;
+import com.ybeltagy.breathe.data.Level;
+import com.ybeltagy.breathe.data.Tag;
 
 import java.time.Instant;
 import java.util.List;
@@ -25,11 +29,12 @@ public interface BreatheDao {
      * method to work correctly.
      *
      * @return all InhalerUsageEvents from the InhalerUsageEvent_table in lexicographical,
-     * descending order of string timestamp (because of UTC format, this is in chronological order)
+     * descending order of string timestamp (because of ISO 8601 format, this is in chronological order)
      * wrapped as LiveData.
      * LiveData is used so the UI may update if any changes occur to the data
      */
-    @Query("SELECT * FROM InhalerUsageEvent_table " +
+    @Query("SELECT * " +
+            "FROM InhalerUsageEvent_table " +
             "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time DESC")
     LiveData<List<InhalerUsageEvent>> getAllIUEs();
 
@@ -65,13 +70,16 @@ public interface BreatheDao {
      * @param diaryMessage
      * @return the number of records updated (should only be 1)
      */
-    @Query("UPDATE InhalerUsageEvent_table SET tag = :tag, message = :diaryMessage " +
+    @Query("UPDATE InhalerUsageEvent_table " +
+            "SET " +
+            "tag = :tag, " +
+            "message = :diaryMessage " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :timeStamp")
     int updateDiaryEntry(Instant timeStamp, Tag tag, String diaryMessage);
 
     /**
      * Note: Use this one to update an existing inhalerUsageEvent with WearableData data so the
-     * existing other inner objects (DiaryEntry, WeatherData) don't get "clobbered"
+     * existing other inner objects (DiaryEntry, WeatherData) don't get overwritten
      *
      * @param inhalerUsageTimeStamp - when the inhalerUsageEvent occurred
      * @param wearableDataTimeStamp - when the wearableData was collected
@@ -82,12 +90,35 @@ public interface BreatheDao {
      * @return the number of records updated (should only be 1)
      */
     @Query("UPDATE InhalerUsageEvent_table " +
-            "SET Wearable_Data_UTC_ISO_8601_date_time = :wearableDataTimeStamp, temperature = :temp, " +
-            "humidity = :humid, character = :character, " +
+            "SET " +
+            "Wearable_Data_UTC_ISO_8601_date_time = :wearableDataTimeStamp," +
+            "temperature = :temp, " +
+            "humidity = :humid," +
+            "character = :character, " +
             "digit = :digit " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :inhalerUsageTimeStamp")
     int updateWearableData(Instant inhalerUsageTimeStamp, Instant wearableDataTimeStamp,
                            float temp, float humid, char character, char digit);
+
+    /**
+     * Note: Use this one to update an existing inhalerUsageEvent with Weatherdata so the
+     * existing other inner objects (DiaryEntry, WearableData) don't get overwritten
+     *
+     * @param inhalerUsageTimeStamp - when the inhalerUsageEvent occurred
+     * @param weatherTemp
+     * @param weatherHumid
+     * @param weatherPollen
+     * @param weatherAQI
+     * @return the number of records updated (should only be 1)
+     */
+    @Query("UPDATE InhalerUsageEvent_table " +
+            "SET " +
+            "weatherTemperature = :weatherTemp," +
+            "weatherHumidity = :weatherHumid, " +
+            "weatherPollen = :weatherPollen," +
+            "weatherAQI = :weatherAQI " +
+            "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :inhalerUsageTimeStamp")
+    int updateWeatherData(Instant inhalerUsageTimeStamp, float weatherTemp, float weatherHumid, Level weatherPollen, int weatherAQI);
 
     /**
      * Note: This method alone is fine but there is no wrapper method for this in the Breathe
@@ -100,7 +131,8 @@ public interface BreatheDao {
      * @return List of InhalerUsageEvents that have the input timeStamp; there should only be 1 as
      * we are currently using the Instant timeStamp as the primary key
      */
-    @Query("SELECT * FROM InhalerUsageEvent_table " +
+    @Query("SELECT * " +
+            "FROM InhalerUsageEvent_table " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time == :timeStamp")
     List<InhalerUsageEvent> getInhalerUsageEventWithTimeStamp(Instant timeStamp);
 
@@ -112,9 +144,11 @@ public interface BreatheDao {
      * @param secondDate - Date in range that occurred last
      * @return InhalerUsageEvents between the parameter dates (inclusive) wrapped as LiveData
      */
-    @Query("SELECT * FROM InhalerUsageEvent_table " +
+    @Query("SELECT * " +
+            "FROM InhalerUsageEvent_table " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time " +
-            "BETWEEN :firstDate AND :secondDate")
+            "BETWEEN :firstDate AND :secondDate " +
+            "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time DESC")
     LiveData<List<InhalerUsageEvent>> loadAllInhalerUsageEventsBetweenDates(Instant firstDate,
                                                                             Instant secondDate);
 
@@ -122,11 +156,13 @@ public interface BreatheDao {
 
     // Some duplicated methods used for unit testing the DAO / RoomDatabase without using LiveData
     // wrapper
-    @Query("SELECT * FROM InhalerUsageEvent_table " +
+    @Query("SELECT * " +
+            "FROM InhalerUsageEvent_table " +
             "ORDER BY Inhaler_Usage_Event_UTC_ISO_8601_date_time DESC")
     List<InhalerUsageEvent> getAllIUEsTest();
 
-    @Query("SELECT * FROM InhalerUsageEvent_table " +
+    @Query("SELECT * " +
+            "FROM InhalerUsageEvent_table " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time " +
             "BETWEEN :firstDate AND :secondDate")
     List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDatesTest(Instant firstDate,

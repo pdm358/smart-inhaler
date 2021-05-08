@@ -27,6 +27,8 @@ public class WeatherAPIWorker extends Worker {
     @NotNull
     @Override
     public Result doWork() {
+        // TODO: should this be a serialized Location object instead of a double array of latitude
+        //       and longitude? -> Yes?
         double latLongArray[] = getInputData().getDoubleArray(GPSWorker.KEY_GPS_RESULT);
 
         Log.d(WEATHER_API_WORKER_TAG,
@@ -51,6 +53,8 @@ public class WeatherAPIWorker extends Worker {
 
             return Result.success(weatherDataOutput);
         } else { // we didn't get any weather data
+            Log.d(WEATHER_API_WORKER_TAG,
+                    "Weather data was null");
             return Result.failure();
         }
     }

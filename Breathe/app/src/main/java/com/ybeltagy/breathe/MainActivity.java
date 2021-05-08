@@ -96,10 +96,26 @@ public class MainActivity extends AppCompatActivity {
         OneTimeWorkRequest weatherAPIRequest = new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
                 .setInputData(data.build()).build();
 
+//        dataFlowManager.beginWith(gpsRequest).then(weatherAPIRequest).enqueue();
+//
+//        displayWeatherData(weatherAPIRequest.getId());
+
         dataFlowManager.enqueue(gpsRequest);
         dataFlowManager.enqueue(weatherAPIRequest);
-
         displayWeatherData(weatherAPIRequest.getId());
+    }
+
+    // FIXME: we shouldn't have to do this but the input from one task to another seems to not be working
+    private void getGPSOutputData(UUID gpsRequestID) {
+        Data.Builder data = new Data.Builder();
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(gpsRequestID)
+                .observe(this, info -> {
+                    if (info != null && info.getState().isFinished()) {
+                        Log.d(MAIN_ACTIVITY_LOG_TAG, "Got GPS data back from task :)!");
+                        double latLong[] = info.getOutputData().getDoubleArray(GPSWorker.KEY_GPS_RESULT);
+                        data.putDoubleArray(GPSWorker.KEY_GPS_RESULT, latLong);
+                    }
+                });
     }
 
     private void displayWeatherData(UUID weatherAPIRequestID) {
@@ -111,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(MAIN_ACTIVITY_LOG_TAG,
                                 "Serialized object string: " + serializedWeatherData);
                         if (serializedWeatherData != null) {
+                            // TODO: check if weatherData is null (could be even if String is not)
                             WeatherData weatherData = TaskObjectSerializationHelper
                                     .weatherDataDeserializeFromJson(serializedWeatherData);
 

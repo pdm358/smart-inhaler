@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.data;
 
 import android.os.Build;
 
@@ -27,10 +27,10 @@ public class WearableData {
     @ColumnInfo(name = "Wearable_Data_UTC_ISO_8601_date_time")
     private Instant wearableDataTimeStamp; // when this wearableData was collected
 
-    private float temperature = 0;
-    private float humidity = 0;
-    private char character = 0;
-    private char digit = 0;
+    private float temperature = DataFinals.DEFAULT_FLOAT; // The default null values should not make sense.
+    private float humidity = DataFinals.DEFAULT_FLOAT;
+    private char character = DataFinals.DEFAULT_CHAR;
+    private char digit = DataFinals.DEFAULT_CHAR;
 
     /**
      * Added this constructor for our iteration.

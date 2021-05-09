@@ -1,9 +1,12 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.data;
 
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.room.TypeConverter;
+
+import com.ybeltagy.breathe.data.Level;
+import com.ybeltagy.breathe.data.Tag;
 
 import java.time.Instant;
 

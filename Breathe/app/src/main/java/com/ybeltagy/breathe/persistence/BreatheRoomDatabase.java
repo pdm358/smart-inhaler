@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.persistence;
 
 import android.content.Context;
 import android.os.Build;
@@ -11,6 +11,10 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+
+import com.ybeltagy.breathe.data.InhalerUsageEvent;
+import com.ybeltagy.breathe.data.WearableData;
+import com.ybeltagy.breathe.data.Converters;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -31,7 +35,7 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
     private static volatile BreatheRoomDatabase INSTANCE; // this BreatheRoomDatabase is a singleton
 
     // Executor Service is used (replaced AsyncTask) so inserts may happen concurrently
-    static final ExecutorService dbWriteExecutor = Executors.newCachedThreadPool();
+    protected static final ExecutorService dbWriteExecutor = Executors.newCachedThreadPool();
 
     // creates a singleton BreatheRoomDatabase
     // (singleton to prevent multiple instances of the database being opened)
@@ -71,8 +75,9 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
                     // Check if there are any placeholder IUEs in the database
                     // If there are none, make some placeholder IUEs and add them to the database
                     Instant now = Instant.now();
-                    for (int i = 0; i < 5; i++) {
-                        Instant aTime = now.minus(i, ChronoUnit.DAYS);
+                    int dummyDataSize = 5;
+                    for (int i = 0; i < dummyDataSize; i++) {
+                        Instant aTime = now.minus( dummyDataSize - i, ChronoUnit.DAYS);
                         InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime);
                         Log.d("BreatheRoomDatabase", "adding InhalerUsageEvent "
                                 + tInhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());

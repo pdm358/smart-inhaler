@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.data;
 
 import android.os.Build;
 
@@ -11,6 +11,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 // UTC/Greenwich ISO-8601 Timestamp
+
 import java.time.Instant;
 
 /**
@@ -65,10 +66,10 @@ public class InhalerUsageEvent {
     @Ignore
     public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp, WeatherData weatherData,
                              DiaryEntry diaryEntry, WearableData wearableData) {
-        this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
-        this.weatherData = weatherData;
-        this.diaryEntry = diaryEntry;
-        this.wearableData = wearableData;
+        setInhalerUsageEventTimeStamp(inhalerUsageEventTimeStamp);;
+        setWeatherData(weatherData);
+        setDiaryEntry(diaryEntry);
+        setWearableData(wearableData);
     }
 
     /**

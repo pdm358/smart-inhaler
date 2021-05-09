@@ -1,8 +1,14 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.persistence;
 
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+
+import com.ybeltagy.breathe.data.DiaryEntry;
+import com.ybeltagy.breathe.data.InhalerUsageEvent;
+import com.ybeltagy.breathe.data.Tag;
+import com.ybeltagy.breathe.data.WearableData;
+import com.ybeltagy.breathe.data.WeatherData;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,16 +22,16 @@ import java.util.List;
  */
 public class BreatheRepository {
     private final BreatheDao breatheDao;
-    private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents; // TODO: IDE wants to make this final, does this cause problems?
+    private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents;
 
 
-    BreatheRepository(Application app) {
+    public BreatheRepository(Application app) {
         BreatheRoomDatabase breatheDB = BreatheRoomDatabase.getDatabase(app); // get handle to database
         breatheDao = breatheDB.breatheDao();
         allInhalerUsageEvents = breatheDao.getAllIUEs();
     }
 
-    LiveData<List<InhalerUsageEvent>> getAllInhalerUsageEvents() {
+    public LiveData<List<InhalerUsageEvent>> getAllInhalerUsageEvents() {
         return allInhalerUsageEvents;
     }
 
@@ -35,7 +41,7 @@ public class BreatheRepository {
      *
      * @param inhalerUsageEvent
      */
-    public void insert(final InhalerUsageEvent inhalerUsageEvent) {
+    public void insertIUE(final InhalerUsageEvent inhalerUsageEvent) {
         BreatheRoomDatabase.dbWriteExecutor.execute(() -> breatheDao.insert(inhalerUsageEvent));
     }
 
@@ -49,7 +55,7 @@ public class BreatheRepository {
      *
      * @param inhalerUsageEvent
      */
-    public void update(InhalerUsageEvent inhalerUsageEvent) {
+    public void updateIUE(InhalerUsageEvent inhalerUsageEvent) {
         BreatheRoomDatabase.dbWriteExecutor.execute(()
                 -> breatheDao.updateInhalerUsageEvent(inhalerUsageEvent));
     }
@@ -59,12 +65,11 @@ public class BreatheRepository {
      * existing other inner objects (WearableData, WeatherData) don't get "clobbered"
      *
      * @param timeStamp
-     * @param tag
-     * @param diaryMessage
+     * @param diaryEntry
      */
-    public void updateDiaryEntry(Instant timeStamp, Tag tag, String diaryMessage) {
+    public void updateDiaryEntry(Instant timeStamp, DiaryEntry diaryEntry) {
         BreatheRoomDatabase.dbWriteExecutor.execute(()
-                -> breatheDao.updateDiaryEntry(timeStamp, tag, diaryMessage));
+                -> breatheDao.updateDiaryEntry(timeStamp, diaryEntry.getTag(), diaryEntry.getMessage()));
     }
 
     /**
@@ -72,28 +77,34 @@ public class BreatheRepository {
      * existing other inner objects (DiaryEntry, WeatherData) don't get "clobbered"
      *
      * @param inhalerUsageTimeStamp
-     * @param wearableDataTimeStamp
-     * @param temperature
-     * @param humidity
-     * @param character
-     * @param digit
+     * @param wearableData
      */
-    public void updateWearableData(Instant inhalerUsageTimeStamp, Instant wearableDataTimeStamp, float temperature, float humidity, char character, char digit) {
+    public void updateWearableData(Instant inhalerUsageTimeStamp, WearableData wearableData) {
         BreatheRoomDatabase.dbWriteExecutor.execute(() ->
                 breatheDao.updateWearableData(
-                        inhalerUsageTimeStamp, wearableDataTimeStamp, temperature, humidity,
-                        character, digit));
+                        inhalerUsageTimeStamp,
+                        wearableData.getWearableDataTimeStamp(),
+                        wearableData.getTemperature(),
+                        wearableData.getHumidity(),
+                        wearableData.getCharacter(),
+                        wearableData.getDigit()));
     }
-
-    // Methods for TESTING PURPOSES ONLY------------------------------------------------------------
 
     /**
-     * IMPORTANT : This is for testing purposes ONLY -> to clear away placeholder IUEs we've created
-     * as we develop and test the app.
+     * Updates an existing inhalerUsageEvent with WeatherData without overwriting
+     * other existing inner objects (DiaryEntry, WeatherData)
+     *
+     * @param inhalerUsageTimeStamp
+     * @param weatherData
      */
-    public void deleteAllInhalerUsageEvents() {
-        BreatheRoomDatabase.dbWriteExecutor.execute(breatheDao::deleteAll);
+    public void updateWeatherData(Instant inhalerUsageTimeStamp, WeatherData weatherData) {
+        BreatheRoomDatabase.dbWriteExecutor.execute(() ->
+                breatheDao.updateWeatherData(
+                        inhalerUsageTimeStamp,
+                        weatherData.getWeatherTemperature(),
+                        weatherData.getWeatherHumidity(),
+                        weatherData.getWeatherPollen(),
+                        weatherData.getWeatherAQI()));
     }
-
 
 }

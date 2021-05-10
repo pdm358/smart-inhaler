@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe.persistence;
+package com.ybeltagy.breathe.collection;
 
 import android.app.Application;
 

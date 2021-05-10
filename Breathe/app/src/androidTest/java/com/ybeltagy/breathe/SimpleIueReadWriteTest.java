@@ -8,7 +8,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.ybeltagy.breathe.data.BreatheDao;
-import com.ybeltagy.breathe.persistence.BreatheRoomDatabase;
+import com.ybeltagy.breathe.collection.BreatheRoomDatabase;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 
 import static org.junit.Assert.*;

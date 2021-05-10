@@ -11,7 +11,7 @@ import com.ybeltagy.breathe.data.DataFinals;
 import com.ybeltagy.breathe.data.Level;
 import com.ybeltagy.breathe.data.WeatherData;
 import com.ybeltagy.breathe.data.BreatheDao;
-import com.ybeltagy.breathe.persistence.BreatheRoomDatabase;
+import com.ybeltagy.breathe.collection.BreatheRoomDatabase;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.Tag;
 import com.ybeltagy.breathe.data.WearableData;

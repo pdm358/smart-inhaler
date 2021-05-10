@@ -4,8 +4,9 @@
 
     <!-- ******************************* Permissions start ************************************* -->
 
-    <!-- TODO: Change to BLE when switching to the inhaler electronics + delete admin -->
-    <!-- Allows applications to discover and pair bluetooth devices. -->
+    <!-- Allows applications to discover and pair bluetooth devices.
+    Only necessary because we use scanning. Once peripheral can bond through
+    the Android settings, this permission will no longer be required.-->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- Allows applications to connect to paired bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -19,8 +20,9 @@
     <!--to use a foreground service-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
-    <!--There is a good chance we need this permission. https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
+    <!--There is a good chance we need this permission. https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
     But is an annoying permission to ask. for.-->
 
 
@@ -36,25 +38,27 @@
         android:supportsRtl="true"
         android:theme="@style/BreatheAppTheme">
 
+        <!--Detect when the phone is booted or this app is updated.
+            Both were tested and successfully worked.-->
         <receiver
-            android:name=".BLEConnectionReceiver"
+            android:name=".ble.BeginReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
-                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
 
-<!--        &lt;!&ndash;todo: clean and remove chicken&ndash;&gt;-->
-<!--        &lt;!&ndash;android:description="string resource"&ndash;&gt;-->
-<!--        <service android:name=".BLEService"-->
-<!--            android:directBootAware="true"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="false"-->
-<!--            android:foregroundServiceType="connectedDevice"-->
-<!--            android:label="Chicken-BLE connected" >-->
-<!--        </service>-->
+        <!--This service attempts to establish a connection with the wearable sensor.-->
+        <service android:name=".ble.BLEService"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"
+            android:label="BLE service" >
+        </service>
 
         <activity
             android:name=".ui.MainActivity">

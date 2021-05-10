@@ -1,5 +1,7 @@
 package com.ybeltagy.breathe.data;
 
+import androidx.room.Ignore;
+
 /**
  * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given InhalerUsageEvent
  * - One InhalerUsageEvent object contains one WeatherData object
@@ -16,6 +18,7 @@ public class WeatherData {
 
     public WeatherData(){}
 
+    @Ignore
     public WeatherData(float weatherTemperature, float weatherHumidity,
                        Level weatherPollen, int weatherAQI) {
         setWeatherTemperature(weatherTemperature);

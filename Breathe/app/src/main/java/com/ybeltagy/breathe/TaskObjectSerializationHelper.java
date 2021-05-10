@@ -1,7 +1,5 @@
 package com.ybeltagy.breathe;
 
-import android.graphics.Bitmap;
-
 import com.google.gson.Gson;
 
 /**

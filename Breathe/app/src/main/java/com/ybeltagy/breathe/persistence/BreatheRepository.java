@@ -4,9 +4,9 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import com.ybeltagy.breathe.data.BreatheDao;
 import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
-import com.ybeltagy.breathe.data.Tag;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
 

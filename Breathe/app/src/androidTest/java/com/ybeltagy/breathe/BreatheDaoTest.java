@@ -10,7 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.ybeltagy.breathe.data.DataFinals;
 import com.ybeltagy.breathe.data.Level;
 import com.ybeltagy.breathe.data.WeatherData;
-import com.ybeltagy.breathe.persistence.BreatheDao;
+import com.ybeltagy.breathe.data.BreatheDao;
 import com.ybeltagy.breathe.persistence.BreatheRoomDatabase;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.Tag;

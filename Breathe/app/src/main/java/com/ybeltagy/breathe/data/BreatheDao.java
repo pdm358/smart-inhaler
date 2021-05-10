@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe.persistence;
+package com.ybeltagy.breathe.data;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;

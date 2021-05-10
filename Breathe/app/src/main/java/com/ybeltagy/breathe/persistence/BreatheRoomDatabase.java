@@ -12,6 +12,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.ybeltagy.breathe.data.BreatheDao;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.Converters;

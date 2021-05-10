@@ -1,5 +1,6 @@
 package com.ybeltagy.breathe;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;
@@ -13,6 +14,7 @@ import androidx.work.WorkerParameters;
 
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jetbrains.annotations.NotNull;
@@ -37,25 +39,32 @@ public class GPSWorker extends ListenableWorker {
         super(appContext, workerParams);
     }
 
+    @SuppressLint("MissingPermission")
     @NonNull
     @Override
     public ListenableFuture<Result> startWork() {
         Log.d(GPS_WORKER_LOG_TAG, "Starting work " + getId());
         return CallbackToFutureAdapter.getFuture( completer -> {
 
-            return mLocationCallback = new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    Location location = locationResult.getLastLocation();
-                    Log.d(GPS_WORKER_LOG_TAG, "Work " + getId() + " returned: " + location);
-
-                    // Always set the result as the last operation
-                    completer.set(Result.success(createGPSOutput(location)));
-                }
-            };
-
+            return LocationServices.getFusedLocationProviderClient(getApplicationContext())
+                    .getLastLocation()
+                    .addOnSuccessListener(location -> {
+                            if (location != null) {
+                                Log.d(GPS_WORKER_LOG_TAG, "Got location in GPSWorker : "
+                                + location.getLatitude() + " , " + location.getLongitude());
+                                completer.set(Result.success(createGPSOutput(location)));
+                            } else {
+                                Log.d(GPS_WORKER_LOG_TAG, "Location was null....");
+                            }
+                    })
+                    .addOnFailureListener(
+                            exception -> {
+                                Log.e(GPS_WORKER_LOG_TAG, "Exception occurred : "
+                                        + exception.getMessage());
+                                completer.set(Result.failure(Data.EMPTY));
+                            }
+                    );
         });
-
     }
 
     private Data createGPSOutput(Location location) {

@@ -88,34 +88,13 @@ public class MainActivity extends AppCompatActivity {
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                         TimeUnit.MILLISECONDS).build();
 
-        Data.Builder data = new Data.Builder();
-        double testArray[] = {47.622743, -122.2929146};
-        data.putDoubleArray(GPSWorker.KEY_GPS_RESULT, testArray);
-
         //  create work request for online weather data for the GPS location
         OneTimeWorkRequest weatherAPIRequest = new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
-                .setInputData(data.build()).build();
+                .build();
 
-//        dataFlowManager.beginWith(gpsRequest).then(weatherAPIRequest).enqueue();
-//
-//        displayWeatherData(weatherAPIRequest.getId());
+        dataFlowManager.beginWith(gpsRequest).then(weatherAPIRequest).enqueue();
 
-        dataFlowManager.enqueue(gpsRequest);
-        dataFlowManager.enqueue(weatherAPIRequest);
         displayWeatherData(weatherAPIRequest.getId());
-    }
-
-    // FIXME: we shouldn't have to do this but the input from one task to another seems to not be working
-    private void getGPSOutputData(UUID gpsRequestID) {
-        Data.Builder data = new Data.Builder();
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(gpsRequestID)
-                .observe(this, info -> {
-                    if (info != null && info.getState().isFinished()) {
-                        Log.d(MAIN_ACTIVITY_LOG_TAG, "Got GPS data back from task :)!");
-                        double latLong[] = info.getOutputData().getDoubleArray(GPSWorker.KEY_GPS_RESULT);
-                        data.putDoubleArray(GPSWorker.KEY_GPS_RESULT, latLong);
-                    }
-                });
     }
 
     private void displayWeatherData(UUID weatherAPIRequestID) {

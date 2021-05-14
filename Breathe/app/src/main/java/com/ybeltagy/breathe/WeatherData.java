@@ -99,7 +99,9 @@ public class WeatherData {
                 .build();
 
         Log.d("WeatherData", request.toString());
-
+        // FIXME: (after merge) change JSON_Object.getDouble(), .getInt(), etc. to .OptDouble(),
+        //       .OptInt() and check for null.  If those values are null for the object, assign the
+        //       WeatherData fields to the null constant values
         try (Response response = client.newCall(request).execute()) {
             JSONObject obj = new JSONObject(response.body().string()).getJSONObject("data");
             obj = (obj.getJSONArray("timelines").getJSONObject(0)).getJSONArray("intervals").getJSONObject(0).getJSONObject("values");
@@ -121,8 +123,10 @@ public class WeatherData {
             Log.d("WeatherData", "Tree Index : " + weatherData.weatherTreeIndex);
             return weatherData;
         }catch(IOException e){
+            Log.e("WeatherData", "IOException : " + e.getMessage());
             return null;
         }catch(JSONException e){
+            Log.e("WeatherData", "JSONException : " + e.getMessage());
             return null;
         }
 

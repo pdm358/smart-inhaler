@@ -66,5 +66,10 @@ public class GPSWorker extends ListenableWorker {
                 .putDoubleArray(KEY_GPS_RESULT, latLong)
                 .build();
     }
+
+    @Override
+    public void onStopped() {
+        super.onStopped();
+    }
 }
 

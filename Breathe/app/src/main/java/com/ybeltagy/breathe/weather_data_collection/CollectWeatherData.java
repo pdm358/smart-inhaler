@@ -63,7 +63,7 @@ public class CollectWeatherData {
         Calendar endTime = (Calendar) startTime.clone();
         endTime.add(Calendar.SECOND, 60);
 
-        String url = "https://data.climacell.co/v4/timelines?location=" + latitude + "," + longitude +
+        String url = "https://api.tomorrow.io/v4/timelines?location=" + latitude + "," + longitude +
                 "&fields=" + TEMPERATURE + "," + HUMIDITY + "," + EPAINDEX + "," + PRECIPITATIONINTENSITY + "," + TREEINDEX + "," + GRASSINDEX +
                 "&startTime=" + getTimestampISO8601(startTime) +
                 "&endTime=" + getTimestampISO8601(endTime) +

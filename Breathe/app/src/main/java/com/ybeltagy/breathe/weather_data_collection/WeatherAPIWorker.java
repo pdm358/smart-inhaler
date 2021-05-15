@@ -63,4 +63,9 @@ public class WeatherAPIWorker extends Worker {
             return Result.failure();
         }
     }
+
+    @Override
+    public void onStopped() {
+        super.onStopped();
+    }
 }

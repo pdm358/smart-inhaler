@@ -3,6 +3,7 @@ package com.ybeltagy.breathe.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +30,8 @@ import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.R;
 import com.ybeltagy.breathe.data.WearableData;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Locale;
 
 /**
@@ -260,5 +264,35 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSimulateIUEButtonClick(View view) {
         breatheViewModel.simulateIUE(this);
+    }
+
+    public void export(View view){
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < 10; i++){
+            sb.append(i);
+            sb.append(",");
+        }
+
+        // todo: try with resource
+        // todo: consider making asynchronous
+        try{
+            FileOutputStream out = openFileOutput("iue_data.csv",Context.MODE_PRIVATE);
+            out.write(sb.toString().getBytes());
+            out.close();
+
+            Context context = this;
+            File file = new File(getFilesDir(), "iue_data.csv");
+            Uri path = FileProvider.getUriForFile(context, "com.ybeltagy.breathe.fileprovider", file); // getUriForFile(context, "${context.packageName}.fileprovider", file)
+            Intent fileIntent = new Intent(Intent.ACTION_SEND); // todo: consider using view but with the correct mime type.
+            //context.contentResolver.getType(contentUri)
+            //    intent.setDataAndType(contentUri, mimeType)
+            fileIntent.setType("text/csv");
+            fileIntent.putExtra(Intent.EXTRA_SUBJECT,"IUE Data");
+            fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            fileIntent.putExtra(Intent.EXTRA_STREAM,path);
+            startActivity(Intent.createChooser(fileIntent, "Export IUE"));
+        }catch (Exception e){
+            Log.d(tag,e.toString());
+        }
     }
 }

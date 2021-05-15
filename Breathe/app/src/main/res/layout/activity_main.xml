@@ -241,6 +241,16 @@
         app:layout_constraintTop_toBottomOf="@+id/test_wearable_button"
         android:onClick="onSimulateIUEButtonClick"/>
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:text="Export Data"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/simulate_iue_button"
+        android:onClick="export"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/diary_recyclerview"
         android:layout_width="match_parent"

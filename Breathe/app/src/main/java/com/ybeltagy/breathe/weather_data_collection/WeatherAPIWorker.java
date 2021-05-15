@@ -37,9 +37,9 @@ public class WeatherAPIWorker extends Worker {
         Log.d(WEATHER_API_WORKER_TAG,
                 "Received location in WeatherAPIWorker: "
                         + latLongArray[0] + " , " + latLongArray[1]);
-        WeatherData.apiKey = getApplicationContext().getString(R.string.clima_cell_api_key);
+        CollectWeatherData.apiKey = getApplicationContext().getString(R.string.clima_cell_api_key);
         WeatherData returnWeatherData =
-                WeatherData.syncGetWeatherData(Calendar.getInstance(),
+                CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),
                         latLongArray[0], latLongArray[1]);
 
         if (returnWeatherData != null) {

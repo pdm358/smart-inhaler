@@ -1,5 +1,6 @@
 package com.ybeltagy.breathe;
 import com.ybeltagy.breathe.data.WeatherData;
+import com.ybeltagy.breathe.weather_data_collection.CollectWeatherData;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -19,17 +20,17 @@ public class WeatherDataTest {
 
     @Test
     public void syncGetCurrentWeatherDataForSeattle() {
-        assertNotNull(WeatherData.syncGetWeatherData(Calendar.getInstance(),47.6062, -122.3321));
+        assertNotNull(CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),47.6062, -122.3321));
     }
 
     @Test
     public void syncGetCurrentWeatherDataForSpokane() {
-        assertNotNull(WeatherData.syncGetWeatherData(Calendar.getInstance(),47.6588, -117.4260));
+        assertNotNull(CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),47.6588, -117.4260));
     }
 
     @Test
     public void syncGetCurrentWeatherDataForMiami() {
-        assertNotNull(WeatherData.syncGetWeatherData(Calendar.getInstance(),25.761681, -80.191788));
+        assertNotNull(CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),25.761681, -80.191788));
     }
 
     @Test
@@ -42,7 +43,9 @@ public class WeatherDataTest {
 
         // Get a random position in the US assuming the US is a rectangle.
         // Not a uniform distribution though.
-        assertNotNull(WeatherData.syncGetWeatherData(Calendar.getInstance(), USLatCenter + (r.nextDouble()-0.5) * USLatRange, USLngCenter + (r.nextDouble()-0.5) * USLngRange));
+        assertNotNull(CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),
+                USLatCenter + (r.nextDouble()-0.5) * USLatRange,
+                USLngCenter + (r.nextDouble()-0.5) * USLngRange));
     }
 
 }

@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.weather_data_collection;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,6 +8,7 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.ybeltagy.breathe.R;
 import com.ybeltagy.breathe.data.WeatherData;
 
 import org.jetbrains.annotations.NotNull;

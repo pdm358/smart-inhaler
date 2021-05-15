@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.weather_data_collection;
 
 import com.google.gson.Gson;
 import com.ybeltagy.breathe.data.WeatherData;

@@ -1,4 +1,6 @@
 package com.ybeltagy.breathe;
+import com.ybeltagy.breathe.data.WeatherData;
+
 import java.util.Calendar;
 import java.util.Random;
 

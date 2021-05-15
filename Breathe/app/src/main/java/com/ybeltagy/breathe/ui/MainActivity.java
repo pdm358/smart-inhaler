@@ -19,9 +19,9 @@ import android.widget.TextView;
 
 import android.os.Bundle;
 
-import com.ybeltagy.breathe.GPSWorker;
-import com.ybeltagy.breathe.TaskObjectSerializationHelper;
-import com.ybeltagy.breathe.WeatherAPIWorker;
+import com.ybeltagy.breathe.weather_data_collection.GPSWorker;
+import com.ybeltagy.breathe.weather_data_collection.TaskObjectSerializationHelper;
+import com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.R;
 import com.ybeltagy.breathe.data.Level;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.ybeltagy.breathe.WeatherAPIWorker.KEY_WEATHER_DATA_RESULT;
+import static com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker.KEY_WEATHER_DATA_RESULT;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a

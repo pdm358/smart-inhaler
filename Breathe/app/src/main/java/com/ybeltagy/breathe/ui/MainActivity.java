@@ -45,9 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String tag = MainActivity.class.getName(); // Maybe we can use this, going forward.
 
-    // FIXME: find a better place to put this and a better way to do this (probably a map)
-    String levelValuesToText[] = {"None", "Very Low", "Low", "Medium", "High", "Very High", "--"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,72 +63,84 @@ public class MainActivity extends AppCompatActivity {
         // populate the fake data for the RecyclerView using
         renderDiaryView();
 
-        // FIXME: move to data collection flow (here for testing)
+        // FIXME: move to data collection flow service (here for testing)
         // WorkManager -> gets WeatherData
         weatherDataFlow();
     }
 
-    // FIXME: move to data collection flow (here for testing)
+    // FIXME: move to data collection flow service (here for testing)
     private void weatherDataFlow() {
         // create work request for GPS
         WorkManager dataFlowManager = WorkManager.getInstance(getApplication());
         OneTimeWorkRequest gpsRequest = new OneTimeWorkRequest.Builder(GPSWorker.class)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                         TimeUnit.MILLISECONDS).build();
 
         //  create work request for online weather data for the GPS location
-        OneTimeWorkRequest weatherAPIRequest = new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
-                .build();
+        OneTimeWorkRequest weatherAPIRequest =
+                new OneTimeWorkRequest.Builder(WeatherAPIWorker.class).build();
 
         dataFlowManager.beginWith(gpsRequest).then(weatherAPIRequest).enqueue();
 
-        displayWeatherData(weatherAPIRequest.getId());
+        observerWeatherAPIWorkerForDisplay(weatherAPIRequest.getId());
     }
 
-    private void displayWeatherData(UUID weatherAPIRequestID) {
+    private void observerWeatherAPIWorkerForDisplay(UUID weatherAPIRequestID) {
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(weatherAPIRequestID)
                 .observe(this, info -> {
+
                     if (info != null && info.getState().isFinished()) {
                         Log.d(tag, "Got data back from WeatherAPITask");
-                        String serializedWeatherData = info.getOutputData().getString(KEY_WEATHER_DATA_RESULT);
-                        Log.d(tag,
-                                "Serialized object string: " + serializedWeatherData);
+
+                        String serializedWeatherData
+                                = info.getOutputData().getString(KEY_WEATHER_DATA_RESULT);
+                        Log.d(tag, "Serialized object string: " + serializedWeatherData);
+
                         if (serializedWeatherData != null) {
-                            // TODO: check if weatherData is null (could be even if String is not)
                             WeatherData weatherData = TaskObjectSerializationHelper
                                     .weatherDataDeserializeFromJson(serializedWeatherData);
 
-                            // display the current weather conditions to the UI
-                            TextView humidityText = findViewById(R.id.humidity_textview);
-                            humidityText.setText(weatherData.getWeatherHumidity() + "%");
-                            // max level between tree and grass pollen
-                            TextView pollen = findViewById(R.id.pollen_textview);
-                            Level maxPollen =
-                                    (weatherData.getWeatherGrassIndex().ordinal() >
-                                            weatherData.getWeatherTreeIndex().ordinal()) ?
-                                            (weatherData.getWeatherGrassIndex()) :
-                                            (weatherData.getWeatherTreeIndex());
-                            pollen.setText(levelValuesToText[maxPollen.ordinal()]);
-                            // precipitation (mm/hr)
-                            TextView precipitationText = findViewById(R.id.precipitation_textview);
-                            precipitationText
-                                    .setText(weatherData.getWeatherPrecipitationIntensity() + " mm/hr");
-                            Log.d(tag, "Set precipitation to -> " + precipitationText.getText());
-                            // temperature in Celsius
-                            TextView temperatureText = findViewById(R.id.temperature_textview);
-                            temperatureText.setText(weatherData.getWeatherTemperature() + " C");
-                            // AQI(a.k.a. EPA Index)
-                            TextView aqiText = findViewById(R.id.aqi_textview);
-                            aqiText.setText("Test");
-                            Log.d(tag, "AQI was -> " + weatherData.getWeatherEPAIndex());
-                            // Note: setText() fails if the input is not a String (a plain old int
-                            // or something)
-                            aqiText.setText("Index : "
-                                    + Integer.toString(weatherData.getWeatherEPAIndex()));
+                            if (weatherData != null) {
+                                displayWeatherData(weatherData);
+                            }
                         }
                     }
-
                 });
+    }
+
+    private void displayWeatherData(WeatherData weatherData) {
+        TextView humidityText = findViewById(R.id.humidity_textview);
+        humidityText.setText(String.format("%s%%", weatherData.getWeatherHumidity()));
+
+        // max level between tree and grass pollen (for display simplicity)
+        TextView pollen = findViewById(R.id.pollen_textview);
+        Level maxPollen =
+                (weatherData.getWeatherGrassIndex().ordinal() >
+                        weatherData.getWeatherTreeIndex().ordinal()) ?
+                        (weatherData.getWeatherGrassIndex()) :
+                        (weatherData.getWeatherTreeIndex());
+
+        String[] levelValuesToText = {"None", "Very Low",
+                "Low", "Medium", "High", "Very High", "--"};
+        pollen.setText(levelValuesToText[maxPollen.ordinal()]);
+
+        // precipitation (mm/hr)
+        TextView precipitationText = findViewById(R.id.precipitation_textview);
+        precipitationText
+                .setText(String.format("%s mm/hr", weatherData.getWeatherPrecipitationIntensity()));
+        Log.d(tag, "Set precipitation to -> " + precipitationText.getText());
+
+        // temperature in Celsius
+        TextView temperatureText = findViewById(R.id.temperature_textview);
+        temperatureText.setText(String.format("%s C",
+                weatherData.getWeatherTemperature()));
+
+        // AQI(a.k.a. EPA Index)
+        TextView aqiText = findViewById(R.id.aqi_textview);
+        Log.d(tag, "AQI was -> " + weatherData.getWeatherEPAIndex());
+        // Note: setText() fails if the input is not a String (a plain old int
+        // or something)
+        aqiText.setText(String.format("Index : %d", weatherData.getWeatherEPAIndex()));
     }
 
     @Override
@@ -141,7 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * render the Progress Bar for the medicine status in first pane (top of the screen)
-     * @param totalDosesInCanister
+     *
+     * @param totalDosesInCanister number of boluses in the replaceable inhaler cartridge
      */
     private void renderMedStatusView(int totalDosesInCanister) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
@@ -200,14 +210,16 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Opens the diary entry activity for the passed inhalerUsageEvent.
      * todo: as the project develops, consider not not passing anymore than than IUE timestamp in the intent and retrieving
-     *  everything from the databse in the DiaryEntryActivity
-     * @param inhalerUsageEvent
+     * everything from the database in the DiaryEntryActivity
+     *
+     * @param inhalerUsageEvent encapsulated data of conditions when user used their inhaler
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void launchDiaryEntryActivity(InhalerUsageEvent inhalerUsageEvent) {
 
         // don't do anything for invalid input.
-        if(inhalerUsageEvent == null || inhalerUsageEvent.getInhalerUsageEventTimeStamp() == null) return;
+        if (inhalerUsageEvent == null)
+            return;
 
         Log.d(tag, "Launching diary entry activity!");
 

@@ -31,12 +31,14 @@ public class WeatherAPIWorker extends Worker {
     @Override
     public Result doWork() {
         // TODO: should this be a serialized Location object instead of a double array of latitude
-        //       and longitude? -> Yes?
-        double latLongArray[] = getInputData().getDoubleArray(GPSWorker.KEY_GPS_RESULT);
+        //       and longitude?
+        double[] latLongArray = getInputData().getDoubleArray(GPSWorker.KEY_GPS_RESULT);
 
+        if (latLongArray == null) throw new AssertionError();
         Log.d(WEATHER_API_WORKER_TAG,
                 "Received location in WeatherAPIWorker: "
                         + latLongArray[0] + " , " + latLongArray[1]);
+
         CollectWeatherData.apiKey = getApplicationContext().getString(R.string.clima_cell_api_key);
         WeatherData returnWeatherData =
                 CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),
@@ -53,8 +55,8 @@ public class WeatherAPIWorker extends Worker {
             Data weatherDataOutput = new Data.Builder()
                     .putString(KEY_WEATHER_DATA_RESULT, serializedWeatherData)
                     .build();
-
             return Result.success(weatherDataOutput);
+
         } else { // we didn't get any weather data
             Log.d(WEATHER_API_WORKER_TAG,
                     "Weather data was null");

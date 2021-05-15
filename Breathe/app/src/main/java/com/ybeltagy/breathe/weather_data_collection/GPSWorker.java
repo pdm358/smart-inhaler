@@ -12,7 +12,6 @@ import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.WorkerParameters;
 
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -27,9 +26,6 @@ public class GPSWorker extends ListenableWorker {
     // Result key for GPS
     public static final String KEY_GPS_RESULT = "GPSResult";
 
-    private ListenableFuture<Result> futureResult;
-    private LocationCallback mLocationCallback;
-
     /**
      * @param appContext   The application {@link Context}
      * @param workerParams Parameters to setup the internal state of this worker
@@ -43,36 +39,32 @@ public class GPSWorker extends ListenableWorker {
     @Override
     public ListenableFuture<Result> startWork() {
         Log.d(GPS_WORKER_LOG_TAG, "Starting work " + getId());
-        return CallbackToFutureAdapter.getFuture( completer -> {
-
-            return LocationServices.getFusedLocationProviderClient(getApplicationContext())
-                    .getLastLocation()
-                    .addOnSuccessListener(location -> {
-                            if (location != null) {
-                                Log.d(GPS_WORKER_LOG_TAG, "Got location in GPSWorker : "
-                                + location.getLatitude() + " , " + location.getLongitude());
-                                completer.set(Result.success(createGPSOutput(location)));
-                            } else {
-                                Log.d(GPS_WORKER_LOG_TAG, "Location was null....");
-                            }
-                    })
-                    .addOnFailureListener(
-                            exception -> {
-                                Log.e(GPS_WORKER_LOG_TAG, "Exception occurred : "
-                                        + exception.getMessage());
-                                completer.set(Result.failure(Data.EMPTY));
-                            }
-                    );
-        });
+        return CallbackToFutureAdapter.getFuture( completer ->
+                LocationServices.getFusedLocationProviderClient(getApplicationContext())
+                .getLastLocation()
+                .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            Log.d(GPS_WORKER_LOG_TAG, "Got location in GPSWorker : "
+                            + location.getLatitude() + " , " + location.getLongitude());
+                            completer.set(Result.success(createGPSOutput(location)));
+                        } else {
+                            Log.d(GPS_WORKER_LOG_TAG, "Location was null....");
+                        }
+                })
+                .addOnFailureListener(
+                        exception -> {
+                            Log.e(GPS_WORKER_LOG_TAG, "Exception occurred : "
+                                    + exception.getMessage());
+                            completer.set(Result.failure(Data.EMPTY));
+                        }
+                ));
     }
 
     private Data createGPSOutput(Location location) {
-        double latLong[] = {location.getLatitude(), location.getLongitude()};
+        double[] latLong = {location.getLatitude(), location.getLongitude()};
         return new Data.Builder()
                 .putDoubleArray(KEY_GPS_RESULT, latLong)
                 .build();
     }
-
-
 }
 

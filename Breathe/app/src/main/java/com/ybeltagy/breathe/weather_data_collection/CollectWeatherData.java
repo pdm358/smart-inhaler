@@ -27,7 +27,6 @@ public class CollectWeatherData {
     //todo: refactor
     //todo: use endtime.
     //todo: better way to build the string.
-    //fixme: handle errors and exceptions.
     //todo: comment
     //todo: error handling for the UX
     //todo: make calendar use UTC
@@ -44,7 +43,7 @@ public class CollectWeatherData {
     /**
      *
      * @param calendar
-     * @return
+     * @return String timestamp for current time
      */
     public static String getTimestampISO8601(Calendar calendar){
         Date date = calendar.getTime();
@@ -56,7 +55,7 @@ public class CollectWeatherData {
 
     /**
      *
-     * @return
+     * @return WeatherData object for the current time and input latitude/longitude location
      */
     public static WeatherData syncGetWeatherData(Calendar startTime,
                                                  double latitude, double longitude){
@@ -123,6 +122,5 @@ public class CollectWeatherData {
             Log.e("WeatherData", "JSONException : " + e.getMessage());
             return null;
         }
-
     }
 }

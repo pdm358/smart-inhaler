@@ -1,8 +1,15 @@
 package com.ybeltagy.breathe.collection;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
+import androidx.work.BackoffPolicy;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.ybeltagy.breathe.data.BreatheDao;
 import com.ybeltagy.breathe.data.DiaryEntry;
@@ -12,6 +19,7 @@ import com.ybeltagy.breathe.data.WeatherData;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The BreatheRepository class:
@@ -105,6 +113,30 @@ public class BreatheRepository {
                         weatherData.getWeatherHumidity(),
                         weatherData.getWeatherPollen(),
                         weatherData.getWeatherAQI()));
+    }
+
+    @SuppressLint("NewApi")
+    public void startDataCollection(Instant timestamp, Context context){ // fixme: consider using getApplicationContext
+
+        InhalerUsageEvent iue = new InhalerUsageEvent(timestamp);
+
+        insertIUE(iue);
+
+        WorkRequest uploadWorkRequest =
+                new OneTimeWorkRequest.Builder(WearableWorker.class)
+                        .setBackoffCriteria(
+                                BackoffPolicy.EXPONENTIAL,
+                                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                                TimeUnit.MILLISECONDS)
+                        .setInputData(
+                                new Data.Builder().
+                                        putString("timestamp", timestamp.toString()).
+                                        build())
+                        .build();
+
+        WorkManager
+                .getInstance(context)
+                .enqueue(uploadWorkRequest);
     }
 
 }

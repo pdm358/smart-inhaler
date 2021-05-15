@@ -11,12 +11,17 @@ import androidx.room.Ignore;
  */
 public class WeatherData {
 
-    private float weatherTemperature = DataFinals.DEFAULT_FLOAT; // Celsius
-    private float weatherHumidity = DataFinals.DEFAULT_FLOAT; // percentage out of 100 - value should always be =< 1
-    private Level weatherPollen = DataFinals.DEFAULT_LEVEL; // LOW, MEDIUM, or HIGH
-    private int weatherAQI = DataFinals.DEFAULT_INTEGER; // Air quality index, as defined by the EPA
+    private float weatherTemperature; // Celsius
+    private float weatherHumidity; // percentage out of 100 - value should always be =< 1
+    private Level weatherPollen; // LOW, MEDIUM, or HIGH
+    private int weatherAQI; // Air quality index, as defined by the EPA
 
-    public WeatherData(){}
+    public WeatherData(){
+        this(DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_LEVEL,
+                DataFinals.DEFAULT_INTEGER);
+    }
 
     @Ignore
     public WeatherData(float weatherTemperature, float weatherHumidity,
@@ -25,6 +30,18 @@ public class WeatherData {
         setWeatherHumidity(weatherHumidity);
         setWeatherPollen(weatherPollen);
         setWeatherAQI(weatherAQI);
+    }
+
+    /**
+     *
+     * @return true if all the data members are different from DataFinal default values.
+     */
+    public boolean isDataValid(){
+        return weatherTemperature != DataFinals.DEFAULT_FLOAT &&
+                weatherHumidity != DataFinals.DEFAULT_FLOAT &&
+                weatherPollen != DataFinals.DEFAULT_LEVEL &&
+                weatherAQI != DataFinals.DEFAULT_INTEGER;
+
     }
 
     public float getWeatherTemperature() {

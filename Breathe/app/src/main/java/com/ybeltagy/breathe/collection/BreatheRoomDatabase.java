@@ -72,6 +72,8 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
                 // Populate the database with placeholder IUEs in the background.
                 BreatheDao breatheDao = INSTANCE.breatheDao();
 
+                breatheDao.deleteAll();
+
                 if (breatheDao.getAnySingleInhalerUsageEvent().size() < 1) {
                     // Check if there are any placeholder IUEs in the database
                     // If there are none, make some placeholder IUEs and add them to the database

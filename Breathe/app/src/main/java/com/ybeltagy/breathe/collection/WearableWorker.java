@@ -1,6 +1,8 @@
 package com.ybeltagy.breathe.collection;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
@@ -14,31 +16,46 @@ import java.time.Instant;
 
 public class WearableWorker extends Worker {
 
-    Instant timestamp = null;
+    private static final String tag = WearableWorker.class.getName();
+
     // fixme: is this the best way to pass the repository?
     // fixme: what happens if the app is not running when the worker is finished.
     // fixme: are there lifecycle issues?
-    BreatheRepository breatheRepository = null;
+
+    Context curContext;
 
     public WearableWorker(
             @NonNull Context context,
-            @NonNull WorkerParameters params,
-            @NonNull BreatheRepository breatheRepository,
-            @NonNull Instant timestamp) {
+            @NonNull WorkerParameters params) {
         super(context, params);
 
-        this.breatheRepository = breatheRepository;
-        this.timestamp = timestamp;
+        this.curContext = context;
     }
 
+    //fixme: does not retry on failure
     @Override
+    @SuppressLint("NewApi")
     public Result doWork() {
+
+        Log.d(tag, "started doWork");
 
         WearableData wearableData = BLEService.getWearableData();
 
         if(wearableData == null) return Result.failure();
 
-        breatheRepository.updateWearableData(timestamp, wearableData); // Todo: consider making a synchronous database save.
+        Log.d(tag, "Wearable Data: ");
+        Log.d(tag, "Temperature: " + wearableData.getTemperature());
+        Log.d(tag, "Humidity: " + wearableData.getHumidity());
+        Log.d(tag, "Character: " + wearableData.getCharacter());
+        Log.d(tag, "Digit: " + wearableData.getDigit());
+
+        //todo: extract key
+        Instant timestamp = Instant.parse(getInputData().getString("timestamp"));
+
+        //todo: consider adding a wrapper inside the dao.
+        //called synchronously.
+        BreatheRoomDatabase.getDatabase(curContext).breatheDao().
+                updateWearableData(timestamp, timestamp, wearableData.getTemperature(), wearableData.getHumidity(), wearableData.getCharacter(), wearableData.getDigit());
 
         // Indicate whether the work finished successfully with the Result
         return Result.success();

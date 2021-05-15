@@ -11,8 +11,8 @@ import androidx.room.Ignore;
  *
  */
 public class DiaryEntry {
-    private Tag tag = DataFinals.DEFAULT_TAG; // category this InhalerUsageEvent falls into, as defined by the user
-    private String message = DataFinals.DEFAULT_STRING; // user entered message describing the InhalerUsageEvent
+    private Tag tag; // category this InhalerUsageEvent falls into, as defined by the user
+    private String message; // user entered message describing the InhalerUsageEvent
 
     @Ignore
     public DiaryEntry(Tag tag, String message) {
@@ -21,6 +21,7 @@ public class DiaryEntry {
     }
 
     public DiaryEntry() {
+        this(DataFinals.DEFAULT_TAG, "");
     }
 
     public Tag getTag() {

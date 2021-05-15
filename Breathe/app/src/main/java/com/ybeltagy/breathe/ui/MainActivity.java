@@ -1,13 +1,18 @@
 package com.ybeltagy.breathe.ui;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -15,12 +20,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.ybeltagy.breathe.ble.BLEScanner;
+import com.ybeltagy.breathe.ble.BLEService;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.R;
-import com.ybeltagy.breathe.data.Tag;
+import com.ybeltagy.breathe.data.WearableData;
 
-import java.util.List;
+import java.util.Locale;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -34,12 +42,20 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String tag = MainActivity.class.getName(); // Maybe we can use this, going forward.
 
+    private static final int ACCESS_FINE_LOCATION_REQUEST = 1;
+    private static final int ENABLE_BLUETOOTH = 2; // todo: consider moving to a centralized location
+
+    @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Note: constructor in codelab did not work; searched for a long time and this fixed it:
+        //fixme: is there a better way to detect the app was opened?
+        Intent foregroundServiceIntent = new Intent(this, BLEService.class);
+        startForegroundService(foregroundServiceIntent); //FIXME why does it take a context too?
+
+        // Note: constructor in code lab did not work; searched for a long time and this fixed it:
         // https://github.com/googlecodelabs/android-room-with-a-view/issues/145#issuecomment-739756244
         breatheViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
@@ -60,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * render the Progress Bar for the medicine status in first pane (top of the screen)
-     * @param totalDosesInCanister
+     * @param totalDosesInCanister the size of the inhaler canister
      */
     private void renderMedStatusView(int totalDosesInCanister) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
@@ -71,19 +87,17 @@ public class MainActivity extends AppCompatActivity {
         //Get text view to set the text for.
         TextView dosesTakenText = findViewById(R.id.doses_textview);
 
-        breatheViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
-            @Override
-            public void onChanged(List<InhalerUsageEvent> inhalerUsageEvents) {
-                // medicine left is number of doses in a full container - doses used
-                medicineStatusBar.setProgress(medicineStatusBar.getMax() - inhalerUsageEvents.size());
-                dosesTakenText.setText(String.format("%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
-            }
+        breatheViewModel.getAllInhalerUsageEvents().observe(this, inhalerUsageEvents -> {
+            // medicine left is number of doses in a full container - doses used
+            medicineStatusBar.setProgress(medicineStatusBar.getMax() - inhalerUsageEvents.size());
+            dosesTakenText.setText(String.format(Locale.ENGLISH,"%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
         });
     }
 
     /**
      * render the diary RecyclerView for the diary timeline of events in third pane
      */
+    @SuppressLint("NewApi")
     private void renderDiaryView() {
 
         Log.d(tag, "DiaryView starting to render...");
@@ -94,13 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
         // set an on-click listener so we can get the InhalerUsageEvent at the clicked position and
         // pass it to the DiaryEntryActivity
-        iueListAdapter.setOnItemClickListener(new IUEListAdapter.IUEListItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onItemClick(View v, int position) {
-                launchDiaryEntryActivity(iueListAdapter.getInhalerUsageEventAtPosition(position));
-            }
-        });
+        iueListAdapter.setOnItemClickListener((v, position) -> launchDiaryEntryActivity(iueListAdapter.getInhalerUsageEventAtPosition(position)));
 
         iueRecyclerView.setAdapter(iueListAdapter); // connect adapter and recyclerView
 
@@ -119,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Opens the diary entry activity for the passed inhalerUsageEvent.
      * todo: as the project develops, consider not not passing anymore than than IUE timestamp in the intent and retrieving
-     *  everything from the databse in the DiaryEntryActivity
-     * @param inhalerUsageEvent
+     *  everything from the database in the DiaryEntryActivity
+     * @param inhalerUsageEvent the iue to edit the diary for
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void launchDiaryEntryActivity(InhalerUsageEvent inhalerUsageEvent) {
@@ -144,5 +152,113 @@ public class MainActivity extends AppCompatActivity {
 
         startActivityForResult(intent, UIFinals.UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE);
 
+    }
+
+    /**
+     * Starts a scan for a wearable sensor device. The wearable includes its service UUID in its advertisements.
+     * The service UUID of the wearable sensor is used to filter for it.
+     * @param view
+     */
+    public void onScanButtonClick(View view) {
+        scanForWearableSensor();
+    }
+
+    public void scanForWearableSensor(){
+        if(!hasLocationPermissions()) return;
+
+        if(!isBluetoothEnabled()) return;
+
+        BLEScanner.scanForWearableSensor(this);
+    }
+
+    /**
+     * Returns true if the app has ACCESS_FINE_LOCATION permission. If not, it requests it from the user and returns false.
+     * @return true if app has ACCESS_FINE_LOCATION permission
+     */
+    private boolean hasLocationPermissions() {
+        // M is for Marshmallow. Before Android Marshmallow, permissions are given at install time rather than at runtime.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)  return true;
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+                Toast.makeText(this, "Bluetooth scanning requires location permission", Toast.LENGTH_SHORT).show();
+            }
+
+            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, ACCESS_FINE_LOCATION_REQUEST);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if(requestCode == ACCESS_FINE_LOCATION_REQUEST){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                scanForWearableSensor();
+            }else{
+                Toast.makeText(this, "Can't scan without a Location permissions", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+    }
+
+    // todo: implement a way an on request result that will restart the scan.
+    /**
+     * Returns true if Bluetooth is enabled. Otherwise, requests the user to enable it and returns false.
+     * @return true if Bluetooth is enabled.
+     */
+    private boolean isBluetoothEnabled(){
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // There is no Bluetooth adapter (i.e, the device doesn't support bluetooth)
+        if (bluetoothAdapter == null) {
+            Toast.makeText(getApplicationContext(), "This device does not support bluetooth", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Bluetooth is supported and enabled.
+        if(bluetoothAdapter.isEnabled()) {
+            return true;
+        }
+
+        // Bluetooth is supported but not enabled.
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        Toast.makeText(this, "Please enable Bluetooth", Toast.LENGTH_SHORT).show();
+        startActivityForResult(enableBtIntent, 0);
+
+        return false;
+    }
+
+
+    /**
+     * A testing method just for development.
+     * @param view
+     */
+    public void testWearableData(View view) {
+        //Fixme: inline thread is just a demo. Remove and use executorService later.
+        //Context context = this;
+
+        (new Thread() {
+            public void run() {
+                WearableData wearableData = BLEService.getWearableData();
+                String temp = "No data";
+
+                if(wearableData != null) temp = "Wearable Data!" +
+                        "\nTemp = " + wearableData.getTemperature() + "\nHumidity: " + wearableData.getHumidity() +
+                        "\nCharacter: " + wearableData.getCharacter() + "\nDigit: " + wearableData.getDigit();
+
+                Log.d(tag,temp);
+            }
+        }).start();
+    }
+
+    public void onSimulateIUEButtonClick(View view) {
+        breatheViewModel.simulateIUE(this);
     }
 }

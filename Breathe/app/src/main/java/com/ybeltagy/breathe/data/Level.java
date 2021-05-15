@@ -1,11 +1,14 @@
 package com.ybeltagy.breathe.data;
 
 /**
- * 3 state level (used for pollen index)
+ * 6 state level (used for pollen indexes) + 1 state for NULL
  */
 public enum Level {
-    NULL,
+    NONE,
+    VERY_LOW,
     LOW,
     MEDIUM,
-    HIGH
+    HIGH,
+    VERY_HIGH,
+    NULL
 }

@@ -12,3 +12,5 @@
 /captures
 .externalNativeBuild
 .cxx
+.idea/dictionaries/panther.xml
+/app/src/main/res/values/secrets.xml

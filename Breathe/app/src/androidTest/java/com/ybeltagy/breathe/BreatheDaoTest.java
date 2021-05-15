@@ -162,18 +162,25 @@ public class BreatheDaoTest {
         assertEquals(allEvents.size(), 1);
 
         assertNotNull(allEvents.get(0).getWeatherData());
-        assertEquals(allEvents.get(0).getWeatherData().getWeatherTemperature(), DataFinals.DEFAULT_FLOAT,0);
-        assertEquals(allEvents.get(0).getWeatherData().getWeatherHumidity(), DataFinals.DEFAULT_FLOAT,0);
-        assertEquals(allEvents.get(0).getWeatherData().getWeatherPollen(), DataFinals.DEFAULT_LEVEL);
-        assertEquals(allEvents.get(0).getWeatherData().getWeatherAQI(), DataFinals.DEFAULT_INTEGER);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherTemperature(),
+                DataFinals.DEFAULT_FLOAT,0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherHumidity(),
+                DataFinals.DEFAULT_FLOAT,0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherTreeIndex(),
+                DataFinals.DEFAULT_LEVEL);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherGrassIndex(),
+                DataFinals.DEFAULT_LEVEL);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherEPAIndex(),
+                DataFinals.DEFAULT_INTEGER);
 
         float temp = 10;
         float humidity = 20;
-        Level level = Level.HIGH;
+        Level treeLevel = Level.HIGH;
+        Level grassLevel = Level.VERY_LOW;
         int aqi = 200;
-        WeatherData weatherData = new WeatherData(temp,humidity, level, aqi);
 
-        tBreatheDao.updateWeatherData(tInhalerUsageEvent.getInhalerUsageEventTimeStamp(),temp, humidity, level, aqi);
+        tBreatheDao.updateWeatherData(tInhalerUsageEvent.getInhalerUsageEventTimeStamp(),temp,
+                humidity, treeLevel, grassLevel, aqi);
 
         allEvents = tBreatheDao.getAllIUEsTest();
         assert allEvents != null;
@@ -182,8 +189,9 @@ public class BreatheDaoTest {
         // was the wearable data preserved when we updated the diary entry?
         assertEquals(allEvents.get(0).getWeatherData().getWeatherTemperature(), temp, 0);
         assertEquals(allEvents.get(0).getWeatherData().getWeatherHumidity(), humidity, 0);
-        assertEquals(allEvents.get(0).getWeatherData().getWeatherPollen(), level);
-        assertEquals(allEvents.get(0).getWeatherData().getWeatherAQI(), aqi);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherTreeIndex(), treeLevel);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherGrassIndex(), grassLevel);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherEPAIndex(), aqi);
     }
 
     @Test

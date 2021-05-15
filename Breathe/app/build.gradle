@@ -27,6 +27,10 @@ android {
         }
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     // for instrumented tests
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
@@ -39,6 +43,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+
+    // Dependencies needed for ClimaCell API calls
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'androidx.concurrent:concurrent-listenablefuture-callback:1.0.0-beta01'
+    implementation 'androidx.concurrent:concurrent-futures:1.1.0'
+    testImplementation 'junit:junit:4.13.1'
 
     // Test dependencies
     testImplementation "com.google.truth:truth:1.1.2"
@@ -102,5 +115,18 @@ dependencies {
     // BLE
     // For BLE Scanning
     implementation 'no.nordicsemi.android.support.v18:scanner:1.4.3'
+
+    // FusedLocationProvider
+    implementation "com.google.android.gms:play-services-location:18.0.0"
+
+    // WorkManager dependencies
+    def work_version = "2.5.0"
+    // (Java only)
+    implementation "androidx.work:work-runtime:$work_version"
+    // optional - test helper
+    androidTestImplementation "androidx.work:work-testing:$work_version"
+    // for serializing POJOs to be input and output from Tasks
+    implementation 'com.google.code.gson:gson:2.8.6'
+
 
 }

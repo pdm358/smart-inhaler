@@ -45,7 +45,7 @@
         android:text="@string/nebulizer_label"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <!-- todo: use a compound drawable in a TextView instead of vertical linear layouts with an image and text for better performance.
         But make sure to automatically resize the images. Right now, the image sizes are hard-coded.
@@ -212,39 +212,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider" />
 
-    <!-- delete later. Leave hardcoded string-->
-    <Button
-        android:id="@+id/test_wearable_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:onClick="testWearableData"
-        android:text="Test wearable"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scan_wearable_button" />
-
-    <!--TODO: consider moving to a settings page-->
-    <Button
-        android:id="@+id/scan_wearable_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginEnd="8dp"
-        android:onClick="onScanButtonClick"
-        android:text="Scan for Wearable"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/diary_header_textview" />
-
-    <Button
-        android:id="@+id/simulate_iue_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_margin"
-        android:text="Simulate IUE"
-        app:layout_constraintStart_toStartOf="@+id/test_wearable_button"
-        app:layout_constraintTop_toBottomOf="@+id/test_wearable_button"
-        android:onClick="onSimulateIUEButtonClick"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/diary_recyclerview"
         android:layout_width="match_parent"
@@ -252,6 +219,6 @@
         android:layout_marginTop="@dimen/default_margin"
         android:layout_marginBottom="@dimen/default_margin"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/simulate_iue_button" />
+        app:layout_constraintTop_toBottomOf="@+id/diary_header_textview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

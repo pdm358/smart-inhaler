@@ -69,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // FIXME: move to data collection flow service (here for testing)
+
+    /**
+     * Get GPS and pass latitude,longitude to tomorrow.io to get weather info
+     */
     private void weatherDataFlow() {
         // create work request for GPS
         WorkManager dataFlowManager = WorkManager.getInstance(getApplication());
@@ -85,6 +89,10 @@ public class MainActivity extends AppCompatActivity {
         observerWeatherAPIWorkerForDisplay(weatherAPIRequest.getId());
     }
 
+    /**
+     * Observe the WeatherAPIWorker for weather data results
+     * @param weatherAPIRequestID
+     */
     private void observerWeatherAPIWorkerForDisplay(UUID weatherAPIRequestID) {
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(weatherAPIRequestID)
                 .observe(this, info -> {
@@ -108,6 +116,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Display weather data from tomorrow.io to the UI
+     * @param weatherData
+     */
     private void displayWeatherData(WeatherData weatherData) {
         TextView humidityText = findViewById(R.id.humidity_textview);
         humidityText.setText(String.format("%s%%", weatherData.getWeatherHumidity()));

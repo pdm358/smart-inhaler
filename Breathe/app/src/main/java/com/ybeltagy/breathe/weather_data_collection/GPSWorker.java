@@ -41,7 +41,7 @@ public class GPSWorker extends ListenableWorker {
     /**
      * Get GPS last known location and pass the GPS result as Data (this output will be used by
      * WeatherAPI worker if it is not null)
-     * @return
+     * @return Result.success with data or Result.failure with Data.empty
      */
     @SuppressLint("MissingPermission")
     @NonNull
@@ -49,6 +49,7 @@ public class GPSWorker extends ListenableWorker {
     public ListenableFuture<Result> startWork() {
         Log.d(GPS_WORKER_LOG_TAG, "Starting work " + getId());
         return CallbackToFutureAdapter.getFuture( completer ->
+                // Get the fused location provider from Google Play Services
                 LocationServices.getFusedLocationProviderClient(getApplicationContext())
                 .getLastLocation()
                 .addOnSuccessListener(location -> {

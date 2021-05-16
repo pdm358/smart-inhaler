@@ -1,7 +1,5 @@
 package com.ybeltagy.breathe.ble;
 
-import android.bluetooth.BluetoothDevice;
-
 public class BLEFinals {
 
     //todo: organize and clean later

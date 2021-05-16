@@ -26,7 +26,8 @@ public class WeatherAPIWorker extends Worker {
     // Result key for WeatherData
     public static final String KEY_WEATHER_DATA_RESULT = "WeatherDataResult";
 
-    public WeatherAPIWorker(@NonNull @NotNull Context context, @NonNull @NotNull WorkerParameters workerParams) {
+    public WeatherAPIWorker(@NonNull @NotNull Context context,
+                            @NonNull @NotNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 

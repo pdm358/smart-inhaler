@@ -1,7 +1,5 @@
 package com.ybeltagy.breathe.data;
 
-import android.provider.ContactsContract;
-
 import androidx.room.Ignore;
 
 /**

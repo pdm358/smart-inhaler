@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.persistence.BreatheRepository;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
-import com.ybeltagy.breathe.data.Tag;
 
 import java.time.Instant;
 import java.util.List;

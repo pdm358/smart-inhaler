@@ -109,12 +109,14 @@ public class IUEListAdapter
         public final TextView tag;          // text view of the tag
 
         // Wearable Data
+        public final TextView wearableLabel;
         public final TextView wearableTemperature;
         public final TextView wearableHumidity;
         public final TextView wearableCharacter;
         public final TextView wearableDigit;
 
         // Weather Data
+        public final TextView weatherLabel;
         public final TextView weatherTemperature;
         public final TextView weatherHumidity;
         public final TextView weatherPollen;
@@ -140,12 +142,14 @@ public class IUEListAdapter
             tag = itemView.findViewById(R.id.iue_entry_tag_textview);
 
             // WearableData Textviews
+            wearableLabel = itemView.findViewById(R.id.wearable_label_textview);
             wearableTemperature = itemView.findViewById(R.id.wearable_temp_textview);
             wearableHumidity = itemView.findViewById(R.id.wearable_humid_textview);
             wearableCharacter = itemView.findViewById(R.id.wearable_char_textview);
             wearableDigit = itemView.findViewById(R.id.wearable_digit_textview);
 
             // WeatherData Textviews
+            weatherLabel = itemView.findViewById(R.id.weather_label_textview);
             weatherTemperature = itemView.findViewById(R.id.weather_temp_textview);
             weatherHumidity = itemView.findViewById(R.id.weather_humid_textview);
             weatherPollen = itemView.findViewById(R.id.weather_pollen_textview);
@@ -172,19 +176,21 @@ public class IUEListAdapter
             // Wearable Data
             if(current.getWearableData().isDataValid()){
                 WearableData wearableData = current.getWearableData();
-                wearableTemperature.setText(String.format(Locale.US, "T: %.0f", wearableData.getTemperature()));
-                wearableHumidity.setText(String.format(Locale.US,"H: %.0f", wearableData.getHumidity()));
-                wearableCharacter.setText(String.format("C: %c", wearableData.getCharacter()));
-                wearableDigit.setText(String.format("D: %c", wearableData.getDigit()));
+                wearableLabel.setText("Wearable \nData: ");
+                wearableTemperature.setText(String.format(Locale.US, "Temperature: \n%.0f°C", wearableData.getTemperature()));
+                wearableHumidity.setText(String.format(Locale.US,"Humidity: \n%.0f %%", wearableData.getHumidity()));
+                wearableCharacter.setText(String.format("Char: \n%c", wearableData.getCharacter()));
+                wearableDigit.setText(String.format("Digit: \n%c", wearableData.getDigit()));
             }
 
             // Weather Data
             if(current.getWeatherData().isDataValid()){
                 WeatherData weatherData = current.getWeatherData();
-                weatherTemperature.setText(String.format(Locale.US, "T: %.0f", weatherData.getWeatherTemperature()));
-                weatherHumidity.setText(String.format(Locale.US,"H: %.0f", weatherData.getWeatherHumidity()));
-                weatherPollen.setText(String.format(Locale.US, "P: %s", weatherData.getWeatherPollen().toString()));
-                weatherAQI.setText(String.format(Locale.US,"AQI: %d", weatherData.getWeatherAQI()));
+                weatherLabel.setText("Weather \nData: ");
+                weatherTemperature.setText(String.format(Locale.US, "Temperature: \n%.0f°C", weatherData.getWeatherTemperature()));
+                weatherHumidity.setText(String.format(Locale.US,"Humidity: \n%.0f%", weatherData.getWeatherHumidity()));
+                weatherPollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherPollen().toString()));
+                weatherAQI.setText(String.format(Locale.US,"AQI: \n%d", weatherData.getWeatherAQI()));
             }
 
         }
@@ -198,11 +204,13 @@ public class IUEListAdapter
             tag.setText("");
             diaryMessage.setText("");
 
+            wearableLabel.setText("");
             wearableTemperature.setText("");
             wearableHumidity.setText("");
             wearableCharacter.setText("");
             wearableDigit.setText("");
 
+            weatherLabel.setText("");
             weatherTemperature.setText("");
             weatherHumidity.setText("");
             weatherPollen.setText("");

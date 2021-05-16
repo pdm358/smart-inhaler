@@ -19,6 +19,12 @@
         android:layout_height="wrap_content"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/iue_entry_tag_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic" />
+
     <!--todo: Consider using something like an array of dots for the tags-->
     <!--  it will be nice if only the timestamp of an iue is visible by default-->
     <!--  and to see the rest of the info, you have to press a button-->
@@ -81,12 +87,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/iue_entry_tag_textview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="italic" />
 
     <TextView
         android:id="@+id/iue_entry_diary_textview"

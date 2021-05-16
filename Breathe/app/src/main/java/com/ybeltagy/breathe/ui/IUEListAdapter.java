@@ -155,6 +155,9 @@ public class IUEListAdapter
         @RequiresApi(api = Build.VERSION_CODES.O)
         protected void setIUE(InhalerUsageEvent current){
 
+            // Clear the TextViews to avoid getting artifacts.
+            clearTextViews();
+
             // timestamp
             iueTimeStamp.setText(current.getInhalerUsageEventTimeStamp().toString());
 
@@ -184,6 +187,26 @@ public class IUEListAdapter
                 weatherAQI.setText(String.format(Locale.US,"AQI: %d", weatherData.getWeatherAQI()));
             }
 
+        }
+
+        /**
+         * Empties all the TextViews
+         */
+        private void clearTextViews(){
+            iueTimeStamp.setText("");
+
+            tag.setText("");
+            diaryMessage.setText("");
+
+            wearableTemperature.setText("");
+            wearableHumidity.setText("");
+            wearableCharacter.setText("");
+            wearableDigit.setText("");
+
+            weatherTemperature.setText("");
+            weatherHumidity.setText("");
+            weatherPollen.setText("");
+            weatherAQI.setText("");
         }
     }
 }

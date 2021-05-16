@@ -43,6 +43,7 @@ public class DataUtilities {
      * Writes the iue to the string builder but ignores the wearable data timestamp.
      * @param sb
      * @param iue
+     * @see <a href=https://techterms.com/definition/csv>csv</a>
      */
     @SuppressLint("NewApi")
     public static void appendIUE(StringBuilder sb, InhalerUsageEvent iue) {
@@ -62,7 +63,7 @@ public class DataUtilities {
             sb.append(comma);
 
             sb.append('\"'); // always append strings with quotation marks so commas and CR/LF characters don't ruin the formatting.
-            sb.append(diaryEntry.getMessage()); // always append the message
+            sb.append(diaryEntry.getMessage().replace("\"","\"\"")); // always append the message and replace double quotes with two double quotes.
             sb.append('\"');
             sb.append(comma);
         }

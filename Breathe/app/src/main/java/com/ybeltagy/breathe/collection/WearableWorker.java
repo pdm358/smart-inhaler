@@ -18,7 +18,6 @@ public class WearableWorker extends Worker {
 
     private static final String tag = WearableWorker.class.getName();
 
-    // fixme: is this the best way to pass the repository?
     // fixme: what happens if the app is not running when the worker is finished.
     // fixme: are there lifecycle issues?
 

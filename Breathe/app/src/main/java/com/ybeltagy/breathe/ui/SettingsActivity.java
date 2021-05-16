@@ -23,6 +23,7 @@ import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.WearableData;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -41,10 +42,9 @@ public class SettingsActivity extends AppCompatActivity {
         //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        // MainActivity's interactions with the data layer are through BreatheViewModel alone
+        // The activity's interactions with the data layer are through BreatheViewModel alone
         // view model for the recyclerview
         breatheViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
@@ -55,12 +55,16 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    //fixme: it is better to use breatheViewModel as an intermediary step.
     public void exportAllIUEs(View view){
 
+        //fixme: is it bad that the UI is directly calling the Export?
         Intent fileIntent = Export.extractAllIUE(this, IUEList);
-        if(fileIntent != null)startActivity(fileIntent); // fixme: consider making this a startActivityForIntent.
-        else Toast.makeText(this, "Failed to Export Data", Toast.LENGTH_SHORT).show();
+        if(fileIntent != null){
+            startActivity(Intent.createChooser(fileIntent, "Export IUE"));
+        }
+        else{
+            Toast.makeText(this, "Failed to Export Data", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -69,9 +73,6 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void testWearableData(View view) {
-        //Fixme: inline thread is just a demo. Remove and use executorService later.
-        //Context context = this;
-
         (new Thread() {
             public void run() {
                 WearableData wearableData = BLEService.getWearableData();

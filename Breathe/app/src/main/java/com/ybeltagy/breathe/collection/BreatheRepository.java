@@ -115,13 +115,20 @@ public class BreatheRepository {
                         weatherData.getWeatherAQI()));
     }
 
+    /**
+     * Saves the IUE into the database and uses the workmanager to collect the other data.
+     * @param timestamp the IUE timestamp
+     * @param context the calling context
+     */
     @SuppressLint("NewApi")
-    public void startDataCollection(Instant timestamp, Context context){ // fixme: consider using getApplicationContext
+    public void startDataCollection(Instant timestamp, Context context){
 
         InhalerUsageEvent iue = new InhalerUsageEvent(timestamp);
 
         insertIUE(iue);
 
+        //fixme: this workrequest does not retry. There is probably something wrong with the parameters.
+        // Something like if I want to retry, I have to specify that in the response.
         WorkRequest uploadWorkRequest =
                 new OneTimeWorkRequest.Builder(WearableWorker.class)
                         .setBackoffCriteria(
@@ -130,7 +137,7 @@ public class BreatheRepository {
                                 TimeUnit.MILLISECONDS)
                         .setInputData(
                                 new Data.Builder().
-                                        putString("timestamp", timestamp.toString()).
+                                        putString("timestamp", timestamp.toString()). //todo: consider extracting timestamp in a Finals file.
                                         build())
                         .build();
 

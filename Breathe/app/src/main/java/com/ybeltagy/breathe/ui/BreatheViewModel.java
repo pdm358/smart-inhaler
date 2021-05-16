@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.ybeltagy.breathe.collection.Export;
 import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.collection.BreatheRepository;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;

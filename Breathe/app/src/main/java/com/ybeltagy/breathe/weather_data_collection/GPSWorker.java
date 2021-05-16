@@ -17,13 +17,17 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jetbrains.annotations.NotNull;
 
-
+/**
+ * Worker class that gets the last location known to the OS. This location may be null if the
+ * Location permission has been turned off and on and no other client has requested location.
+ * If this occurs, the GPSWorker will be garbage collected and WeatherAPIWorker will not run.
+ */
 public class GPSWorker extends ListenableWorker {
 
     // debug
     String GPS_WORKER_LOG_TAG = "GPSWorker";
 
-    // Result key for GPS
+    // result key for GPS
     public static final String KEY_GPS_RESULT = "GPSResult";
 
     /**
@@ -34,6 +38,11 @@ public class GPSWorker extends ListenableWorker {
         super(appContext, workerParams);
     }
 
+    /**
+     * Get GPS last known location and pass the GPS result as Data (this output will be used by
+     * WeatherAPI worker if it is not null)
+     * @return
+     */
     @SuppressLint("MissingPermission")
     @NonNull
     @Override
@@ -60,6 +69,11 @@ public class GPSWorker extends ListenableWorker {
                 ));
     }
 
+    /**
+     * Creates data output from location
+     * @param location
+     * @return
+     */
     private Data createGPSOutput(Location location) {
         double[] latLong = {location.getLatitude(), location.getLongitude()};
         return new Data.Builder()

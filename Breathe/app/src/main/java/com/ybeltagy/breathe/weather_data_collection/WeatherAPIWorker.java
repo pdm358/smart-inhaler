@@ -15,6 +15,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
 
+/**
+ * Worker class that takes a double array of latitude, longitude and requests weather data from
+ * tomorrow.io's v4 API
+ */
 public class WeatherAPIWorker extends Worker {
     // debug
     String WEATHER_API_WORKER_TAG = "WeatherAPIWorker";
@@ -26,6 +30,10 @@ public class WeatherAPIWorker extends Worker {
         super(context, workerParams);
     }
 
+    /**
+     * Get weather data from tomorrow.io
+     * @return
+     */
     @NonNull
     @NotNull
     @Override

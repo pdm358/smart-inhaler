@@ -20,6 +20,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * A helper class to hold the Tomorrow.io api call code for the weather data
+ */
 public class CollectWeatherData {
 
     //fixme: extract to secret file later.
@@ -27,12 +30,12 @@ public class CollectWeatherData {
     //todo: refactor
     //todo: use endtime.
     //todo: better way to build the string.
-    //todo: comment
     //todo: error handling for the UX
     //todo: make calendar use UTC
     //todo: Use a broadcast receiver.
     public static String apiKey;
 
+    // API fields
     public static final String TEMPERATURE = "temperature";
     public static final String HUMIDITY = "humidity";
     public static final String EPAINDEX = "epaIndex";
@@ -41,6 +44,8 @@ public class CollectWeatherData {
     public static final String GRASSINDEX = "grassIndex";
 
     /**
+     * Get the ISO-8601 timestamp for right "now"
+     * Note: this may be unnecessary - v4 api calls default to "now" for null start time
      *
      * @param calendar
      * @return String timestamp for current time
@@ -48,13 +53,14 @@ public class CollectWeatherData {
     public static String getTimestampISO8601(Calendar calendar){
         Date date = calendar.getTime();
         TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
+        // Quoted "Z" to indicate UTC, no timezone offset
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(tz);
         return df.format(date);
     }
 
     /**
-     *
+     * Get weather data for the requested fields for right now from tomorrow.io
      * @return WeatherData object for the current time and input latitude/longitude location
      */
     public static WeatherData syncGetWeatherData(Calendar startTime,
@@ -87,7 +93,8 @@ public class CollectWeatherData {
 
             WeatherData weatherData = new WeatherData();
 
-            // get NaN if temperature doesn't exist (instead of throwing exception)
+            // get NaN if temperature doesn't exist (instead of throwing exception, which happened
+            // to me a couple times)
             // https://stackoverflow.com/questions/15477304/android-jsonexception-no-value-for
             weatherData.setWeatherTemperature(
                     (float) obj.optDouble(TEMPERATURE, DataFinals.DEFAULT_FLOAT));

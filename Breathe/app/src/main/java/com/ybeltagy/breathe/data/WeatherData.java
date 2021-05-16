@@ -1,24 +1,9 @@
 package com.ybeltagy.breathe.data;
 
 import androidx.room.Ignore;
-import android.util.Log;
-
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
- * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given InhalerUsageEvent
+ * Encapsulates area weather conditions (data from tomorrow.io API) at the time of a given InhalerUsageEvent
  * - One InhalerUsageEvent object contains one WeatherData object
  * <p>
  */

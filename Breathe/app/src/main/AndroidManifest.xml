@@ -77,6 +77,15 @@
                 android:value="com.ybeltagy.breathe.ui.MainActivity" />
         </activity>
 
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/settings_label"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ybeltagy.breathe.ui.MainActivity" />
+        </activity>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

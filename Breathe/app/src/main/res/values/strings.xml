@@ -8,4 +8,5 @@
     <string name="edit_diary_entry_text_hint">What happened?</string>
     <string name="placeholder_text">-</string>
     <string name="diary_label">Diary</string>
+    <string name="settings_label">Settings</string>
 </resources>

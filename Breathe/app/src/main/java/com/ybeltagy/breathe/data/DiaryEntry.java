@@ -1,7 +1,5 @@
 package com.ybeltagy.breathe.data;
 
-import android.provider.ContactsContract;
-
 import androidx.room.Ignore;
 
 /**
@@ -21,7 +19,11 @@ public class DiaryEntry {
     }
 
     public DiaryEntry() {
-        this(DataFinals.DEFAULT_TAG, "");
+        this(DataFinals.DEFAULT_TAG, DataFinals.DEFAULT_STRING);
+    }
+
+    public boolean isTagValid(){
+        return tag != DataFinals.DEFAULT_TAG;
     }
 
     public Tag getTag() {

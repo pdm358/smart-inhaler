@@ -28,8 +28,8 @@ public class WearableData {
     private Instant wearableDataTimeStamp; // when this wearableData was collected
 
     private float temperature; // The default null values should not make sense.
-    private float humidity;
-    private char character;
+    private float humidity; //fixme: these variable names are asymmetric compared to weather data.
+    private char character; // they are also confusing.
     private char digit;
 
     /**
@@ -75,10 +75,26 @@ public class WearableData {
      * @return true if all the the data members are different from DataFinal default values.
      */
     public boolean isDataValid(){
-        return temperature != DataFinals.DEFAULT_FLOAT &&
-                humidity != DataFinals.DEFAULT_FLOAT &&
-                character != DataFinals.DEFAULT_CHAR &&
-                digit != DataFinals.DEFAULT_CHAR;
+        return isTemperatureValid() &&
+                isHumidityValid() &&
+                isCharacterValid() &&
+                isDigitValid();
+    }
+
+    public boolean isTemperatureValid(){
+        return temperature != DataFinals.DEFAULT_FLOAT;
+    }
+
+    public boolean isHumidityValid(){
+        return humidity != DataFinals.DEFAULT_FLOAT;
+    }
+
+    public boolean isCharacterValid(){
+        return character != DataFinals.DEFAULT_CHAR;
+    }
+
+    public boolean isDigitValid(){
+        return digit != DataFinals.DEFAULT_CHAR;
     }
 
     @NonNull

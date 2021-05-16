@@ -43,12 +43,6 @@ public class WearableWorker extends Worker {
 
         if(wearableData == null) return Result.failure();
 
-        Log.d(tag, "Wearable Data: ");
-        Log.d(tag, "Temperature: " + wearableData.getTemperature());
-        Log.d(tag, "Humidity: " + wearableData.getHumidity());
-        Log.d(tag, "Character: " + wearableData.getCharacter());
-        Log.d(tag, "Digit: " + wearableData.getDigit());
-
         //todo: extract key
         Instant timestamp = Instant.parse(getInputData().getString("timestamp"));
 

@@ -6,6 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
     <!--todo: if possible, I (Youssef) would like to use a circular status bar to save space.-->
     <!--fixme: I'm (Youssef) currently ignoring the context description warnings because it doesn't seem worthwhile to make resources for it -->
     <TextView
@@ -240,16 +244,6 @@
         app:layout_constraintStart_toStartOf="@+id/test_wearable_button"
         app:layout_constraintTop_toBottomOf="@+id/test_wearable_button"
         android:onClick="onSimulateIUEButtonClick"/>
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:text="Export Data"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/simulate_iue_button"
-        android:onClick="export"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/diary_recyclerview"

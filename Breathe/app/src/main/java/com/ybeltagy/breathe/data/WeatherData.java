@@ -37,11 +37,27 @@ public class WeatherData {
      * @return true if all the data members are different from DataFinal default values.
      */
     public boolean isDataValid(){
-        return weatherTemperature != DataFinals.DEFAULT_FLOAT &&
-                weatherHumidity != DataFinals.DEFAULT_FLOAT &&
-                weatherPollen != DataFinals.DEFAULT_LEVEL &&
-                weatherAQI != DataFinals.DEFAULT_INTEGER;
+        return isWeatherTemperatureValid() &&
+                isWeatherHumidityValid() &&
+                isWeatherPollenValid() &&
+                isWeatherAQIValid();
 
+    }
+
+    public boolean isWeatherTemperatureValid(){
+        return weatherTemperature != DataFinals.DEFAULT_FLOAT;
+    }
+
+    public boolean isWeatherHumidityValid(){
+        return weatherHumidity != DataFinals.DEFAULT_FLOAT;
+    }
+
+    public boolean isWeatherPollenValid(){
+        return weatherPollen != DataFinals.DEFAULT_LEVEL;
+    }
+
+    public boolean isWeatherAQIValid(){
+        return weatherAQI != DataFinals.DEFAULT_INTEGER;
     }
 
     public float getWeatherTemperature() {

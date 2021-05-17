@@ -27,9 +27,6 @@ public class GPSWorker extends ListenableWorker {
     // debug
     String GPS_WORKER_LOG_TAG = "GPSWorker";
 
-    // result key for GPS
-    public static final String KEY_GPS_RESULT = "GPSResult";
-
     /**
      * @param appContext   The application {@link Context}
      * @param workerParams Parameters to setup the internal state of this worker
@@ -78,13 +75,8 @@ public class GPSWorker extends ListenableWorker {
     private Data createGPSOutput(Location location) {
         double[] latLong = {location.getLatitude(), location.getLongitude()};
         return new Data.Builder()
-                .putDoubleArray(KEY_GPS_RESULT, latLong)
+                .putDoubleArray(TaskDataFinals.KEY_GPS_RESULT, latLong)
                 .build();
-    }
-
-    @Override
-    public void onStopped() {
-        super.onStopped();
     }
 }
 

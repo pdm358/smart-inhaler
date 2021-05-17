@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker.KEY_WEATHER_DATA_RESULT;
+import static com.ybeltagy.breathe.weather_data_collection.TaskDataFinals.KEY_WEATHER_DATA_RESULT;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Observe the WeatherAPIWorker for weather data results
+     *
      * @param weatherAPIRequestID
      */
     private void observerWeatherAPIWorkerForDisplay(UUID weatherAPIRequestID) {
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Display weather data from tomorrow.io to the UI
+     *
      * @param weatherData
      */
     private void displayWeatherData(WeatherData weatherData) {
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
         // temperature in Celsius
         TextView temperatureText = findViewById(R.id.temperature_textview);
-        temperatureText.setText(String.format("%s C",
+        temperatureText.setText(String.format("%s °C",
                 weatherData.getWeatherTemperature()));
 
         // AQI(a.k.a. EPA Index)

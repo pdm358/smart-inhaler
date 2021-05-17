@@ -102,6 +102,7 @@ public class BreatheRepository {
                         inhalerUsageTimeStamp,
                         weatherData.getWeatherTemperature(),
                         weatherData.getWeatherHumidity(),
+                        weatherData.getWeatherPrecipitationIntensity(),
                         weatherData.getWeatherTreeIndex(),
                         weatherData.getWeatherGrassIndex(),
                         weatherData.getWeatherEPAIndex()));

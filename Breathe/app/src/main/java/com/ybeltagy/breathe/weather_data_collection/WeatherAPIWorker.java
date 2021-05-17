@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
 
+import static com.ybeltagy.breathe.weather_data_collection.TaskDataFinals.KEY_WEATHER_DATA_RESULT;
+
 /**
  * Worker class that takes a double array of latitude, longitude and requests weather data from
  * tomorrow.io's v4 API
@@ -23,9 +25,6 @@ public class WeatherAPIWorker extends Worker {
     // debug
     String WEATHER_API_WORKER_TAG = "WeatherAPIWorker";
 
-    // Result key for WeatherData
-    public static final String KEY_WEATHER_DATA_RESULT = "WeatherDataResult";
-
     public WeatherAPIWorker(@NonNull @NotNull Context context,
                             @NonNull @NotNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -33,7 +32,9 @@ public class WeatherAPIWorker extends Worker {
 
     /**
      * Get weather data from tomorrow.io
-     * @return
+     *
+     * @return Result.success() if valid weather data was returned
+     * or Result.failure if valid weather data wasn't returned from API call
      */
     @NonNull
     @NotNull
@@ -41,7 +42,7 @@ public class WeatherAPIWorker extends Worker {
     public Result doWork() {
         // TODO: should this be a serialized Location object instead of a double array of latitude
         //       and longitude?
-        double[] latLongArray = getInputData().getDoubleArray(GPSWorker.KEY_GPS_RESULT);
+        double[] latLongArray = getInputData().getDoubleArray(TaskDataFinals.KEY_GPS_RESULT);
 
         if (latLongArray == null) throw new AssertionError();
         Log.d(WEATHER_API_WORKER_TAG,
@@ -71,10 +72,5 @@ public class WeatherAPIWorker extends Worker {
                     "Weather data was null");
             return Result.failure();
         }
-    }
-
-    @Override
-    public void onStopped() {
-        super.onStopped();
     }
 }

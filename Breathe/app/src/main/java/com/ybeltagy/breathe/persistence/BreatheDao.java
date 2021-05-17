@@ -109,19 +109,21 @@ public interface BreatheDao {
      * @param weatherHumid
      * @param weatherGrassPollen
      * @param weatherTreePollen
-     * @param weatherAQI
+     * @param weatherEPA
      * @return the number of records updated (should only be 1)
      */
     @Query("UPDATE InhalerUsageEvent_table " +
             "SET " +
             "weatherTemperature = :weatherTemp," +
             "weatherHumidity = :weatherHumid, " +
+            "weatherPrecipitationIntensity = :weatherPrecipitation," +
             "weatherTreeIndex = :weatherTreePollen," +
             "weatherGrassIndex = :weatherGrassPollen," +
-            "weatherEPAIndex = :weatherAQI " +
+            "weatherEPAIndex = :weatherEPA " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :inhalerUsageTimeStamp")
     int updateWeatherData(Instant inhalerUsageTimeStamp, float weatherTemp, float weatherHumid,
-                          Level weatherTreePollen, Level weatherGrassPollen, int weatherAQI);
+                          float weatherPrecipitation, Level weatherTreePollen,
+                          Level weatherGrassPollen, int weatherEPA);
 
     /**
      * Note: This method alone is fine but there is no wrapper method for this in the Breathe

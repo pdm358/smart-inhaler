@@ -25,13 +25,13 @@ public class WeatherData {
 
     @Ignore
     public WeatherData(float temperature, float humidity, float precipitationIntensity,
-                       Level grassPollen, Level treePollen, int aQI) {
+                       Level grassPollen, Level treePollen, int epaIndex) {
         setWeatherTemperature(temperature);
         setWeatherHumidity(humidity);
         setWeatherPrecipitationIntensity(precipitationIntensity);
         setWeatherGrassIndex(grassPollen);
         setWeatherTreeIndex(treePollen);
-        setWeatherEPAIndex(aQI);
+        setWeatherEPAIndex(epaIndex);
     }
 
     public float getWeatherTemperature() {

@@ -175,12 +175,13 @@ public class BreatheDaoTest {
 
         float temp = 10;
         float humidity = 20;
+        float precipitation = (float) .03;
         Level treeLevel = Level.HIGH;
         Level grassLevel = Level.VERY_LOW;
-        int aqi = 200;
+        int epaIndex = 200;
 
-        tBreatheDao.updateWeatherData(tInhalerUsageEvent.getInhalerUsageEventTimeStamp(),temp,
-                humidity, treeLevel, grassLevel, aqi);
+        tBreatheDao.updateWeatherData(tInhalerUsageEvent.getInhalerUsageEventTimeStamp(), temp,
+                humidity, precipitation, treeLevel, grassLevel, epaIndex);
 
         allEvents = tBreatheDao.getAllIUEsTest();
         assert allEvents != null;
@@ -189,9 +190,11 @@ public class BreatheDaoTest {
         // was the wearable data preserved when we updated the diary entry?
         assertEquals(allEvents.get(0).getWeatherData().getWeatherTemperature(), temp, 0);
         assertEquals(allEvents.get(0).getWeatherData().getWeatherHumidity(), humidity, 0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherPrecipitationIntensity(),
+                precipitation, 0);
         assertEquals(allEvents.get(0).getWeatherData().getWeatherTreeIndex(), treeLevel);
         assertEquals(allEvents.get(0).getWeatherData().getWeatherGrassIndex(), grassLevel);
-        assertEquals(allEvents.get(0).getWeatherData().getWeatherEPAIndex(), aqi);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherEPAIndex(), epaIndex);
     }
 
     @Test

@@ -42,7 +42,6 @@ dependencies {
 
     // Dependencies needed for tomorrow.io API calls
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
 
     // Test dependencies

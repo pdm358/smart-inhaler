@@ -33,15 +33,15 @@ public class CollectWeatherData {
     //todo: error handling for the UX
     //todo: make calendar use UTC
     //todo: Use a broadcast receiver.
-    public static String apiKey;
+    protected static String apiKey;
 
     // API fields
-    public static final String TEMPERATURE = "temperature";
-    public static final String HUMIDITY = "humidity";
-    public static final String EPAINDEX = "epaIndex";
-    public static final String PRECIPITATIONINTENSITY = "precipitationIntensity";
-    public static final String TREEINDEX = "treeIndex";
-    public static final String GRASSINDEX = "grassIndex";
+    private static final String TEMPERATURE = "temperature";
+    private static final String HUMIDITY = "humidity";
+    private static final String EPAINDEX = "epaIndex";
+    private static final String PRECIPITATIONINTENSITY = "precipitationIntensity";
+    private static final String TREEINDEX = "treeIndex";
+    private static final String GRASSINDEX = "grassIndex";
 
     /**
      * Get the ISO-8601 timestamp for right "now"

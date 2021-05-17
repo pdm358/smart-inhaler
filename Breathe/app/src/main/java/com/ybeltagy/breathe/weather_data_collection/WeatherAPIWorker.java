@@ -25,9 +25,13 @@ public class WeatherAPIWorker extends Worker {
     // debug
     String WEATHER_API_WORKER_TAG = "WeatherAPIWorker";
 
+    // handle to Context from constructor
+    Context context;
+
     public WeatherAPIWorker(@NonNull @NotNull Context context,
                             @NonNull @NotNull WorkerParameters workerParams) {
         super(context, workerParams);
+        this.context = context;
     }
 
     /**
@@ -49,7 +53,7 @@ public class WeatherAPIWorker extends Worker {
                 "Received location in WeatherAPIWorker: "
                         + latLongArray[0] + " , " + latLongArray[1]);
 
-        CollectWeatherData.apiKey = getApplicationContext().getString(R.string.clima_cell_api_key);
+        CollectWeatherData.apiKey = context.getString(R.string.clima_cell_api_key);
         WeatherData returnWeatherData =
                 CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),
                         latLongArray[0], latLongArray[1]);

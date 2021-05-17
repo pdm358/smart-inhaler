@@ -44,10 +44,13 @@ public class Export {
     }
 
     /**
-     * Generates a CSB file and returns its URI.
+     * Generates a CSV file and returns its URI.
      * @param context The calling context
      * @param IUEList The IUEList to save
      * @return The URI of the created file or null if the file creation failed.
+     * @see <a href=https://techterms.com/definition/csv>csv</a>
+     * @see <a href=https://developer.android.com/reference/android/net/Uri>Android URI</a>
+     * @see <a href=https://en.wikipedia.org/wiki/Uniform_Resource_Identifier>URI</a>
      */
     private static Uri generateCSVFile(Context context, List<InhalerUsageEvent> IUEList){
         StringBuilder sb = new StringBuilder();

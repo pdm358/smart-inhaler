@@ -115,8 +115,12 @@ public class BreatheRepository {
                         weatherData.getWeatherAQI()));
     }
 
+
     /**
      * Saves the IUE into the database and uses the workmanager to collect the other data.
+     * <P>
+     * Unfortunately, the behavior of the workmanager once the app closes is
+     * <a href=https://stackoverflow.com/questions/50682061/android-is-workmanager-running-when-app-is-closed>not well defined.</a>
      * @param timestamp the IUE timestamp
      * @param context the calling context
      */

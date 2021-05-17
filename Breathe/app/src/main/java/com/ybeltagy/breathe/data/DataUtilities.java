@@ -117,4 +117,15 @@ public class DataUtilities {
 
     }
 
+    /**
+     * If num is NaN, returns DataFinals.DEFAULT_FLOAT. Otherwise, returns num.
+     * @param num the num to be checked
+     * @return num if num is not Nan; DataFinals.DEFAULT_FLOAT otherwise.
+     */
+    protected static float nanGuard(float num){
+        if(num == Float.NaN) return DataFinals.DEFAULT_FLOAT;
+
+        return num;
+    }
+
 }

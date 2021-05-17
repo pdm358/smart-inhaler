@@ -111,7 +111,7 @@ public class WearableData {
     }
 
     public void setTemperature(float temperature) {
-        this.temperature = temperature;
+        this.temperature = DataUtilities.nanGuard(temperature);
     }
 
     public float getHumidity() {
@@ -119,7 +119,7 @@ public class WearableData {
     }
 
     public void setHumidity(float humidity) {
-        this.humidity = humidity;
+        this.humidity = DataUtilities.nanGuard(humidity);
     }
 
     public char getCharacter() {

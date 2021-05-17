@@ -65,7 +65,7 @@ public class WeatherData {
     }
 
     public void setWeatherTemperature(float weatherTemperature) {
-        this.weatherTemperature = weatherTemperature;
+        this.weatherTemperature = DataUtilities.nanGuard(weatherTemperature);
     }
 
     public float getWeatherHumidity() {
@@ -73,7 +73,7 @@ public class WeatherData {
     }
 
     public void setWeatherHumidity(float weatherHumidity) {
-        this.weatherHumidity = weatherHumidity;
+        this.weatherHumidity = DataUtilities.nanGuard(weatherHumidity);
     }
 
     public Level getWeatherPollen() {

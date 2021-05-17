@@ -1,15 +1,17 @@
 package com.ybeltagy.breathe.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.ybeltagy.breathe.collection.Export;
 import com.ybeltagy.breathe.data.DiaryEntry;
-import com.ybeltagy.breathe.persistence.BreatheRepository;
+import com.ybeltagy.breathe.collection.BreatheRepository;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
-import com.ybeltagy.breathe.data.Tag;
 
 import java.time.Instant;
 import java.util.List;
@@ -37,6 +39,11 @@ public class BreatheViewModel extends AndroidViewModel {
 
     public void updateDiaryEntry(Instant timeStamp, DiaryEntry diaryEntry) {
         breatheRepository.updateDiaryEntry(timeStamp, diaryEntry);
+    }
+
+    @SuppressLint("NewApi")
+    public void simulateIUE(Context context){
+        breatheRepository.startDataCollection(Instant.now(), context);
     }
 
 }

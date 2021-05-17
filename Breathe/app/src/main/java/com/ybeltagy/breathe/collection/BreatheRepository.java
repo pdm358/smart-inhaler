@@ -1,17 +1,25 @@
-package com.ybeltagy.breathe.persistence;
+package com.ybeltagy.breathe.collection;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
+import androidx.work.BackoffPolicy;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
+import com.ybeltagy.breathe.data.BreatheDao;
 import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
-import com.ybeltagy.breathe.data.Tag;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The BreatheRepository class:
@@ -105,6 +113,41 @@ public class BreatheRepository {
                         weatherData.getWeatherHumidity(),
                         weatherData.getWeatherPollen(),
                         weatherData.getWeatherAQI()));
+    }
+
+
+    /**
+     * Saves the IUE into the database and uses the workmanager to collect the other data.
+     * <P>
+     * Unfortunately, the behavior of the workmanager once the app closes is
+     * <a href=https://stackoverflow.com/questions/50682061/android-is-workmanager-running-when-app-is-closed>not well defined.</a>
+     * @param timestamp the IUE timestamp
+     * @param context the calling context
+     */
+    @SuppressLint("NewApi")
+    public void startDataCollection(Instant timestamp, Context context){
+
+        InhalerUsageEvent iue = new InhalerUsageEvent(timestamp);
+
+        insertIUE(iue);
+
+        //fixme: this workrequest does not retry. There is probably something wrong with the parameters.
+        // Something like if I want to retry, I have to specify that in the response.
+        WorkRequest uploadWorkRequest =
+                new OneTimeWorkRequest.Builder(WearableWorker.class)
+                        .setBackoffCriteria(
+                                BackoffPolicy.EXPONENTIAL,
+                                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                                TimeUnit.MILLISECONDS)
+                        .setInputData(
+                                new Data.Builder().
+                                        putString("timestamp", timestamp.toString()). //todo: consider extracting timestamp in a Finals file.
+                                        build())
+                        .build();
+
+        WorkManager
+                .getInstance(context)
+                .enqueue(uploadWorkRequest);
     }
 
 }

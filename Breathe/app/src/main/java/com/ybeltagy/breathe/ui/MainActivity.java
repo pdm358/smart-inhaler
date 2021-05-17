@@ -1,26 +1,44 @@
 package com.ybeltagy.breathe.ui;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.ybeltagy.breathe.ble.BLEScanner;
+import com.ybeltagy.breathe.ble.BLEService;
+import com.ybeltagy.breathe.collection.Export;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.R;
-import com.ybeltagy.breathe.data.Tag;
+import com.ybeltagy.breathe.data.WearableData;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -34,12 +52,21 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String tag = MainActivity.class.getName(); // Maybe we can use this, going forward.
 
+    @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Note: constructor in codelab did not work; searched for a long time and this fixed it:
+        //Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        //fixme: is there a better way to detect the app was opened?
+        Intent foregroundServiceIntent = new Intent(this, BLEService.class);
+        startForegroundService(foregroundServiceIntent); //FIXME why does it take a context too?
+
+        // Note: constructor in code lab did not work; searched for a long time and this fixed it:
         // https://github.com/googlecodelabs/android-room-with-a-view/issues/145#issuecomment-739756244
         breatheViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
@@ -54,13 +81,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //inflate the toolbar menu.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //Handle toolbar clicks.
+
+        int id = item.getItemId(); // which item was clicked.
+
+        if(id == R.id.settings_menuitem){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent); // fixme: should this be for a result?
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
 
     /**
      * render the Progress Bar for the medicine status in first pane (top of the screen)
-     * @param totalDosesInCanister
+     * @param totalDosesInCanister the size of the inhaler canister
      */
     private void renderMedStatusView(int totalDosesInCanister) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
@@ -71,19 +119,17 @@ public class MainActivity extends AppCompatActivity {
         //Get text view to set the text for.
         TextView dosesTakenText = findViewById(R.id.doses_textview);
 
-        breatheViewModel.getAllInhalerUsageEvents().observe(this, new Observer<List<InhalerUsageEvent>>() {
-            @Override
-            public void onChanged(List<InhalerUsageEvent> inhalerUsageEvents) {
-                // medicine left is number of doses in a full container - doses used
-                medicineStatusBar.setProgress(medicineStatusBar.getMax() - inhalerUsageEvents.size());
-                dosesTakenText.setText(String.format("%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
-            }
+        breatheViewModel.getAllInhalerUsageEvents().observe(this, inhalerUsageEvents -> {
+            // medicine left is number of doses in a full container - doses used
+            medicineStatusBar.setProgress(medicineStatusBar.getMax() - inhalerUsageEvents.size());
+            dosesTakenText.setText(String.format(Locale.ENGLISH,"%d / %d", medicineStatusBar.getProgress(), medicineStatusBar.getMax()));
         });
     }
 
     /**
      * render the diary RecyclerView for the diary timeline of events in third pane
      */
+    @SuppressLint("NewApi")
     private void renderDiaryView() {
 
         Log.d(tag, "DiaryView starting to render...");
@@ -94,13 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
         // set an on-click listener so we can get the InhalerUsageEvent at the clicked position and
         // pass it to the DiaryEntryActivity
-        iueListAdapter.setOnItemClickListener(new IUEListAdapter.IUEListItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onItemClick(View v, int position) {
-                launchDiaryEntryActivity(iueListAdapter.getInhalerUsageEventAtPosition(position));
-            }
-        });
+        iueListAdapter.setOnItemClickListener((v, position) -> launchDiaryEntryActivity(iueListAdapter.getInhalerUsageEventAtPosition(position)));
 
         iueRecyclerView.setAdapter(iueListAdapter); // connect adapter and recyclerView
 
@@ -119,8 +159,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Opens the diary entry activity for the passed inhalerUsageEvent.
      * todo: as the project develops, consider not not passing anymore than than IUE timestamp in the intent and retrieving
-     *  everything from the databse in the DiaryEntryActivity
-     * @param inhalerUsageEvent
+     *  everything from the database in the DiaryEntryActivity
+     * @param inhalerUsageEvent the iue to edit the diary for
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void launchDiaryEntryActivity(InhalerUsageEvent inhalerUsageEvent) {
@@ -145,4 +185,5 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, UIFinals.UPDATE_INHALER_USAGE_EVENT_REQUEST_CODE);
 
     }
+
 }

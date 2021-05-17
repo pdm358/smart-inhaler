@@ -27,10 +27,10 @@ public class WearableData {
     @ColumnInfo(name = "Wearable_Data_UTC_ISO_8601_date_time")
     private Instant wearableDataTimeStamp; // when this wearableData was collected
 
-    private float temperature = DataFinals.DEFAULT_FLOAT; // The default null values should not make sense.
-    private float humidity = DataFinals.DEFAULT_FLOAT;
-    private char character = DataFinals.DEFAULT_CHAR;
-    private char digit = DataFinals.DEFAULT_CHAR;
+    private float temperature; // The default null values should not make sense.
+    private float humidity; //fixme: these variable names are asymmetric compared to weather data.
+    private char character; // they are also confusing.
+    private char digit;
 
     /**
      * Added this constructor for our iteration.
@@ -40,11 +40,61 @@ public class WearableData {
     @SuppressLint("NewApi")
     @Ignore
     public WearableData() {
-        wearableDataTimeStamp = Instant.now();
+
+        this(Instant.now(),
+                DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_CHAR,
+                DataFinals.DEFAULT_CHAR);
+
     }
 
     public WearableData(@NonNull Instant wearableDataTimeStamp) {
-        this.wearableDataTimeStamp = wearableDataTimeStamp;
+        this(wearableDataTimeStamp,
+                DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_CHAR,
+                DataFinals.DEFAULT_CHAR);
+    }
+
+    @Ignore
+    public WearableData(@NonNull Instant wearableDataTimeStamp,
+                        float temperature,
+                        float humidity,
+                        char character,
+                        char digit){
+
+        setWearableDataTimeStamp(wearableDataTimeStamp);
+        setTemperature(temperature);
+        setHumidity(humidity);
+        setCharacter(character);
+        setDigit(digit);
+    }
+
+    /**
+     * @return true if all the the data members are different from DataFinal default values.
+     */
+    public boolean isDataValid(){
+        return isTemperatureValid() &&
+                isHumidityValid() &&
+                isCharacterValid() &&
+                isDigitValid();
+    }
+
+    public boolean isTemperatureValid(){
+        return temperature != DataFinals.DEFAULT_FLOAT;
+    }
+
+    public boolean isHumidityValid(){
+        return humidity != DataFinals.DEFAULT_FLOAT;
+    }
+
+    public boolean isCharacterValid(){
+        return character != DataFinals.DEFAULT_CHAR;
+    }
+
+    public boolean isDigitValid(){
+        return digit != DataFinals.DEFAULT_CHAR;
     }
 
     @NonNull
@@ -61,7 +111,7 @@ public class WearableData {
     }
 
     public void setTemperature(float temperature) {
-        this.temperature = temperature;
+        this.temperature = DataUtilities.nanGuard(temperature);
     }
 
     public float getHumidity() {
@@ -69,7 +119,7 @@ public class WearableData {
     }
 
     public void setHumidity(float humidity) {
-        this.humidity = humidity;
+        this.humidity = DataUtilities.nanGuard(humidity);
     }
 
     public char getCharacter() {

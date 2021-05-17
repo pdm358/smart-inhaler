@@ -42,13 +42,11 @@ public class InhalerUsageEvent {
     // (https://medium.com/decisionbrain/dates-time-in-modern-java-4ed9d5848a3e)
 
     @Embedded
-    private WeatherData weatherData = new WeatherData();
+    private WeatherData weatherData;
     @Embedded
-    private DiaryEntry diaryEntry = new DiaryEntry();
+    private DiaryEntry diaryEntry;
     @Embedded
-    private WearableData wearableData = new WearableData();
-
-    // @NonNull annotation means timeStamp parameter can never be null
+    private WearableData wearableData;
 
     /**
      * TODO: We probably should delete this and use the constructor with only the timestamp
@@ -66,7 +64,7 @@ public class InhalerUsageEvent {
     @Ignore
     public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp, WeatherData weatherData,
                              DiaryEntry diaryEntry, WearableData wearableData) {
-        setInhalerUsageEventTimeStamp(inhalerUsageEventTimeStamp);;
+        setInhalerUsageEventTimeStamp(inhalerUsageEventTimeStamp);
         setWeatherData(weatherData);
         setDiaryEntry(diaryEntry);
         setWearableData(wearableData);
@@ -78,7 +76,10 @@ public class InhalerUsageEvent {
      * @param inhalerUsageEventTimeStamp
      */
     public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp) {
-        setInhalerUsageEventTimeStamp(inhalerUsageEventTimeStamp);
+        this(inhalerUsageEventTimeStamp,
+                new WeatherData(),
+                new DiaryEntry(),
+                new WearableData());
     }
 
     // Note: getter methods are required by Room so it can instantiate InhalerUsageEvent objects

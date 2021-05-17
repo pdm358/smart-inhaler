@@ -16,8 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ybeltagy.breathe.R;
 import com.ybeltagy.breathe.data.DataFinals;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
+import com.ybeltagy.breathe.data.WearableData;
+import com.ybeltagy.breathe.data.WeatherData;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This class prepares and updates the IUE data to be displayed in the RecyclerView in the Main
@@ -100,15 +103,29 @@ public class IUEListAdapter
         public final LinearLayout inhalerUsageEventEntry; // the entire entry in the timeline
 
         public final TextView iueTimeStamp;  // text view of the timestamp
+
+        // Diary
         public final TextView diaryMessage; // text view of the diary entry
         public final TextView tag;          // text view of the tag
+
+        // Wearable Data
+        public final TextView wearableLabel;
+        public final TextView wearableTemperature;
+        public final TextView wearableHumidity;
+        public final TextView wearableCharacter;
+        public final TextView wearableDigit;
+
+        // Weather Data
+        public final TextView weatherLabel;
+        public final TextView weatherTemperature;
+        public final TextView weatherHumidity;
+        public final TextView weatherPollen;
+        public final TextView weatherAQI;
+
 
         public IUEViewHolder(@NonNull View itemView) {
             super(itemView);
             inhalerUsageEventEntry = itemView.findViewById(R.id.inhaler_usage_event_entry);
-            iueTimeStamp = itemView.findViewById(R.id.iue_entry_timestamp_textview);
-            diaryMessage = itemView.findViewById(R.id.iue_entry_diary_textview);
-            tag = itemView.findViewById(R.id.iue_entry_tag_textview);
 
             inhalerUsageEventEntry.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -116,22 +133,88 @@ public class IUEListAdapter
                     iueListItemClickListener.onItemClick(view, getAbsoluteAdapterPosition());
                 }
             });
+
+            // timestamp textview
+            iueTimeStamp = itemView.findViewById(R.id.iue_entry_timestamp_textview);
+
+            // Diary Textviews
+            diaryMessage = itemView.findViewById(R.id.iue_entry_diary_textview);
+            tag = itemView.findViewById(R.id.iue_entry_tag_textview);
+
+            // WearableData Textviews
+            wearableLabel = itemView.findViewById(R.id.wearable_label_textview);
+            wearableTemperature = itemView.findViewById(R.id.wearable_temp_textview);
+            wearableHumidity = itemView.findViewById(R.id.wearable_humid_textview);
+            wearableCharacter = itemView.findViewById(R.id.wearable_char_textview);
+            wearableDigit = itemView.findViewById(R.id.wearable_digit_textview);
+
+            // WeatherData Textviews
+            weatherLabel = itemView.findViewById(R.id.weather_label_textview);
+            weatherTemperature = itemView.findViewById(R.id.weather_temp_textview);
+            weatherHumidity = itemView.findViewById(R.id.weather_humid_textview);
+            weatherPollen = itemView.findViewById(R.id.weather_pollen_textview);
+            weatherAQI = itemView.findViewById(R.id.weather_aqi_textview);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.O)
         protected void setIUE(InhalerUsageEvent current){
-            // show timestamp
+
+            // Clear the TextViews to avoid getting artifacts.
+            clearTextViews();
+
+            // timestamp
             iueTimeStamp.setText(current.getInhalerUsageEventTimeStamp().toString());
-
-
-            diaryMessage.setText(current.getDiaryEntry().getMessage());
-
 
             // show tag
             if (current.getDiaryEntry().getTag() != DataFinals.DEFAULT_TAG) { // only print user-chosen tags
-                tag.setText(String.format("Tagged as : %s",
-                        current.getDiaryEntry().getTag().toString()));
+                tag.setText(current.getDiaryEntry().getTag().toString());
             }
+
+            // Diary entry
+            diaryMessage.setText(current.getDiaryEntry().getMessage());
+
+            // Wearable Data
+            if(current.getWearableData().isDataValid()){
+                WearableData wearableData = current.getWearableData();
+                wearableLabel.setText("Wearable \nData: ");
+                wearableTemperature.setText(String.format(Locale.US, "Temperature: \n%.0f°C", wearableData.getTemperature()));
+                wearableHumidity.setText(String.format(Locale.US,"Humidity: \n%.0f %%", wearableData.getHumidity()));
+                wearableCharacter.setText(String.format("Char: \n%c", wearableData.getCharacter()));
+                wearableDigit.setText(String.format("Digit: \n%c", wearableData.getDigit()));
+            }
+
+            // Weather Data
+            if(current.getWeatherData().isDataValid()){
+                WeatherData weatherData = current.getWeatherData();
+                weatherLabel.setText("Weather \nData: ");
+                weatherTemperature.setText(String.format(Locale.US, "Temperature: \n%.0f°C", weatherData.getWeatherTemperature()));
+                weatherHumidity.setText(String.format(Locale.US,"Humidity: \n%.0f%", weatherData.getWeatherHumidity()));
+                weatherPollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherPollen().toString()));
+                weatherAQI.setText(String.format(Locale.US,"AQI: \n%d", weatherData.getWeatherAQI()));
+            }
+
+        }
+
+        /**
+         * Empties all the TextViews
+         */
+        private void clearTextViews(){
+            iueTimeStamp.setText("");
+
+            tag.setText("");
+            diaryMessage.setText("");
+
+            wearableLabel.setText("");
+            wearableTemperature.setText("");
+            wearableHumidity.setText("");
+            wearableCharacter.setText("");
+            wearableDigit.setText("");
+
+            weatherLabel.setText("");
+            weatherTemperature.setText("");
+            weatherHumidity.setText("");
+            weatherPollen.setText("");
+            weatherAQI.setText("");
         }
     }
 }

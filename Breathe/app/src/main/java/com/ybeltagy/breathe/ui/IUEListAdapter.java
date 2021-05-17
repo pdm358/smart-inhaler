@@ -119,8 +119,9 @@ public class IUEListAdapter
         public final TextView weatherLabel;
         public final TextView weatherTemperature;
         public final TextView weatherHumidity;
-        public final TextView weatherPollen;
-        public final TextView weatherAQI;
+        public final TextView weatherGrassPollen;
+        public final TextView weatherTreePollen;
+        public final TextView weatherEPAIndex;
 
 
         public IUEViewHolder(@NonNull View itemView) {
@@ -134,7 +135,7 @@ public class IUEListAdapter
                 }
             });
 
-            // timestamp textview
+            // Timestamp textview
             iueTimeStamp = itemView.findViewById(R.id.iue_entry_timestamp_textview);
 
             // Diary Textviews
@@ -152,8 +153,9 @@ public class IUEListAdapter
             weatherLabel = itemView.findViewById(R.id.weather_label_textview);
             weatherTemperature = itemView.findViewById(R.id.weather_temp_textview);
             weatherHumidity = itemView.findViewById(R.id.weather_humid_textview);
-            weatherPollen = itemView.findViewById(R.id.weather_pollen_textview);
-            weatherAQI = itemView.findViewById(R.id.weather_aqi_textview);
+            weatherGrassPollen = itemView.findViewById(R.id.weather_grass_pollen_textview);
+            weatherTreePollen = itemView.findViewById(R.id.weather_tree_pollen_textview);
+            weatherEPAIndex = itemView.findViewById(R.id.weather_aqi_textview);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.O)
@@ -189,8 +191,9 @@ public class IUEListAdapter
                 weatherLabel.setText("Weather \nData: ");
                 weatherTemperature.setText(String.format(Locale.US, "Temperature: \n%.0f°C", weatherData.getWeatherTemperature()));
                 weatherHumidity.setText(String.format(Locale.US,"Humidity: \n%.0f%", weatherData.getWeatherHumidity()));
-                weatherPollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherPollen().toString()));
-                weatherAQI.setText(String.format(Locale.US,"AQI: \n%d", weatherData.getWeatherAQI()));
+                weatherGrassPollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherGrassIndex().toString()));
+                weatherTreePollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherTreeIndex().toString()));
+                weatherEPAIndex.setText(String.format(Locale.US,"AQI: \n%d", weatherData.getWeatherEPAIndex()));
             }
 
         }
@@ -213,8 +216,9 @@ public class IUEListAdapter
             weatherLabel.setText("");
             weatherTemperature.setText("");
             weatherHumidity.setText("");
-            weatherPollen.setText("");
-            weatherAQI.setText("");
+            weatherGrassPollen.setText("");
+            weatherTreePollen.setText("");
+            weatherEPAIndex.setText("");
         }
     }
 }

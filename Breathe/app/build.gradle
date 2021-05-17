@@ -40,6 +40,10 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    // Dependencies needed for tomorrow.io API calls
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
+
     // Test dependencies
     testImplementation "com.google.truth:truth:1.1.2"
     testImplementation 'junit:junit:4.13.2'
@@ -103,6 +107,7 @@ dependencies {
     // For BLE Scanning
     implementation 'no.nordicsemi.android.support.v18:scanner:1.4.3'
 
+    // Work Manager dependencies
     def work_version = "2.5.0"
 
     // (Java only)
@@ -111,7 +116,16 @@ dependencies {
     // optional - Test helpers -- not used yet
     androidTestImplementation "androidx.work:work-testing:$work_version"
 
-    // optional - Multiprocess support -- not used yet
+    // optional - Multi-process support -- not used yet
     implementation "androidx.work:work-multiprocess:$work_version"
 
+    // for serializing POJOs to be input and output from Tasks
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    // For ListenableWorker
+    implementation 'androidx.concurrent:concurrent-listenablefuture-callback:1.0.0-beta01'
+    implementation 'androidx.concurrent:concurrent-futures:1.1.0'
+
+    // FusedLocationProvider
+    implementation "com.google.android.gms:play-services-location:18.0.0"
 }

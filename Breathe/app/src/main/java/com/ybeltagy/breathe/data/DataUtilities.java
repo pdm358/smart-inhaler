@@ -105,11 +105,15 @@ public class DataUtilities {
             sb.append(comma);
 
             if (weatherData.isWeatherPollenValid())
-                sb.append(weatherData.getWeatherPollen().toString());
+                sb.append(weatherData.getWeatherGrassIndex().toString());
             sb.append(comma);
 
-            if (weatherData.isWeatherAQIValid())
-                sb.append(weatherData.getWeatherAQI());
+            if (weatherData.isWeatherPollenValid())
+                sb.append(weatherData.getWeatherTreeIndex().toString());
+            sb.append(comma);
+
+            if (weatherData.isWeatherEPAIndexValid())
+                sb.append(weatherData.getWeatherEPAIndex());
             // There is no need to add a comma since this is the last item in the inhaler usage event.
         }
 

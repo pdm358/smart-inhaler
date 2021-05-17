@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e0621fc895cc7b17a7ade2d57fa9e31d",
+    "identityHash": "632233a010b21d79447465e36ae7790b",
     "entities": [
       {
         "tableName": "InhalerUsageEvent_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Inhaler_Usage_Event_UTC_ISO_8601_date_time` TEXT NOT NULL, `weatherTemperature` REAL, `weatherHumidity` REAL, `weatherPollen` INTEGER, `weatherAQI` INTEGER, `tag` INTEGER, `message` TEXT, `Wearable_Data_UTC_ISO_8601_date_time` TEXT, `temperature` REAL, `humidity` REAL, `character` INTEGER, `digit` INTEGER, PRIMARY KEY(`Inhaler_Usage_Event_UTC_ISO_8601_date_time`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Inhaler_Usage_Event_UTC_ISO_8601_date_time` TEXT NOT NULL, `weatherTemperature` REAL, `weatherHumidity` REAL, `weatherPrecipitationIntensity` REAL, `weatherTreeIndex` INTEGER, `weatherGrassIndex` INTEGER, `weatherEPAIndex` INTEGER, `tag` INTEGER, `message` TEXT, `Wearable_Data_UTC_ISO_8601_date_time` TEXT, `temperature` REAL, `humidity` REAL, `character` INTEGER, `digit` INTEGER, PRIMARY KEY(`Inhaler_Usage_Event_UTC_ISO_8601_date_time`))",
         "fields": [
           {
             "fieldPath": "inhalerUsageEventTimeStamp",
@@ -27,14 +27,26 @@
             "notNull": false
           },
           {
-            "fieldPath": "weatherData.weatherPollen",
-            "columnName": "weatherPollen",
+            "fieldPath": "weatherData.weatherPrecipitationIntensity",
+            "columnName": "weatherPrecipitationIntensity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weatherData.weatherTreeIndex",
+            "columnName": "weatherTreeIndex",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
-            "fieldPath": "weatherData.weatherAQI",
-            "columnName": "weatherAQI",
+            "fieldPath": "weatherData.weatherGrassIndex",
+            "columnName": "weatherGrassIndex",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weatherData.weatherEPAIndex",
+            "columnName": "weatherEPAIndex",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -138,7 +150,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e0621fc895cc7b17a7ade2d57fa9e31d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '632233a010b21d79447465e36ae7790b')"
     ]
   }
 }

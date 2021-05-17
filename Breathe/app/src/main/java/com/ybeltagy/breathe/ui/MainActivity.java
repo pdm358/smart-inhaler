@@ -126,15 +126,9 @@ public class MainActivity extends AppCompatActivity {
 
         // max level between tree and grass pollen (for display simplicity)
         TextView pollen = findViewById(R.id.pollen_textview);
-        Level maxPollen =
-                (weatherData.getWeatherGrassIndex().ordinal() >
-                        weatherData.getWeatherTreeIndex().ordinal()) ?
-                        (weatherData.getWeatherGrassIndex()) :
-                        (weatherData.getWeatherTreeIndex());
-
-        String[] levelValuesToText = {"None", "Very Low",
-                "Low", "Medium", "High", "Very High", "--"};
-        pollen.setText(levelValuesToText[maxPollen.ordinal()]);
+        Level maxPollen = Level.maxLevelOfTwo(
+                weatherData.getWeatherGrassIndex(), weatherData.getWeatherTreeIndex());
+        pollen.setText(maxPollen.toString());
 
         // precipitation (mm/hr)
         TextView precipitationText = findViewById(R.id.precipitation_textview);

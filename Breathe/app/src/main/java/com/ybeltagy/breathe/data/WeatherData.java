@@ -34,9 +34,6 @@ public class WeatherData {
         setWeatherEPAIndex(aQI);
     }
 
-
-    //todo: implement a toString method.
-
     public float getWeatherTemperature() {
         return weatherTemperature;
     }

@@ -129,12 +129,12 @@ public class CollectWeatherData {
                             + weatherData.getWeatherPrecipitationIntensity());
 
             weatherData.setWeatherTreeIndex(
-                    Level.values()[obj.optInt(TREEINDEX, DataFinals.DEFAULT_LEVEL.ordinal())]);
+                    Level.intToLevel(obj.optInt(TREEINDEX, DataFinals.DEFAULT_LEVEL.ordinal())));
             Log.d("WeatherData", "Tree Index : " + weatherData.getWeatherTreeIndex()
                     + " = " + weatherData.getWeatherTreeIndex().ordinal());
 
             weatherData.setWeatherGrassIndex(
-                    Level.values()[obj.optInt(GRASSINDEX, DataFinals.DEFAULT_LEVEL.ordinal())]);
+                    Level.intToLevel(obj.optInt(GRASSINDEX, DataFinals.DEFAULT_LEVEL.ordinal())));
             Log.d("WeatherData", "Grass Index : " + weatherData.getWeatherGrassIndex()
                     + " = " + weatherData.getWeatherGrassIndex().ordinal());
 

@@ -23,7 +23,8 @@ public class DataUtilities {
 
             "Weather Temperature",
             "Weather Humidity",
-            "Weather Pollen",
+            "Weather Grass Index",
+            "Weather Tree Index",
             "Weather AQI"
     };
 

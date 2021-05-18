@@ -32,4 +32,15 @@ public enum Level {
         }
         return first.ordinal() > second.ordinal() ? first : second;
     }
+
+    /**
+     * This methods Level is dependent on the ordering in the enum:
+     * {NONE, VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, NULL}
+     * https://docs.tomorrow.io/reference/data-layers-pollen
+     * @param numToConvert
+     * @return
+     */
+    public static Level intToLevel(int numToConvert) {
+        return Level.values()[numToConvert];
+    }
 }

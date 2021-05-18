@@ -171,14 +171,14 @@ public class BreatheRepository {
         OneTimeWorkRequest weatherAPIRequest =
                 new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
                         .setInputData( new Data.Builder().putString(
-                                TaskDataFinals.KEY_TIMESTAMP, Instant.now().toString()).build())
+                                TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
                         .build();
 
         // create work request to save weatherData object to the database
         OneTimeWorkRequest saveWeatherRequest =
                 new OneTimeWorkRequest.Builder(WeatherDataSaveToDBWorker.class)
                 .setInputData( new Data.Builder().putString(
-                        TaskDataFinals.KEY_TIMESTAMP, Instant.now().toString()).build())
+                        TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
                         // note: also gets input from weatherAPIRequest String output
                 .build();
 

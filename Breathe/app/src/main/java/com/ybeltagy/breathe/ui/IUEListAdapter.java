@@ -190,9 +190,9 @@ public class IUEListAdapter
                 WeatherData weatherData = current.getWeatherData();
                 weatherLabel.setText("Weather \nData: ");
                 weatherTemperature.setText(String.format(Locale.US, "Temperature: \n%.0f°C", weatherData.getWeatherTemperature()));
-                weatherHumidity.setText(String.format(Locale.US,"Humidity: \n%.0f%", weatherData.getWeatherHumidity()));
-                weatherGrassPollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherGrassIndex().toString()));
-                weatherTreePollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherTreeIndex().toString()));
+                weatherHumidity.setText(String.format(Locale.US,"Humidity: \n%.0f", weatherData.getWeatherHumidity()));
+                weatherGrassPollen.setText(String.format(Locale.US, "Grass Index: \n%s", weatherData.getWeatherGrassIndex().toString()));
+                weatherTreePollen.setText(String.format(Locale.US, "Tree Index: \n%s", weatherData.getWeatherTreeIndex().toString()));
                 weatherEPAIndex.setText(String.format(Locale.US,"AQI: \n%d", weatherData.getWeatherEPAIndex()));
             }
         }

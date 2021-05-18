@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.BackoffPolicy;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -26,13 +27,15 @@ import com.ybeltagy.breathe.ble.BLEService;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.R;
 
+import com.ybeltagy.breathe.weather_data_collection.CollectWeatherData;
 import com.ybeltagy.breathe.weather_data_collection.GPSWorker;
-import com.ybeltagy.breathe.weather_data_collection.TaskObjectSerializationHelper;
+import com.ybeltagy.breathe.weather_data_collection.TaskDataFinals;
 import com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker;
 
 import com.ybeltagy.breathe.data.Level;
 import com.ybeltagy.breathe.data.WeatherData;
 
+import java.time.Instant;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -78,16 +81,14 @@ public class MainActivity extends AppCompatActivity {
         // populate the fake data for the RecyclerView using
         renderDiaryView();
 
-        // FIXME: move to data collection flow service (here for testing)
         // WorkManager -> gets WeatherData
         weatherDataFlow();
     }
 
-    // FIXME: move to data collection flow service (here for testing)
-
     /**
      * Get GPS and pass latitude,longitude to tomorrow.io to get weather info
      */
+    @SuppressLint("NewApi")
     private void weatherDataFlow() {
         // create work request for GPS
         WorkManager dataFlowManager = WorkManager.getInstance(getApplication());
@@ -96,8 +97,11 @@ public class MainActivity extends AppCompatActivity {
                         TimeUnit.MILLISECONDS).build();
 
         //  create work request for online weather data for the GPS location
-        OneTimeWorkRequest weatherAPIRequest =
-                new OneTimeWorkRequest.Builder(WeatherAPIWorker.class).build();
+       OneTimeWorkRequest weatherAPIRequest =
+                new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
+                        .setInputData( new Data.Builder().putString(
+                        TaskDataFinals.KEY_TIMESTAMP, Instant.now().toString()).build())
+                        .build();
 
         dataFlowManager.beginWith(gpsRequest).then(weatherAPIRequest).enqueue();
 
@@ -116,13 +120,13 @@ public class MainActivity extends AppCompatActivity {
                     if (info != null && info.getState().isFinished()) {
                         Log.d(tag, "Got data back from WeatherAPITask");
 
-                        String serializedWeatherData
+                        String responseJSONWeatherString
                                 = info.getOutputData().getString(KEY_WEATHER_DATA_RESULT);
-                        Log.d(tag, "Serialized object string: " + serializedWeatherData);
+                        Log.d(tag, "Serialized object string: " + responseJSONWeatherString);
 
-                        if (serializedWeatherData != null) {
-                            WeatherData weatherData = TaskObjectSerializationHelper
-                                    .weatherDataDeserializeFromJson(serializedWeatherData);
+                        if (responseJSONWeatherString != null) {
+                            WeatherData weatherData = CollectWeatherData
+                                    .responseJSONToWeatherData(responseJSONWeatherString);
 
                             if (weatherData != null) {
                                 displayWeatherData(weatherData);
@@ -138,6 +142,11 @@ public class MainActivity extends AppCompatActivity {
      * @param weatherData
      */
     private void displayWeatherData(WeatherData weatherData) {
+        // check if weatherData request came back valid or not
+        if (!weatherData.isDataValid()) {
+            return;
+        }
+
         TextView humidityText = findViewById(R.id.humidity_textview);
         humidityText.setText(String.format("%s%%", weatherData.getWeatherHumidity()));
 

@@ -1,5 +1,6 @@
 package com.ybeltagy.breathe.weather_data_collection;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -9,10 +10,10 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.ybeltagy.breathe.R;
-import com.ybeltagy.breathe.data.WeatherData;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.Calendar;
 
 import static com.ybeltagy.breathe.weather_data_collection.TaskDataFinals.KEY_WEATHER_DATA_RESULT;
@@ -43,9 +44,11 @@ public class WeatherAPIWorker extends Worker {
     @NonNull
     @NotNull
     @Override
+    @SuppressLint("NewApi")
     public Result doWork() {
         // TODO: should this be a serialized Location object instead of a double array of latitude
         //       and longitude?
+        // Input data - latitude and longitude
         double[] latLongArray = getInputData().getDoubleArray(TaskDataFinals.KEY_GPS_RESULT);
 
         if (latLongArray == null) throw new AssertionError();
@@ -53,27 +56,28 @@ public class WeatherAPIWorker extends Worker {
                 "Received location in WeatherAPIWorker: "
                         + latLongArray[0] + " , " + latLongArray[1]);
 
+        // Input data - timestamp string
+        String timestampInputString = getInputData().getString(TaskDataFinals.KEY_TIMESTAMP);
+        if (timestampInputString == null) throw new AssertionError();
+        Instant timestamp = Instant.parse(timestampInputString);
+
         CollectWeatherData.apiKey = context.getString(R.string.clima_cell_api_key);
-        WeatherData returnWeatherData =
-                CollectWeatherData.syncGetWeatherData(Calendar.getInstance(),
+        String returnJSONResponseForWeatherData =
+                CollectWeatherData.syncGetWeatherDataJSONString(timestamp,
                         latLongArray[0], latLongArray[1]);
 
-        if (returnWeatherData != null) {
+        if (returnJSONResponseForWeatherData != null) {
             // set output
-            // - serialize our WeatherData object
-            String serializedWeatherData =
-                    TaskObjectSerializationHelper.weatherDataSerializeToJSON(returnWeatherData);
             Log.d(WEATHER_API_WORKER_TAG,
-                    "Serialized weather data -> "
-                            + serializedWeatherData);
+                    "JSON weather data response -> " + returnJSONResponseForWeatherData);
             Data weatherDataOutput = new Data.Builder()
-                    .putString(KEY_WEATHER_DATA_RESULT, serializedWeatherData)
+                    .putString(KEY_WEATHER_DATA_RESULT, returnJSONResponseForWeatherData)
                     .build();
             return Result.success(weatherDataOutput);
 
         } else { // we didn't get any weather data
             Log.d(WEATHER_API_WORKER_TAG,
-                    "Weather data was null");
+                    "Weather data API response was null");
             return Result.failure();
         }
     }

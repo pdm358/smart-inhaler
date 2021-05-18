@@ -1,5 +1,6 @@
 package com.ybeltagy.breathe.weather_data_collection;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.ybeltagy.breathe.data.DataFinals;
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -50,7 +52,7 @@ public class CollectWeatherData {
      * @param calendar
      * @return String timestamp for current time
      */
-    public static String getTimestampISO8601(Calendar calendar){
+    public static String getTimestampISO8601(Calendar calendar) {
         Date date = calendar.getTime();
         TimeZone tz = TimeZone.getTimeZone("UTC");
         // Quoted "Z" to indicate UTC, no timezone offset
@@ -61,20 +63,20 @@ public class CollectWeatherData {
 
     /**
      * Get weather data for the requested fields for right now from tomorrow.io
+     *
      * @return WeatherData object for the current time and input latitude/longitude location
      */
-    public static WeatherData syncGetWeatherData(Calendar startTime,
-                                                 double latitude, double longitude){
+    @SuppressLint("NewApi")
+    public static String syncGetWeatherDataJSONString(Instant startTime,
+                                                      double latitude, double longitude) {
 
-        Calendar endTime = (Calendar) startTime.clone();
-        endTime.add(Calendar.SECOND, 60);
+        Instant endTime = startTime.plusSeconds(60);
 
         String url = "https://api.tomorrow.io/v4/timelines?location=" + latitude + "," + longitude +
-                "&fields=" + TEMPERATURE + "," + HUMIDITY + "," + EPAINDEX + "," + PRECIPITATIONINTENSITY + "," + TREEINDEX + "," + GRASSINDEX +
-                "&startTime=" + getTimestampISO8601(startTime) +
-                "&endTime=" + getTimestampISO8601(endTime) +
-                "&timesteps=1m" +
-                "&apikey=" + apiKey;
+                "&fields=" + TEMPERATURE + "," + HUMIDITY + "," + EPAINDEX + ","
+                + PRECIPITATIONINTENSITY + "," + TREEINDEX + "," + GRASSINDEX +
+                "&startTime=" + startTime.toString() + "&endTime=" + endTime.toString() +
+                "&timesteps=1m" + "&apikey=" + apiKey;
 
         Log.d("WeatherData", url);
         OkHttpClient client = new OkHttpClient();
@@ -86,7 +88,20 @@ public class CollectWeatherData {
         Log.d("WeatherData", request.toString());
 
         try (Response response = client.newCall(request).execute()) {
-            JSONObject obj = new JSONObject(response.body().string()).getJSONObject("data");
+            // FIXME: Add error checking
+            return response.body().string();
+
+        } catch (IOException e) {
+            Log.e("WeatherData", "IOException : " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static WeatherData responseJSONToWeatherData(String response) {
+        JSONObject obj = null;
+        try {
+            obj = new JSONObject(response).getJSONObject("data");
+
             obj = (obj.getJSONArray("timelines").getJSONObject(0))
                     .getJSONArray("intervals").getJSONObject(0)
                     .getJSONObject("values");
@@ -110,22 +125,21 @@ public class CollectWeatherData {
             weatherData.setWeatherPrecipitationIntensity(
                     (float) obj.optDouble(PRECIPITATIONINTENSITY, DataFinals.DEFAULT_FLOAT));
             Log.d("WeatherData",
-                    "Precipitation Intensity : " + weatherData.getWeatherPrecipitationIntensity());
-
-            weatherData.setWeatherGrassIndex(
-                    Level.values()[obj.optInt(GRASSINDEX, DataFinals.DEFAULT_LEVEL.ordinal())]);
-            Log.d("WeatherData", "Grass Index : " + weatherData.getWeatherGrassIndex());
+                    "Precipitation Intensity : "
+                            + weatherData.getWeatherPrecipitationIntensity());
 
             weatherData.setWeatherTreeIndex(
                     Level.values()[obj.optInt(TREEINDEX, DataFinals.DEFAULT_LEVEL.ordinal())]);
-            Log.d("WeatherData", "Tree Index : " + weatherData.getWeatherTreeIndex());
+            Log.d("WeatherData", "Tree Index : " + weatherData.getWeatherTreeIndex()
+                    + " = " + weatherData.getWeatherTreeIndex().ordinal());
+
+            weatherData.setWeatherGrassIndex(
+                    Level.values()[obj.optInt(GRASSINDEX, DataFinals.DEFAULT_LEVEL.ordinal())]);
+            Log.d("WeatherData", "Grass Index : " + weatherData.getWeatherGrassIndex()
+                    + " = " + weatherData.getWeatherGrassIndex().ordinal());
 
             return weatherData;
-
-        }catch(IOException e){
-            Log.e("WeatherData", "IOException : " + e.getMessage());
-            return null;
-        }catch(JSONException e){
+        } catch (JSONException e) {
             Log.e("WeatherData", "JSONException : " + e.getMessage());
             return null;
         }

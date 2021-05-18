@@ -16,6 +16,10 @@ import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
+import com.ybeltagy.breathe.weather_data_collection.GPSWorker;
+import com.ybeltagy.breathe.weather_data_collection.TaskDataFinals;
+import com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker;
+import com.ybeltagy.breathe.weather_data_collection.WeatherDataSaveToDBWorker;
 
 import java.time.Instant;
 import java.util.List;
@@ -142,14 +146,44 @@ public class BreatheRepository {
                                 OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                                 TimeUnit.MILLISECONDS)
                         .setInputData(
-                                new Data.Builder().
-                                        putString("timestamp", timestamp.toString()). //todo: consider extracting timestamp in a Finals file.
-                                        build())
+                                new Data.Builder().putString(
+                                        TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
                         .build();
 
         WorkManager
                 .getInstance(context)
                 .enqueue(uploadWorkRequest);
+
+        // get WeatherData for this IUE
+        getAndSaveWeatherDataHelper(timestamp, context);
+
+    }
+
+    @SuppressLint("NewApi")
+    private void getAndSaveWeatherDataHelper(Instant timestamp, Context context) {
+        // create work request for GPS
+        WorkManager dataFlowManager = WorkManager.getInstance(context);
+        OneTimeWorkRequest gpsRequest = new OneTimeWorkRequest.Builder(GPSWorker.class)
+                .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                        TimeUnit.MILLISECONDS).build();
+
+        //  create work request for online weather data for the GPS location
+        OneTimeWorkRequest weatherAPIRequest =
+                new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
+                        .setInputData( new Data.Builder().putString(
+                                TaskDataFinals.KEY_TIMESTAMP, Instant.now().toString()).build())
+                        .build();
+
+        // create work request to save weatherData object to the database
+        OneTimeWorkRequest saveWeatherRequest =
+                new OneTimeWorkRequest.Builder(WeatherDataSaveToDBWorker.class)
+                .setInputData( new Data.Builder().putString(
+                        TaskDataFinals.KEY_TIMESTAMP, Instant.now().toString()).build())
+                        // note: also gets input from weatherAPIRequest String output
+                .build();
+
+        dataFlowManager.beginWith(gpsRequest).then(weatherAPIRequest).then(saveWeatherRequest)
+                .enqueue();
     }
 
 }

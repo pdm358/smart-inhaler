@@ -195,7 +195,6 @@ public class IUEListAdapter
                 weatherTreePollen.setText(String.format(Locale.US, "Pollen: \n%s", weatherData.getWeatherTreeIndex().toString()));
                 weatherEPAIndex.setText(String.format(Locale.US,"AQI: \n%d", weatherData.getWeatherEPAIndex()));
             }
-
         }
 
         /**

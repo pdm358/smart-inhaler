@@ -9,7 +9,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.ybeltagy.breathe.data.DataFinals;
 import com.ybeltagy.breathe.data.Level;
-import com.ybeltagy.breathe.data.WeatherData;
 import com.ybeltagy.breathe.data.BreatheDao;
 import com.ybeltagy.breathe.collection.BreatheRoomDatabase;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
@@ -31,6 +30,8 @@ import java.util.List;
 
 // todo: as we add more testing methods, make helper methods to reduce code redundancy
 //  and make the code maintainable.
+
+// todo: consider reviewing/refactoring the tests if time allows
 
 /**
  * Simple tests for updating entities in the DAO and querying between dates
@@ -120,7 +121,6 @@ public class BreatheDaoTest {
         tBreatheDao.insert(tInhalerUsageEvent);
 
         // update only the diary entry using only the timestamp string of the Instant
-        String timeStamp = rightNow.toString();
         tBreatheDao.updateDiaryEntry(rightNow, Tag.PREVENTATIVE, "test test");
 
         // simulating we gathered the wearableData 3 minutes later
@@ -136,12 +136,19 @@ public class BreatheDaoTest {
         assertEquals(allEvents.size(), 1);
 
         // was the wearable data preserved when we updated the diary entry?
-        assertEquals(allEvents.get(0).getWearableData().getTemperature(),
-                testTemp,
-                0);
         assertEquals(
                 allEvents.get(0).getWearableData().getWearableDataTimeStamp(),
                 rightNow.plusSeconds(180));
+        assertEquals(allEvents.get(0).getWearableData().getTemperature(),
+                testTemp,
+                0);
+        assertEquals(allEvents.get(0).getWearableData().getHumidity(),
+                testHumidity,
+                0);
+        assertEquals(allEvents.get(0).getWearableData().getCharacter(),
+                testChar1);
+        assertEquals(allEvents.get(0).getWearableData().getDigit(),
+                testChar2);
 
         // was the diary entry data preserved?
         assertEquals(allEvents.get(0).getDiaryEntry().getTag(), Tag.PREVENTATIVE);
@@ -165,6 +172,8 @@ public class BreatheDaoTest {
         assertEquals(allEvents.get(0).getWeatherData().getWeatherTemperature(),
                 DataFinals.DEFAULT_FLOAT,0);
         assertEquals(allEvents.get(0).getWeatherData().getWeatherHumidity(),
+                DataFinals.DEFAULT_FLOAT,0);
+        assertEquals(allEvents.get(0).getWeatherData().getWeatherPrecipitationIntensity(),
                 DataFinals.DEFAULT_FLOAT,0);
         assertEquals(allEvents.get(0).getWeatherData().getWeatherTreeIndex(),
                 DataFinals.DEFAULT_LEVEL);

@@ -11,12 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,14 +22,9 @@ import okhttp3.Response;
  */
 public class CollectWeatherData {
 
-    //fixme: extract to secret file later.
-    //todo: use volley
-    //todo: refactor
-    //todo: use endtime.
     //todo: better way to build the string.
-    //todo: error handling for the UX
-    //todo: make calendar use UTC
-    //todo: Use a broadcast receiver.
+    //todo: error handling
+    //todo: consider implementing a check to ensure the timestamp is sooner than six hours as an optimization
     protected static String apiKey;
 
     // API fields
@@ -45,21 +35,7 @@ public class CollectWeatherData {
     private static final String TREEINDEX = "treeIndex";
     private static final String GRASSINDEX = "grassIndex";
 
-    /**
-     * Get the ISO-8601 timestamp for right "now"
-     * Note: this may be unnecessary - v4 api calls default to "now" for null start time
-     *
-     * @param calendar
-     * @return String timestamp for current time
-     */
-    public static String getTimestampISO8601(Calendar calendar) {
-        Date date = calendar.getTime();
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        // Quoted "Z" to indicate UTC, no timezone offset
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        df.setTimeZone(tz);
-        return df.format(date);
-    }
+    private static final String QUERY_URL = "https://api.tomorrow.io/v4/timelines";
 
     /**
      * Get weather data for the requested fields for right now from tomorrow.io
@@ -72,14 +48,37 @@ public class CollectWeatherData {
 
         Instant endTime = startTime.plusSeconds(60);
 
-        String url = "https://api.tomorrow.io/v4/timelines?location=" + latitude + "," + longitude +
-                "&fields=" + TEMPERATURE + "," + HUMIDITY + "," + EPAINDEX + ","
-                + PRECIPITATIONINTENSITY + "," + TREEINDEX + "," + GRASSINDEX +
-                "&startTime=" + startTime.toString() + "&endTime=" + endTime.toString() +
-                "&timesteps=1m" + "&apikey=" + apiKey;
+        String url =
+                new StringBuilder(QUERY_URL).
+                        append("?").
+                        append("fields=").
+                        append(TEMPERATURE).
+                        append(",").
+                        append(HUMIDITY).
+                        append(",").
+                        append(EPAINDEX).
+                        append(",").
+                        append(PRECIPITATIONINTENSITY).
+                        append(",").
+                        append(TREEINDEX).
+                        append(",").
+                        append(GRASSINDEX).
+                        append("&startTime=").
+                        append(startTime.toString()).
+                        append("&endTime=").
+                        append(endTime.toString()).
+                        append("&timesteps=1m").
+                        append("&apikey=").
+                        append(apiKey).
+                        append("&location=").
+                        append(latitude).
+                        append(",").
+                        append(longitude).
+                        toString();
 
         Log.d("WeatherData", url);
-        OkHttpClient client = new OkHttpClient();
+
+        OkHttpClient client = new OkHttpClient(); // todo: continue: stopped here! ybeltagy continue from here
 
         Request request = new Request.Builder()
                 .url(url)
@@ -88,13 +87,14 @@ public class CollectWeatherData {
         Log.d("WeatherData", request.toString());
 
         try (Response response = client.newCall(request).execute()) {
-            // FIXME: Add error checking
-            return response.body().string();
+
+            if(response.isSuccessful()) return response.body().string();
 
         } catch (IOException e) {
             Log.e("WeatherData", "IOException : " + e.getMessage());
-            return null;
         }
+
+        return null;
     }
 
     public static WeatherData responseJSONToWeatherData(String response) {

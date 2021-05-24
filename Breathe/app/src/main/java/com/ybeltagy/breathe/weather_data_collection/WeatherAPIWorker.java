@@ -11,10 +11,7 @@ import androidx.work.WorkerParameters;
 
 import com.ybeltagy.breathe.R;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.time.Instant;
-import java.util.Calendar;
 
 import static com.ybeltagy.breathe.weather_data_collection.TaskDataFinals.KEY_WEATHER_DATA_RESULT;
 
@@ -29,8 +26,8 @@ public class WeatherAPIWorker extends Worker {
     // handle to Context from constructor
     Context context;
 
-    public WeatherAPIWorker(@NonNull @NotNull Context context,
-                            @NonNull @NotNull WorkerParameters workerParams) {
+    public WeatherAPIWorker(@NonNull Context context,
+                            @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.context = context;
     }
@@ -42,7 +39,6 @@ public class WeatherAPIWorker extends Worker {
      * or Result.failure if valid weather data wasn't returned from API call
      */
     @NonNull
-    @NotNull
     @Override
     @SuppressLint("NewApi")
     public Result doWork() {

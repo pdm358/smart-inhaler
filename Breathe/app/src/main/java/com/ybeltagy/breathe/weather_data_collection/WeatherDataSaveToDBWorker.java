@@ -15,8 +15,6 @@ import com.ybeltagy.breathe.collection.WearableWorker;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.time.Instant;
 
 public class WeatherDataSaveToDBWorker extends Worker {
@@ -25,13 +23,12 @@ public class WeatherDataSaveToDBWorker extends Worker {
 
     Context context;
 
-    public WeatherDataSaveToDBWorker(@NonNull @NotNull Context context, @NonNull @NotNull WorkerParameters workerParams) {
+    public WeatherDataSaveToDBWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.context = context;
     }
 
     @NonNull
-    @NotNull
     @Override
     @SuppressLint("NewApi")
     public Result doWork() {

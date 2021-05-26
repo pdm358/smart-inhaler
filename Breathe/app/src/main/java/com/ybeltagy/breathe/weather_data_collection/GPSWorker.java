@@ -72,7 +72,7 @@ public class GPSWorker extends ListenableWorker {
      * @param location
      * @return
      */
-    private Data createGPSOutput(Location location) {
+    private static Data createGPSOutput(Location location) {
         double[] latLong = {location.getLatitude(), location.getLongitude()};
         return new Data.Builder()
                 .putDoubleArray(TaskDataFinals.KEY_GPS_RESULT, latLong)

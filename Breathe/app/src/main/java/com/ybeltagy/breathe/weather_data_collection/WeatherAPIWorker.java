@@ -20,8 +20,10 @@ import static com.ybeltagy.breathe.weather_data_collection.TaskDataFinals.KEY_WE
  * tomorrow.io's v4 API
  */
 public class WeatherAPIWorker extends Worker {
-    // debug
-    String WEATHER_API_WORKER_TAG = "WeatherAPIWorker";
+    /**
+     * debug
+      */
+    private static final String WEATHER_API_WORKER_TAG = "WeatherAPIWorker";
 
     // handle to Context from constructor
     Context context;
@@ -47,14 +49,14 @@ public class WeatherAPIWorker extends Worker {
         // Input data - latitude and longitude
         double[] latLongArray = getInputData().getDoubleArray(TaskDataFinals.KEY_GPS_RESULT);
 
-        if (latLongArray == null) throw new AssertionError();
+        if (latLongArray == null) Result.failure();
         Log.d(WEATHER_API_WORKER_TAG,
                 "Received location in WeatherAPIWorker: "
                         + latLongArray[0] + " , " + latLongArray[1]);
 
         // Input data - timestamp string
         String timestampInputString = getInputData().getString(TaskDataFinals.KEY_TIMESTAMP);
-        if (timestampInputString == null) throw new AssertionError();
+        if (timestampInputString == null) Result.failure();
         Instant timestamp = Instant.parse(timestampInputString);
 
         CollectWeatherData.apiKey = context.getString(R.string.clima_cell_api_key);

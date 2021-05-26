@@ -85,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
         weatherDataFlow();
     }
 
-    /**
+
+    /** // Todo: move this logic to the repository and access it through the viewModel
      * Get GPS and pass latitude,longitude to tomorrow.io to get weather info
      */
     @SuppressLint("NewApi")

@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
  * - contains the Inhaler_Usage_Event_table with InhalerUsageEvent entities
  * - contains the Wearable_Data_table with WearableData entities
  */
-@Database(entities = {InhalerUsageEvent.class, WearableData.class}, version = 1)
+@Database(entities = {InhalerUsageEvent.class, WearableData.class}, version = 2)
 @TypeConverters({Converters.class})
 public abstract class BreatheRoomDatabase extends RoomDatabase {
 
@@ -47,7 +47,8 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
                     // create database
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             BreatheRoomDatabase.class, "Breathe_database")
-                            .addCallback(roomDatabaseCallback)
+                            .fallbackToDestructiveMigration() // allow for destructive Migration.
+                            //.addCallback(roomDatabaseCallback) fixme: delete this statement later when we are finalizing the project.
                             // Note: leaving implementation of migration strategy to future teams
                             .build();
                 }

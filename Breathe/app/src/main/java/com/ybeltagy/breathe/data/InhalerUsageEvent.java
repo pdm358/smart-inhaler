@@ -14,6 +14,8 @@ import androidx.room.PrimaryKey;
 
 import java.time.Instant;
 
+// todo: consider reording the variable declarations so they are in the same order as in the export feature.
+
 /**
  * Entity (used in Room database) that represents an inhaler usage event.  Contains:
  * - a unique UTC ISO-8601 timestamp (when it occurred)

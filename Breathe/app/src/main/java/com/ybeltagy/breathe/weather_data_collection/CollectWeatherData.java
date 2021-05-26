@@ -22,8 +22,6 @@ import okhttp3.Response;
  */
 public class CollectWeatherData {
 
-    //todo: better way to build the string.
-    //todo: error handling
     //todo: consider implementing a check to ensure the timestamp is sooner than six hours as an optimization
     protected static String apiKey;
 
@@ -49,32 +47,32 @@ public class CollectWeatherData {
         Instant endTime = startTime.plusSeconds(60);
 
         String url =
-                new StringBuilder(QUERY_URL).
-                        append("?").
-                        append("fields=").
-                        append(TEMPERATURE).
-                        append(",").
-                        append(HUMIDITY).
-                        append(",").
-                        append(EPAINDEX).
-                        append(",").
-                        append(PRECIPITATIONINTENSITY).
-                        append(",").
-                        append(TREEINDEX).
-                        append(",").
-                        append(GRASSINDEX).
-                        append("&startTime=").
-                        append(startTime.toString()).
-                        append("&endTime=").
-                        append(endTime.toString()).
-                        append("&timesteps=1m").
-                        append("&apikey=").
-                        append(apiKey).
-                        append("&location=").
-                        append(latitude).
-                        append(",").
-                        append(longitude).
-                        toString();
+                new StringBuilder(QUERY_URL)
+                        .append("?")
+                        .append("fields=")
+                        .append(TEMPERATURE)
+                        .append(",")
+                        .append(HUMIDITY)
+                        .append(",")
+                        .append(EPAINDEX)
+                        .append(",")
+                        .append(PRECIPITATIONINTENSITY)
+                        .append(",")
+                        .append(TREEINDEX)
+                        .append(",")
+                        .append(GRASSINDEX)
+                        .append("&startTime=")
+                        .append(startTime.toString())
+                        .append("&endTime=")
+                        .append(endTime.toString())
+                        .append("&timesteps=1m")
+                        .append("&apikey=")
+                        .append(apiKey)
+                        .append("&location=")
+                        .append(latitude)
+                        .append(",")
+                        .append(longitude)
+                        .toString();
 
         Log.d("WeatherData", url);
 
@@ -98,12 +96,18 @@ public class CollectWeatherData {
     }
 
     public static WeatherData responseJSONToWeatherData(String response) {
-        JSONObject obj = null;
+
+        if (response == null || response.isEmpty()) return null;
+
         try {
+            JSONObject obj = null;
+
             obj = new JSONObject(response).getJSONObject("data");
 
-            obj = (obj.getJSONArray("timelines").getJSONObject(0))
-                    .getJSONArray("intervals").getJSONObject(0)
+            obj = obj.getJSONArray("timelines")
+                    .getJSONObject(0)
+                    .getJSONArray("intervals")
+                    .getJSONObject(0)
                     .getJSONObject("values");
 
             WeatherData weatherData = new WeatherData();
@@ -119,9 +123,6 @@ public class CollectWeatherData {
                     (float) obj.optDouble(HUMIDITY, DataFinals.DEFAULT_FLOAT));
             Log.d("WeatherData", "Humidity : " + weatherData.getWeatherHumidity());
 
-            weatherData.setWeatherEPAIndex(obj.optInt(EPAINDEX, DataFinals.DEFAULT_INTEGER));
-            Log.d("WeatherData", "EPA Index : " + weatherData.getWeatherEPAIndex());
-
             weatherData.setWeatherPrecipitationIntensity(
                     (float) obj.optDouble(PRECIPITATIONINTENSITY, DataFinals.DEFAULT_FLOAT));
             Log.d("WeatherData",
@@ -129,14 +130,17 @@ public class CollectWeatherData {
                             + weatherData.getWeatherPrecipitationIntensity());
 
             weatherData.setWeatherTreeIndex(
-                    Level.intToLevel(obj.optInt(TREEINDEX, DataFinals.DEFAULT_LEVEL.ordinal())));
+                    Level.intToLevel(obj.optInt(TREEINDEX, Level.levelToInt(DataFinals.DEFAULT_LEVEL))));
             Log.d("WeatherData", "Tree Index : " + weatherData.getWeatherTreeIndex()
-                    + " = " + weatherData.getWeatherTreeIndex().ordinal());
+                    + " = " + Level.levelToInt(weatherData.getWeatherTreeIndex()));
 
             weatherData.setWeatherGrassIndex(
-                    Level.intToLevel(obj.optInt(GRASSINDEX, DataFinals.DEFAULT_LEVEL.ordinal())));
+                    Level.intToLevel(obj.optInt(GRASSINDEX, Level.levelToInt(DataFinals.DEFAULT_LEVEL))));
             Log.d("WeatherData", "Grass Index : " + weatherData.getWeatherGrassIndex()
-                    + " = " + weatherData.getWeatherGrassIndex().ordinal());
+                    + " = " + Level.levelToInt(weatherData.getWeatherGrassIndex()));
+
+            weatherData.setWeatherEPAIndex(obj.optInt(EPAINDEX, DataFinals.DEFAULT_INTEGER));
+            Log.d("WeatherData", "EPA Index : " + weatherData.getWeatherEPAIndex());
 
             return weatherData;
         } catch (JSONException e) {

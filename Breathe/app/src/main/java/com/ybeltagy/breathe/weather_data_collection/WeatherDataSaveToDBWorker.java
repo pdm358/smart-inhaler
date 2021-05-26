@@ -17,6 +17,9 @@ import com.ybeltagy.breathe.data.WeatherData;
 
 import java.time.Instant;
 
+
+//fixme: rather than implementing a worker just for saving, it makes more sense to modify
+// weatherAPIWorker so it takes a parameter and either saves into the database or returns the jsonString depending on that variable.
 public class WeatherDataSaveToDBWorker extends Worker {
 
     private static final String tag = WeatherDataSaveToDBWorker.class.getName();
@@ -55,10 +58,12 @@ public class WeatherDataSaveToDBWorker extends Worker {
         Instant timestamp = Instant.parse(timeStampInput);
 
         BreatheRoomDatabase.getDatabase(context).breatheDao().
-                updateWeatherData(timestamp, weatherData.getWeatherTemperature(),
+                updateWeatherData(timestamp,
+                        weatherData.getWeatherTemperature(),
                         weatherData.getWeatherHumidity(),
                         weatherData.getWeatherPrecipitationIntensity(),
-                        weatherData.getWeatherTreeIndex(), weatherData.getWeatherGrassIndex(),
+                        weatherData.getWeatherTreeIndex(),
+                        weatherData.getWeatherGrassIndex(),
                         weatherData.getWeatherEPAIndex());
 
         // Success! We've saved to the database

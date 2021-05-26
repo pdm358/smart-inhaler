@@ -43,4 +43,6 @@ public enum Level {
     public static Level intToLevel(int numToConvert) {
         return Level.values()[numToConvert];
     }
+
+    public static int levelToInt(Level lvl) { return lvl.ordinal();};
 }

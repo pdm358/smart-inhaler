@@ -1,5 +1,7 @@
 package com.ybeltagy.breathe.data;
 
+import android.provider.ContactsContract;
+
 import androidx.room.Ignore;
 
 /**
@@ -9,35 +11,38 @@ import androidx.room.Ignore;
  */
 public class WeatherData {
 
-    private float weatherTemperature = DataFinals.DEFAULT_FLOAT; // Celsius
-    private float weatherHumidity = DataFinals.DEFAULT_FLOAT; // percentage out of 100 - value should always be =< 1
+    //todo: use java docs. Remove hard examples.
+
+    private float weatherTemperature; // Celsius
+
+    private float weatherHumidity; // ratio out of 1 - value should always be =< 1
     private float weatherPrecipitationIntensity; // mm/hr
 
     // { NONE,  VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, NULL }
-    private Level weatherTreeIndex = DataFinals.DEFAULT_LEVEL;
+    private Level weatherTreeIndex;
     // { NONE,  VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, NULL }
-    private Level weatherGrassIndex= DataFinals.DEFAULT_LEVEL;
+    private Level weatherGrassIndex;
 
     // Air quality index, as defined by the EPA
-    private int weatherEPAIndex = DataFinals.DEFAULT_INTEGER;
+    private int weatherEPAIndex;
 
     public WeatherData(){
         this(DataFinals.DEFAULT_FLOAT,       // temperature
                 DataFinals.DEFAULT_FLOAT,    // humidity
                 DataFinals.DEFAULT_FLOAT,    // precipitation
-                DataFinals.DEFAULT_LEVEL,    // grass pollen
                 DataFinals.DEFAULT_LEVEL,    // tree pollen
+                DataFinals.DEFAULT_LEVEL,    // grass pollen
                 DataFinals.DEFAULT_INTEGER); // epaIndex (also known as AQI)
     }
 
     @Ignore
     public WeatherData(float temperature, float humidity, float precipitationIntensity,
-                       Level grassPollen, Level treePollen, int epaIndex) {
+                       Level treePollen, Level grassPollen, int epaIndex) {
         setWeatherTemperature(temperature);
         setWeatherHumidity(humidity);
         setWeatherPrecipitationIntensity(precipitationIntensity);
-        setWeatherGrassIndex(grassPollen);
         setWeatherTreeIndex(treePollen);
+        setWeatherGrassIndex(grassPollen);
         setWeatherEPAIndex(epaIndex);
     }
 
@@ -48,7 +53,9 @@ public class WeatherData {
     public boolean isDataValid(){
         return isWeatherTemperatureValid() &&
                 isWeatherHumidityValid() &&
-                isWeatherPollenValid() &&
+                isWeatherPrecipitationIntencityValid() &&
+                isWeatherTreeIndexValid() &&
+                isWeatherGrassIndexValid() &&
                 isWeatherEPAIndexValid();
 
     }
@@ -61,9 +68,16 @@ public class WeatherData {
         return weatherHumidity != DataFinals.DEFAULT_FLOAT;
     }
 
-    public boolean isWeatherPollenValid(){
-        return weatherGrassIndex != DataFinals.DEFAULT_LEVEL &&
-                weatherTreeIndex != DataFinals.DEFAULT_LEVEL;
+    public boolean isWeatherPrecipitationIntencityValid(){
+        return weatherPrecipitationIntensity != DataFinals.DEFAULT_FLOAT;
+    }
+
+    public boolean isWeatherTreeIndexValid(){
+        return weatherTreeIndex != DataFinals.DEFAULT_LEVEL;
+    }
+
+    public boolean isWeatherGrassIndexValid(){
+        return weatherGrassIndex != DataFinals.DEFAULT_LEVEL;
     }
 
     public boolean isWeatherEPAIndexValid(){
@@ -86,20 +100,12 @@ public class WeatherData {
         this.weatherHumidity = DataUtilities.nanGuard(weatherHumidity);
     }
 
-    public int getWeatherEPAIndex() {
-        return weatherEPAIndex;
-    }
-
-    public void setWeatherEPAIndex(int weatherEPAIndex) {
-        this.weatherEPAIndex = weatherEPAIndex;
-    }
-
     public float getWeatherPrecipitationIntensity() {
         return weatherPrecipitationIntensity;
     }
 
     public void setWeatherPrecipitationIntensity(float weatherPrecipitationIntensity) {
-        this.weatherPrecipitationIntensity = weatherPrecipitationIntensity;
+        this.weatherPrecipitationIntensity = DataUtilities.nanGuard(weatherPrecipitationIntensity);
     }
 
     public Level getWeatherTreeIndex() {
@@ -116,5 +122,13 @@ public class WeatherData {
 
     public void setWeatherGrassIndex(Level weatherGrassIndex) {
         this.weatherGrassIndex = weatherGrassIndex;
+    }
+
+    public int getWeatherEPAIndex() {
+        return weatherEPAIndex;
+    }
+
+    public void setWeatherEPAIndex(int weatherEPAIndex) {
+        this.weatherEPAIndex = weatherEPAIndex;
     }
 }

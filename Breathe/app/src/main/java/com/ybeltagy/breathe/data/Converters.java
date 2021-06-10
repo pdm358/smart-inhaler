@@ -62,8 +62,8 @@ public class Converters {
      */
     @TypeConverter
     public static Level fromLevelIntValue(int level) {
-        return Level.values()[level];
-    } // todo: consider using Level.intToLevel
+        return Level.intToLevel(level);
+    }
 
     /**
      * Converts Level into int to be stored in database
@@ -73,6 +73,6 @@ public class Converters {
      */
     @TypeConverter
     public static int toLevelIntValue(Level level) {
-        return level != null ? level.ordinal() : Level.NULL.ordinal();
-    } // todo: consider using Level.levelToInt
+        return Level.levelToInt(level);
+    }
 }

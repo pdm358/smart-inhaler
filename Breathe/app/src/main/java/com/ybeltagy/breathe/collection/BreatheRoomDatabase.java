@@ -48,7 +48,6 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             BreatheRoomDatabase.class, "Breathe_database")
                             .fallbackToDestructiveMigration() // allow for destructive Migration.
-                            //.addCallback(roomDatabaseCallback) fixme: delete this statement later when we are finalizing the project.
                             // Note: leaving implementation of migration strategy to future teams
                             .build();
                 }
@@ -56,37 +55,4 @@ public abstract class BreatheRoomDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
-
-    /**
-     * IMPORTANT: The code for the RoomDatabase.Callback is for TESTING ONLY; this causes
-     * the database to be populated with placeholder Inhaler usage events.
-     * <p>
-     * Please delete this code after the inhaler can successfully send IUEs to the app.
-     */
-    private static final RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public void onOpen(@NonNull SupportSQLiteDatabase db) {
-            super.onOpen(db);
-
-            dbWriteExecutor.execute(() -> {
-                // Populate the database with placeholder IUEs in the background.
-                BreatheDao breatheDao = INSTANCE.breatheDao();
-
-                if (breatheDao.getAnySingleInhalerUsageEvent().size() < 1) {
-                    // Check if there are any placeholder IUEs in the database
-                    // If there are none, make some placeholder IUEs and add them to the database
-                    Instant now = Instant.now();
-                    int dummyDataSize = 5;
-                    for (int i = 0; i < dummyDataSize; i++) {
-                        Instant aTime = now.minus( dummyDataSize - i, ChronoUnit.DAYS);
-                        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime);
-                        Log.d("BreatheRoomDatabase", "adding InhalerUsageEvent "
-                                + tInhalerUsageEvent.getInhalerUsageEventTimeStamp().toString());
-                        breatheDao.insert(tInhalerUsageEvent);
-                    }
-                }
-            });
-        }
-    };
 }

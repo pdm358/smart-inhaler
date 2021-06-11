@@ -1,7 +1,5 @@
 package com.ybeltagy.breathe.data;
 
-import android.provider.ContactsContract;
-
 import androidx.room.Ignore;
 
 /**
@@ -53,7 +51,7 @@ public class WeatherData {
     public boolean isDataValid(){
         return isWeatherTemperatureValid() &&
                 isWeatherHumidityValid() &&
-                isWeatherPrecipitationIntencityValid() &&
+                isWeatherPrecipitationIntensityValid() &&
                 isWeatherTreeIndexValid() &&
                 isWeatherGrassIndexValid() &&
                 isWeatherEPAIndexValid();
@@ -68,7 +66,7 @@ public class WeatherData {
         return weatherHumidity != DataFinals.DEFAULT_FLOAT;
     }
 
-    public boolean isWeatherPrecipitationIntencityValid(){
+    public boolean isWeatherPrecipitationIntensityValid(){
         return weatherPrecipitationIntensity != DataFinals.DEFAULT_FLOAT;
     }
 

@@ -107,7 +107,7 @@ public class DataUtilities {
                 sb.append(weatherData.getWeatherHumidity());
             sb.append(comma);
 
-            if (weatherData.isWeatherPrecipitationIntencityValid())
+            if (weatherData.isWeatherPrecipitationIntensityValid())
                 sb.append(weatherData.getWeatherPrecipitationIntensity());
             sb.append(comma);
 

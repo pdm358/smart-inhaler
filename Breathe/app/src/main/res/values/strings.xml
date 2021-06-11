@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Breathe</string>
+    <string name="nebulizer_label">Nebulizer</string>
+    <string name="null_diary_entry_screen_date">Entry for -- -- --, 00:00 -M</string>
+    <string name="rescue_button_label">Rescue</string>
+    <string name="preventative_button_label">Preventative</string>
+    <string name="save_button_label">Save</string>
+    <string name="edit_diary_entry_text_hint">What happened?</string>
+    <string name="placeholder_text">-</string>
+    <string name="diary_label">Diary</string>
+    <string name="settings_label">Settings</string>
+    <string name="connect_to_wearable">Connect to wearable</string>
+    <string name="export_data_as_csv">Export data as csv</string>
 </resources>

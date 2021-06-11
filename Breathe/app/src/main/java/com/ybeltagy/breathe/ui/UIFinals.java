@@ -15,5 +15,6 @@ public class UIFinals {
     // TODO: Replace with real number of doses in a canister
     //  or put that in the resources folder if we will continue using it.
     //  Also add a way for the user to reset the size of the canister without deleting what is in the DB.
+    //  Consider storing in the shared preferences
     protected static int TOTAL_DOSES_IN_CANISTER = 200;
 }

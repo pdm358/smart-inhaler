@@ -26,6 +26,8 @@ public class DiaryEntry {
         return tag != DataFinals.DEFAULT_TAG;
     }
 
+    public boolean isMessageValid() {return message != null;};
+
     public Tag getTag() {
         return tag;
     }

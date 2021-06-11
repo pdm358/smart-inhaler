@@ -88,7 +88,19 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/weather_pollen_textview"
+            android:id="@+id/weather_precipitation_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/weather_tree_pollen_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/weather_grass_pollen_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>

@@ -11,7 +11,7 @@
     <!-- Allows applications to connect to paired bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
 
-    <!-- To discover devices | todo: not sure it is necessary + ensure necessity-->
+    <!-- To discover devices | We need either this or ACCESS_COARSE_LOCATION for GPS -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!--Requires that the phone be BLE capable for the app to be installed-->
@@ -22,10 +22,11 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
-    <!--There is a good chance we need this permission. https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
-    But is an annoying permission to ask. for.-->
+    <!-- To check the network before making an HTTP request-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
+    <!-- Needed for accessing the network-->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Permissions end -->
 

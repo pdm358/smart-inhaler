@@ -11,6 +11,7 @@ import androidx.work.WorkerParameters;
 import com.ybeltagy.breathe.ble.BLEService;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.collection.BreatheRepository;
+import com.ybeltagy.breathe.weather_data_collection.TaskDataFinals;
 
 import java.time.Instant;
 
@@ -42,13 +43,14 @@ public class WearableWorker extends Worker {
 
         if(wearableData == null) return Result.failure();
 
-        //todo: extract key
-        Instant timestamp = Instant.parse(getInputData().getString("timestamp"));
+        Instant timestamp = Instant.parse(getInputData().getString(TaskDataFinals.KEY_TIMESTAMP));
 
         //todo: consider adding a wrapper inside the dao.
         //called synchronously.
         BreatheRoomDatabase.getDatabase(curContext).breatheDao().
-                updateWearableData(timestamp, timestamp, wearableData.getTemperature(), wearableData.getHumidity(), wearableData.getCharacter(), wearableData.getDigit());
+                updateWearableData(timestamp, timestamp, wearableData.getTemperature(),
+                        wearableData.getHumidity(), wearableData.getCharacter(),
+                        wearableData.getDigit());
 
         // Indicate whether the work finished successfully with the Result
         return Result.success();

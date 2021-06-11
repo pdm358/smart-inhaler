@@ -23,7 +23,9 @@ public class DataUtilities {
 
             "Weather Temperature",
             "Weather Humidity",
-            "Weather Pollen",
+            "weather Precipitation Intensity",
+            "Weather Tree Index",
+            "Weather Grass Index",
             "Weather AQI"
     };
 
@@ -63,7 +65,8 @@ public class DataUtilities {
             sb.append(comma);
 
             sb.append('\"'); // always append strings with quotation marks so commas and CR/LF characters don't ruin the formatting.
-            sb.append(diaryEntry.getMessage().replace("\"","\"\"")); // always append the message and replace double quotes with two double quotes.
+            if (diaryEntry.isMessageValid())
+                sb.append(diaryEntry.getMessage().replace("\"","\"\"")); // always append the message and replace double quotes with two double quotes.
             sb.append('\"');
             sb.append(comma);
         }
@@ -104,12 +107,20 @@ public class DataUtilities {
                 sb.append(weatherData.getWeatherHumidity());
             sb.append(comma);
 
-            if (weatherData.isWeatherPollenValid())
-                sb.append(weatherData.getWeatherPollen().toString());
+            if (weatherData.isWeatherPrecipitationIntensityValid())
+                sb.append(weatherData.getWeatherPrecipitationIntensity());
             sb.append(comma);
 
-            if (weatherData.isWeatherAQIValid())
-                sb.append(weatherData.getWeatherAQI());
+            if (weatherData.isWeatherTreeIndexValid())
+                sb.append(weatherData.getWeatherTreeIndex().toString());
+            sb.append(comma);
+
+            if (weatherData.isWeatherGrassIndexValid())
+                sb.append(weatherData.getWeatherGrassIndex().toString());
+            sb.append(comma);
+
+            if (weatherData.isWeatherEPAIndexValid())
+                sb.append(weatherData.getWeatherEPAIndex());
             // There is no need to add a comma since this is the last item in the inhaler usage event.
         }
 
@@ -124,7 +135,6 @@ public class DataUtilities {
      */
     protected static float nanGuard(float num){
         if(num == Float.NaN) return DataFinals.DEFAULT_FLOAT;
-
         return num;
     }
 

@@ -5,9 +5,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.room.TypeConverter;
 
-import com.ybeltagy.breathe.data.Level;
-import com.ybeltagy.breathe.data.Tag;
-
 import java.time.Instant;
 
 /**
@@ -61,20 +58,21 @@ public class Converters {
     /**
      * Converts Level int stored in database to relevant Level enum
      * @param level
-     * @return enum Level (NULL, LOW, MEDIUM, or HIGH)
+     * @return enum Level (NONE, VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, or NULL)
      */
     @TypeConverter
     public static Level fromLevelIntValue(int level) {
-        return Level.values()[level];
+        return Level.intToLevel(level);
     }
 
     /**
      * Converts Level into int to be stored in database
      * @param level
-     * @return ordinal value of level (NULL = 0, LOW = 1, MEDIUM = 2, or HIGH = 3)
+     * @return ordinal value of level (NONE = 0, VERY_LOW=1, LOW=2, MEDIUM=3, HIGH=4,
+     *                                 VERY_HIGH=5, NULL=6)
      */
     @TypeConverter
     public static int toLevelIntValue(Level level) {
-        return level != null ? level.ordinal() : Level.NULL.ordinal();
+        return Level.levelToInt(level);
     }
 }

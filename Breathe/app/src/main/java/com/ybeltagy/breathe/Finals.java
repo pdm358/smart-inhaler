@@ -22,7 +22,7 @@ public class Finals {
      */
     public static final String PACKAGE_NAME =   "com.ybeltagy.breathe";
 
-    /**
+    /** todo: consider including in the collection package too.
      * The private file where CSV content is generated for temporary sharing.
      *
      * This must be in a folder listed inside res/xml/provider_paths.xml so the FileProvider can share it.

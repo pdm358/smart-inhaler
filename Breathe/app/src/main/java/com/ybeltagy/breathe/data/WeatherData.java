@@ -3,33 +3,45 @@ package com.ybeltagy.breathe.data;
 import androidx.room.Ignore;
 
 /**
- * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given InhalerUsageEvent
+ * Encapsulates area weather conditions (data from tomorrow.io API) at the time of a given InhalerUsageEvent
  * - One InhalerUsageEvent object contains one WeatherData object
  * <p>
- * TODO: write static WeatherData createWeatherData() to gather conditions from ClimaCell API
- * and create a WeatherData object
  */
 public class WeatherData {
 
+    //todo: use java docs. Remove hard examples.
+
     private float weatherTemperature; // Celsius
-    private float weatherHumidity; // percentage out of 100 - value should always be =< 1
-    private Level weatherPollen; // LOW, MEDIUM, or HIGH
-    private int weatherAQI; // Air quality index, as defined by the EPA
+
+    private float weatherHumidity; // ratio out of 1 - value should always be =< 1
+    private float weatherPrecipitationIntensity; // mm/hr
+
+    // { NONE,  VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, NULL }
+    private Level weatherTreeIndex;
+    // { NONE,  VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, NULL }
+    private Level weatherGrassIndex;
+
+    // Air quality index, as defined by the EPA
+    private int weatherEPAIndex;
 
     public WeatherData(){
-        this(DataFinals.DEFAULT_FLOAT,
-                DataFinals.DEFAULT_FLOAT,
-                DataFinals.DEFAULT_LEVEL,
-                DataFinals.DEFAULT_INTEGER);
+        this(DataFinals.DEFAULT_FLOAT,       // temperature
+                DataFinals.DEFAULT_FLOAT,    // humidity
+                DataFinals.DEFAULT_FLOAT,    // precipitation
+                DataFinals.DEFAULT_LEVEL,    // tree pollen
+                DataFinals.DEFAULT_LEVEL,    // grass pollen
+                DataFinals.DEFAULT_INTEGER); // epaIndex (also known as AQI)
     }
 
     @Ignore
-    public WeatherData(float weatherTemperature, float weatherHumidity,
-                       Level weatherPollen, int weatherAQI) {
-        setWeatherTemperature(weatherTemperature);
-        setWeatherHumidity(weatherHumidity);
-        setWeatherPollen(weatherPollen);
-        setWeatherAQI(weatherAQI);
+    public WeatherData(float temperature, float humidity, float precipitationIntensity,
+                       Level treePollen, Level grassPollen, int epaIndex) {
+        setWeatherTemperature(temperature);
+        setWeatherHumidity(humidity);
+        setWeatherPrecipitationIntensity(precipitationIntensity);
+        setWeatherTreeIndex(treePollen);
+        setWeatherGrassIndex(grassPollen);
+        setWeatherEPAIndex(epaIndex);
     }
 
     /**
@@ -39,8 +51,10 @@ public class WeatherData {
     public boolean isDataValid(){
         return isWeatherTemperatureValid() &&
                 isWeatherHumidityValid() &&
-                isWeatherPollenValid() &&
-                isWeatherAQIValid();
+                isWeatherPrecipitationIntensityValid() &&
+                isWeatherTreeIndexValid() &&
+                isWeatherGrassIndexValid() &&
+                isWeatherEPAIndexValid();
 
     }
 
@@ -52,12 +66,20 @@ public class WeatherData {
         return weatherHumidity != DataFinals.DEFAULT_FLOAT;
     }
 
-    public boolean isWeatherPollenValid(){
-        return weatherPollen != DataFinals.DEFAULT_LEVEL;
+    public boolean isWeatherPrecipitationIntensityValid(){
+        return weatherPrecipitationIntensity != DataFinals.DEFAULT_FLOAT;
     }
 
-    public boolean isWeatherAQIValid(){
-        return weatherAQI != DataFinals.DEFAULT_INTEGER;
+    public boolean isWeatherTreeIndexValid(){
+        return weatherTreeIndex != DataFinals.DEFAULT_LEVEL;
+    }
+
+    public boolean isWeatherGrassIndexValid(){
+        return weatherGrassIndex != DataFinals.DEFAULT_LEVEL;
+    }
+
+    public boolean isWeatherEPAIndexValid(){
+        return weatherEPAIndex != DataFinals.DEFAULT_INTEGER;
     }
 
     public float getWeatherTemperature() {
@@ -76,19 +98,35 @@ public class WeatherData {
         this.weatherHumidity = DataUtilities.nanGuard(weatherHumidity);
     }
 
-    public Level getWeatherPollen() {
-        return weatherPollen;
+    public float getWeatherPrecipitationIntensity() {
+        return weatherPrecipitationIntensity;
     }
 
-    public void setWeatherPollen(Level weatherPollen) {
-        this.weatherPollen = weatherPollen;
+    public void setWeatherPrecipitationIntensity(float weatherPrecipitationIntensity) {
+        this.weatherPrecipitationIntensity = DataUtilities.nanGuard(weatherPrecipitationIntensity);
     }
 
-    public int getWeatherAQI() {
-        return weatherAQI;
+    public Level getWeatherTreeIndex() {
+        return weatherTreeIndex;
     }
 
-    public void setWeatherAQI(int weatherAQI) {
-        this.weatherAQI = weatherAQI;
+    public void setWeatherTreeIndex(Level weatherTreeIndex) {
+        this.weatherTreeIndex = weatherTreeIndex;
+    }
+
+    public Level getWeatherGrassIndex() {
+        return weatherGrassIndex;
+    }
+
+    public void setWeatherGrassIndex(Level weatherGrassIndex) {
+        this.weatherGrassIndex = weatherGrassIndex;
+    }
+
+    public int getWeatherEPAIndex() {
+        return weatherEPAIndex;
+    }
+
+    public void setWeatherEPAIndex(int weatherEPAIndex) {
+        this.weatherEPAIndex = weatherEPAIndex;
     }
 }

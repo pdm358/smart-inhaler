@@ -16,6 +16,10 @@ import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
+import com.ybeltagy.breathe.weather_data_collection.GPSWorker;
+import com.ybeltagy.breathe.weather_data_collection.TaskDataFinals;
+import com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker;
+import com.ybeltagy.breathe.weather_data_collection.WeatherDataSaveToDBWorker;
 
 import java.time.Instant;
 import java.util.List;
@@ -55,8 +59,8 @@ public class BreatheRepository {
 
     /**
      * TODO: maybe we should never use this because it "clobbers" our existing IUEs (unless we
-     * can also retrieve the existing inhalerUsageEvent, update the data and use the same
-     * inhalerUsageEvent object as the input to this function) (might want to delete it)
+     *  can also retrieve the existing inhalerUsageEvent, update the data and use the same
+     *  inhalerUsageEvent object as the input to this function) (might want to delete it)
      * <p>
      * wrapper for BreatheDao update method
      * - uses Executor Service (non-UI thread)
@@ -111,8 +115,10 @@ public class BreatheRepository {
                         inhalerUsageTimeStamp,
                         weatherData.getWeatherTemperature(),
                         weatherData.getWeatherHumidity(),
-                        weatherData.getWeatherPollen(),
-                        weatherData.getWeatherAQI()));
+                        weatherData.getWeatherPrecipitationIntensity(),
+                        weatherData.getWeatherTreeIndex(),
+                        weatherData.getWeatherGrassIndex(),
+                        weatherData.getWeatherEPAIndex()));
     }
 
 
@@ -127,27 +133,68 @@ public class BreatheRepository {
     @SuppressLint("NewApi")
     public void startDataCollection(Instant timestamp, Context context){
 
+        // fixme: this method looks weird with part of its logic implemented direclty in it and another in a helper.
+        //  refactor later.
         InhalerUsageEvent iue = new InhalerUsageEvent(timestamp);
 
         insertIUE(iue);
 
         //fixme: this workrequest does not retry. There is probably something wrong with the parameters.
         // Something like if I want to retry, I have to specify that in the response.
-        WorkRequest uploadWorkRequest =
-                new OneTimeWorkRequest.Builder(WearableWorker.class)
+        WorkRequest wearableWorkRequest =
+                new OneTimeWorkRequest
+                        .Builder(WearableWorker.class)
                         .setBackoffCriteria(
                                 BackoffPolicy.EXPONENTIAL,
                                 OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                                 TimeUnit.MILLISECONDS)
                         .setInputData(
-                                new Data.Builder().
-                                        putString("timestamp", timestamp.toString()). //todo: consider extracting timestamp in a Finals file.
-                                        build())
+                                new Data.Builder().putString(
+                                        TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
+                        // todo: Merge the weather data package and this package. It is not a good idea to refer to a final in another package.
                         .build();
 
         WorkManager
                 .getInstance(context)
-                .enqueue(uploadWorkRequest);
+                .enqueue(wearableWorkRequest);
+
+        // get WeatherData for this IUE
+        getAndSaveWeatherDataHelper(timestamp, context);
+
+    }
+
+    @SuppressLint("NewApi")
+    private void getAndSaveWeatherDataHelper(Instant timestamp, Context context) {
+        // create work request for GPS
+        WorkManager dataFlowManager = WorkManager.getInstance(context);
+        OneTimeWorkRequest gpsRequest = new OneTimeWorkRequest
+                .Builder(GPSWorker.class)
+                .setBackoffCriteria(
+                        BackoffPolicy.EXPONENTIAL,
+                        OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                        TimeUnit.MILLISECONDS).build();
+
+        //  create work request for online weather data for the GPS location
+        OneTimeWorkRequest weatherAPIRequest =
+                new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
+                        .setInputData( new Data.Builder().putString(
+                                TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
+                        .build();
+
+        // create work request to save weatherData object to the database
+        OneTimeWorkRequest saveWeatherRequest =
+                new OneTimeWorkRequest.Builder(WeatherDataSaveToDBWorker.class)
+                .setInputData( new Data.Builder().putString(
+                        TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
+                        // note: also gets input from weatherAPIRequest String output
+                        // fixme: might as well have weatherAPIRequest pass the timestamp.
+                .build();
+
+        dataFlowManager
+                .beginWith(gpsRequest)
+                .then(weatherAPIRequest)
+                .then(saveWeatherRequest)
+                .enqueue();
     }
 
 }

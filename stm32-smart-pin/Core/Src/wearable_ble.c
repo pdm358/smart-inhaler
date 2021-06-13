@@ -4,9 +4,13 @@
 #include <stdio.h>
 #include "dht_11.h"
 #include "PM_Sensor.h"
+#include <math.h>
+
 
 #define SERVICE_UUID 						"25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID 	"c3856cfa4af64d0da9a05ed875d937cc"
+
+#define RETRY_TIMES 2
 
 typedef struct{
 	float temperature;				// 4 bytes - little endian
@@ -28,31 +32,42 @@ static wearable_data_t getWearableData(){
 
 	uint8_t ret_code = 0;
 
-	//Making dummy data.
 	wearable_data_t data;
 
-	//DHT 11 Data
-	DHT_11_Data dht11_data;
-	DHT_GetData (&dht11_data);
-	data.temperature = dht11_data.Temperature;
-	data.humidity = dht11_data.Humidity;
+	{ // Get dht 11 sensor data
+		//DHT 11 Data
+		DHT_11_Data dht11_data;
+		for(uint8_t i = 0; i < RETRY_TIMES ; i++){ // Linear retry logic
+			ret_code = get_dht11_data (&dht11_data);
+			if(ret_code) break; // success ; no need to retry
+			HAL_Delay(5 + 5*i);
+		}
 
+		if(ret_code){ // success
+			data.temperature = dht11_data.Temperature;
+			data.humidity = dht11_data.Humidity;
+		}else{
+			data.temperature = NAN;
+			data.humidity = NAN;
+		}
 
-	// PM2.5 sensor data
-	struct PMS_AQI_data pm_data;
-	for(uint8_t i = 0; i < 2 ; i++){ // Linear retry logic
-		ret_code = read_pm_sensor_data(&pm_data);
-		if(ret_code) break;
-		HAL_Delay(5 + 5*i);
 	}
 
-	if(ret_code){ // success
-		data.particle_0_5_count = pm_data.particles_05um;
-	}else{
-		data.particle_0_5_count = 0xFFFFFFFF;
+	{
+		// PM2.5 sensor data
+		struct PMS_AQI_data pm_data;
+		for(uint8_t i = 0; i < RETRY_TIMES ; i++){ // Linear retry logic
+			ret_code = read_pm_sensor_data(&pm_data);
+			if(ret_code) break; // success ; no need to retry
+			HAL_Delay(5 + 5*i);
+		}
+
+		if(ret_code){ // success
+			data.particle_0_5_count = pm_data.particles_05um;
+		}else{
+			data.particle_0_5_count = 0xFFFFFFFF;
+		}
 	}
-
-
 
 	// Character Dummy Data
 	static char chr = 'A';
@@ -174,9 +189,6 @@ uint8_t Get_Wearable_Service_UUID(uint8_t* uuidPtr){
  */
 void Wearable_Sensor_Init(void)
 {
-
-	DHT_Initialize();
-
 
   /**
    *	Register the event handler to the BLE controller

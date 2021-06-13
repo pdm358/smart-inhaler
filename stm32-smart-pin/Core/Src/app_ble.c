@@ -336,23 +336,31 @@ void APP_BLE_Init( void )
   mutex = 1;
 #endif
 
-  /**
-   * Make device discoverable
-   */
+  ////===========Setup the advertisment data and start advertising
 
-
-// TODO: consider moving those statements somewhere else.
+  // Add the service UUID to the advertisement
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 0;
 
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = 0x07; // TODO: use Macro
+  BleApplicationContext.
+  BleApplicationContext_legacy.
+  advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen]
+			   = AD_TYPE_128_BIT_SERV_UUID_CMPLT_LIST; // TODO: use Macro
+
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
 
   // Advertise the wearable service
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen +=
-  Get_Wearable_Service_UUID((uint8_t*) BleApplicationContext.BleApplicationContext_legacy.advtServUUID + BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen);
+  Get_Wearable_Service_UUID(
+		  (uint8_t*) BleApplicationContext.BleApplicationContext_legacy.advtServUUID
+		  + BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen
+		  );
+
+
 
   /// Add a terminating zero just for cleanliness
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = 0;
+  BleApplicationContext.
+  BleApplicationContext_legacy.
+  advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = 0;
 
   /* Initialize intervals for reconnexion without intervals update */
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
@@ -804,8 +812,7 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
     char local_name[] = {0, AD_TYPE_COMPLETE_LOCAL_NAME, 'S', 'T', 'M', '3', '2', ' ', 'W', 'e', 'a', 'r', 'a', 'b', 'l', 'e', ' ', 'S', 'e', 'n', 's', 'o', 'r'};
     local_name[0] = sizeof(local_name) -1;
 
-    // TODO: clean
-    // the advertising is packet is too small to contain both the device name
+    // The advertising packet is too small to contain both the device name
     // and service UUID.
     // So we use the scan response too.
     // However, the app could not find the wearable when the service UUID was in the

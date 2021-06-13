@@ -7,6 +7,8 @@
 
 #include "PM_Sensor.h"
 
+//TODO: USE TRUE/FALSE MACROS
+
 // must have this defined in main.c
 extern I2C_HandleTypeDef hi2c1;
 
@@ -30,8 +32,8 @@ uint8_t static parse_pm_sensor_data(uint8_t *input_buffer_ptr, struct PMS_AQI_da
 		((uint16_t*)output_pm_data_ptr)[i] += bufOffset2[i * 2 + 1];
 	}
 
-	uint16_t sum = 0;
 	// get checksum ready
+	uint16_t sum = 0;
 	for (uint8_t i = 0; i < PMS_BUF_LENGTH - 2; i++) {
 		sum += input_buffer_ptr[i];
 	}
@@ -53,12 +55,12 @@ uint8_t read_pm_sensor_data(struct PMS_AQI_data *pm_data_output_ptr) {
 
 	// Tell PM sensor that we want to read
 	buf[0] = PMS_REG;
-	ret = HAL_I2C_Master_Transmit(&hi2c1, PMS_ADDR, buf, 1, 1);
+	ret = HAL_I2C_Master_Transmit(&hi2c1, PMS_ADDR, buf, 1, 5);
 
 	if(ret != HAL_OK) return 0;
 
 	// Read PMS_BUF_LENGTH bytes (PMS_BUF_LENGTH = 32 is the standard Plantower packet size) from PM sensor
-	ret = HAL_I2C_Master_Receive(&hi2c1, PMS_ADDR, buf, PMS_BUF_LENGTH, 1);
+	ret = HAL_I2C_Master_Receive(&hi2c1, PMS_ADDR, buf, PMS_BUF_LENGTH, 5);
 
 	if ( ret != HAL_OK ) return 0;
 

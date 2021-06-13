@@ -102,13 +102,12 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
       {
         case ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE:
         {
-        	//todo: fix warning --> fixed, but check again.
         	aci_gatt_read_permit_req_event_rp0* read_permit_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
 			if(read_permit_req->Attribute_Handle == (wearable_context.data_characteristic_handler + 1))
 			{
 				//https://community.st.com/s/question/0D53W000003xw7LSAQ/basic-ble-reading-for-stm32wb
 
-				static wearable_data_t data; // fixme: it is annoying and unnecessary to protect this against concurrency. Will think a bit about this later.
+				static wearable_data_t data;
 
 				data = getWearableData();
 
@@ -118,7 +117,7 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
 															0, /* charValOffset */
 															sizeof(wearable_data_t), /* charValueLen */
 															(uint8_t*) (&data));
-				aci_gatt_allow_read(read_permit_req->Connection_Handle); // todo: consider switching the order.
+				aci_gatt_allow_read(read_permit_req->Connection_Handle);
 
 				 return_value = SVCCTL_EvtNotAck;
 			}

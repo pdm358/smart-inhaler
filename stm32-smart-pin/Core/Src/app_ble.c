@@ -344,7 +344,7 @@ void APP_BLE_Init( void )
   BleApplicationContext.
   BleApplicationContext_legacy.
   advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen]
-			   = AD_TYPE_128_BIT_SERV_UUID_CMPLT_LIST; // TODO: use Macro
+			   = AD_TYPE_128_BIT_SERV_UUID_CMPLT_LIST;
 
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
 

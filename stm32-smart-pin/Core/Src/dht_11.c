@@ -70,78 +70,42 @@ static uint32_t time_to_signal(GPIO_PinState waitFor, uint32_t timoutInTicks){
  *
  * The smart-pin would freeze because the counter doesn't increment.
  */
-//static uint8_t init_timer(uint8_t set_counter)
-//{
-//	static uint32_t demcr_copy = 0;
-//	static uint32_t dwt_ctrl_copy = 0;
-//
-//	if(set_counter == TRUE){ // Initialize
-//
-//		demcr_copy = CoreDebug->DEMCR;
-//		dwt_ctrl_copy = DWT->CTRL;
-//
-//		// fixme: disabling before enabling seems unnecessary and should be deleted if so.
-//		// However, couldn't confirm so because the DWT->CYCCNT always works by the time this function is called.
-//		// In fact, it isn't clear why debucg exception and monitor controlled need to enabled at all.
-//		// fixme: If you ever need this function, see if it is necessary to set CoreDebug->DEMCR and delete
-//		// the following two lines if it is unnecessary.
-//		// From stack overflow, I can this is not necessary: https://stackoverflow.com/questions/32610019/arm-m4-instructions-per-cycle-ipc-counters
-//		//		/* Disable TRC */
-//		CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk; // ~0x01000000;
-//
-//		/* Enable TRC */ // todo: consider deleting this too.
-//		CoreDebug->DEMCR |=  CoreDebug_DEMCR_TRCENA_Msk; // 0x01000000;
-//
-//
-//
-//
-//		/* Disable clock cycle counter */
-//		// fixme: disabling before enabling seems unnecessary and should be deleted if so.
-//		// However, couldn't confirm so because the DWT->CYCCNT always works by the time this function is called.
-//		DWT->CTRL &= ~DWT_CTRL_CYCCNTENA_Msk; //~0x00000001;
-//
-//		/* Enable  clock cycle counter */
-//		DWT->CTRL |=  DWT_CTRL_CYCCNTENA_Msk; //0x00000001;
-//
-//
-//
-//
-//		/* Reset the clock cycle counter value */
-//		DWT->CYCCNT = 0;
-//
-//		/* 3 NO OPERATION instructions */
-//		__ASM volatile ("NOP");
-//		__ASM volatile ("NOP");
-//		__ASM volatile ("NOP");
-//
-//		/* Check if clock cycle counter has started */
-//		if(DWT->CYCCNT) return TRUE; /*clock cycle counter started*/
-//
-//		return FALSE; /*clock cycle counter not started*/
-//
-//	}
-//
-//
-//	// Deinitialize
-//
-//	// Restore the status of the register.
-//	// Assumes this function was called first with set_counter == TRUE
-//	CoreDebug->DEMCR = demcr_copy;
-//	DWT->CTRL = dwt_ctrl_copy;
-//
-//
-//	DWT->CYCCNT = 0;
-//
-//	/* 3 NO OPERATION instructions */
-//	__ASM volatile ("NOP");
-//	__ASM volatile ("NOP");
-//	__ASM volatile ("NOP");
-//
-//	if(DWT->CYCCNT == 0) return TRUE;
-//
-//	return FALSE;
-//
-//}
+static uint8_t init_timer(uint8_t set_counter)
+{
+	static uint32_t dwt_ctrl_copy = 0;
+
+	if(set_counter){ // Initialize
+
+		/* Enable  clock cycle counter */
+		dwt_ctrl_copy = DWT->CTRL;
+
+		DWT->CTRL |=  DWT_CTRL_CYCCNTENA_Msk; //Enable the counter
+
+		uint32_t cur_count = DWT->CYCCNT;
+
+		/* 3 NO OPERATION instructions */
+		__ASM volatile ("NOP");
+		__ASM volatile ("NOP");
+		__ASM volatile ("NOP");
+
+		/* Check if clock cycle counter has started */
+		if(DWT->CYCCNT - cur_count > 0) return TRUE; /*clock cycle counter started*/
+
+		return FALSE; /*clock cycle counter not started*/
+
+	}
+
+
+	// Deinitialize
+
+	// Restore the status of the register.
+	// Assumes this function was called first with set_counter == TRUE
+	//CoreDebug->DEMCR = demcr_copy;
+	DWT->CTRL = dwt_ctrl_copy;
+
+	return TRUE;
+
+}
 
 
 static uint8_t query_dht11_sensor (uint32_t timeout_per_operation)
@@ -221,7 +185,7 @@ uint8_t get_dht11_data (DHT_11_Data *DHT_Data)
 {
 
 
-	//if(!init_timer(TRUE)) return FALSE; // Please checkout the init_timer function to understand why it is commented out.
+	if(!init_timer(TRUE)) return FALSE; // Please checkout the init_timer function to understand why it is commented out.
 
 	//500 us * (freq/1M) = 500 us * num clk cycles in us = number of clk cycles in 500us.
 
@@ -234,7 +198,7 @@ uint8_t get_dht11_data (DHT_11_Data *DHT_Data)
 		if(!read_dht11_data_byte((dht_buffer + i), cyc_timout_per_operation)) return FALSE;
 	}
 
-	//if(!init_timer(FALSE)) return FALSE; // Please checkout the init_timer function to understand why it is commented out.
+	if(!init_timer(FALSE)) return FALSE; // Please checkout the init_timer function to understand why it is commented out.
 
 	if(!parse_data(dht_buffer, DHT_Data)) return FALSE;
 

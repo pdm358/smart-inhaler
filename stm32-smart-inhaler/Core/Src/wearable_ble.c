@@ -3,35 +3,38 @@
 #include "app_ble.h"
 #include "pvd.h"
 #include <stdio.h>
+#include "rtc.h" // TODO: Move all of the includes somewhere else.
 
-#define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
-#define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
+#define SERVICE_UUID "e814c25d7107459eb25d23fec96d49da"
+#define IUE_CHARACTERISTIC "d7dc7c5048ce45a49c3e243a5bb75608"
+
+//"015529f7-554c-4138-a71e-40a2dfede10a"
 
 typedef struct{
 	uint32_t timestamp;      // 4 bytes
+	uint32_t count;
 } IUE_t;
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
-  uint16_t	data_characteristic_handler;	  /**< Characteristic handle */
-}Wearable_Context_t;
+  uint16_t	iue_characteristic_handler;	  /**< Characteristic handle */
+}Inhaler_Context_t;
 
-PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_context;
+PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Inhaler_Context_t inhaler_context;
 
 static IUE_t getWearableData(){
 
-	//Making dummy data.
 	IUE_t data;
 
 	static uint32_t counter = 0;
+	counter++;
 
-	data.timestamp = counter++;
-
+	data.timestamp = get_timestamp();
+	data.count = counter << 24;
 
 	return data;
 }
 
-// todo: I want to confirm where this is called from.
 /**
  * @brief  Event handler
  * @param  Event: Address of the buffer holding the Event
@@ -52,22 +55,21 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
       {
         case ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE:
         {
-        	//todo: fix warning --> fixed, but check again.
         	aci_gatt_read_permit_req_event_rp0* read_permit_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
-			if(read_permit_req->Attribute_Handle == (wearable_context.data_characteristic_handler + 1))
+			if(read_permit_req->Attribute_Handle == (inhaler_context.iue_characteristic_handler + 1))
 			{
 				//https://community.st.com/s/question/0D53W000003xw7LSAQ/basic-ble-reading-for-stm32wb
 
-				static IUE_t data; // fixme: it is annoying and unnecessary to protect this against concurrency. Will think a bit about this later.
+				static IUE_t data;
 
 				data = getWearableData();
 
-				//todo: I want to confirm whether this is synchronous or asynchronous. Could be a problem with two asynch calls right after each other.
-				aci_gatt_update_char_value(wearable_context.service_handler,
-						wearable_context.data_characteristic_handler,
+				aci_gatt_update_char_value(inhaler_context.service_handler,
+						inhaler_context.iue_characteristic_handler,
 															0, /* charValOffset */
 															sizeof(IUE_t), /* charValueLen */
 															(uint8_t*) (&data));
+
 				aci_gatt_allow_read(read_permit_req->Connection_Handle); // todo: consider switching the order.
 
 				 return_value = SVCCTL_EvtNotAck;
@@ -162,13 +164,13 @@ void Wearable_Sensor_Init(void)
                       (Service_UUID_t *) &uuid128,
                       PRIMARY_SERVICE,
                       6,
-                      &(wearable_context.service_handler));
+                      &(inhaler_context.service_handler));
 
     /**
      *  Add LED Characteristic
      */
-  	Char_Array_To_128UUID( WEARABLE_DATA_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
-    aci_gatt_add_char(wearable_context.service_handler,
+  	Char_Array_To_128UUID( IUE_CHARACTERISTIC , (uint8_t*)&uuid128);
+    aci_gatt_add_char(inhaler_context.service_handler,
                       UUID_TYPE_128, &uuid128,
                       sizeof(IUE_t),
                       CHAR_PROP_READ,
@@ -176,6 +178,6 @@ void Wearable_Sensor_Init(void)
 					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
                       10, /* encryKeySize */
                       1, /* isVariable */
-                      &(wearable_context.data_characteristic_handler));
+                      &(inhaler_context.iue_characteristic_handler));
 
 }

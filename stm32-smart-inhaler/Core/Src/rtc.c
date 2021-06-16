@@ -31,6 +31,9 @@ extern RTC_HandleTypeDef hrtc; //TODO: Consider passing this as a parameter rath
   */
 uint32_t get_timestamp( void )
 {
+	// TODO: fix so that it returns a 64 bit integer
+	// TODO: Check this is the correct way to read the rtc.
+	// TODO: Check the prescaler is configured correctly.
 	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
 	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
 

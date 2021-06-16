@@ -703,7 +703,7 @@ static void Ble_Hci_Gap_Gatt_Init(void){
 
   if (role > 0)
   {
-    const char *name = "STM32 Wearable Sensor"; // TODO: put that together with the local name array
+    const char *name = "STM32 Smart Inhaler"; // TODO: put that together with the local name array
     aci_gap_init(role, 0,
                  strlen(name),
                  &gap_service_handle, &gap_dev_name_char_handle, &gap_appearance_char_handle);
@@ -801,7 +801,8 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
 
 
 
-    char local_name[] = {0, AD_TYPE_COMPLETE_LOCAL_NAME, 'S', 'T', 'M', '3', '2', ' ', 'W', 'e', 'a', 'r', 'a', 'b', 'l', 'e', ' ', 'S', 'e', 'n', 's', 'o', 'r'};
+    // TODO: consider unifying this local name with the aci init device name by making a function that populates an array.
+    char local_name[] = {0, AD_TYPE_COMPLETE_LOCAL_NAME, 'S', 'T', 'M', '3', '2', ' ', 'S', 'm', 'a', 'r', 't', ' ', 'I', 'n', 'h', 'a', 'l', 'e', 'r'};
     local_name[0] = sizeof(local_name) -1;
 
     // TODO: clean

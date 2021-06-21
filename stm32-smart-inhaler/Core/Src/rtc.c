@@ -117,6 +117,10 @@ void get_compile_time(RTC_DateTypeDef * sDate, RTC_TimeTypeDef * sTime){
   */
 int64_t get_timestamp( void )
 {
+
+	//TODO: Confirm the sleep modes don't ruin the shadow registers.
+	// that when this function is called when the MCU wakes from sleep, it returns the time
+	// right now rather than when it went to sleep.
 	struct tm currTime;
 	RTC_TimeTypeDef currentTime;
 	RTC_DateTypeDef currentDate;

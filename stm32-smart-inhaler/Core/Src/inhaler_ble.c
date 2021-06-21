@@ -189,7 +189,13 @@ void send_iue(void){
 
 	hibernate_fram();
 
-	if(stack_size == 0) return;
+	if(stack_size == 0){
+
+		// If there is nothing to send, terminate BLE connection to save power.
+		if(inhaler_context.inhaler_connected) disconnect();
+
+		return;
+	}
 
 	aci_gatt_update_char_value(inhaler_context.service_handler,
 								inhaler_context.iue_characteristic_handler,

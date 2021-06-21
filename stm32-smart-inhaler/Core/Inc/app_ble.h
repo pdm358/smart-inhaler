@@ -78,7 +78,7 @@ extern "C" {
 /* USER CODE BEGIN EF */
 
 /**
-* Terminate BLE disconnection.
+* Terminate BLE connection.
 */
 void disconnect();
 

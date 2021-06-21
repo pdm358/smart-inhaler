@@ -901,7 +901,7 @@ const uint8_t* BleGetBdAddress( void )
 /* USER CODE BEGIN FD_LOCAL_FUNCTION */
 
 /**
- * Terminate BLE disconnection.
+ * Terminate BLE connection.
  */
 void disconnect(){
 	hci_disconnect(BleApplicationContext.BleApplicationContext_legacy.connectionHandle, 0x14);

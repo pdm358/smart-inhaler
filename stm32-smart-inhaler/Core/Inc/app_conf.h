@@ -546,8 +546,6 @@ typedef enum
 #define MAX_DBG_TRACE_MSG_SIZE 1024
 
 /* USER CODE BEGIN Defines */
-#define CFG_LED_SUPPORTED         1
-#define CFG_BUTTON_SUPPORTED      1
 /* USER CODE END Defines */
 
 /******************************************************************************

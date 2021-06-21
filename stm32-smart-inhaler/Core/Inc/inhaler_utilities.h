@@ -23,8 +23,7 @@
 #endif
 
 typedef struct{
-	uint32_t timestamp;      // 4 bytes
-	uint32_t count;			 // 4 bytes
+	int64_t timestamp;      // 8 bytes
 } IUE_t;
 
 /**

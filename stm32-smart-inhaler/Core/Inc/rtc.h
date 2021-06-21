@@ -11,6 +11,6 @@
 #include <time.h>
 #include "stm32wbxx_hal.h"
 
-uint32_t get_timestamp();
+int64_t get_timestamp();
 
 #endif /* CORE_INC_RTC_H_ */

@@ -17,6 +17,9 @@
 #define LED_NUM_BLINKS				5
 #define ADV_TIMOUT        			(10*1000*1000/CFG_TS_TICK_VAL) /**< 10s */
 
+/**
+ * Represents the state of the inhaler
+ */
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
   uint16_t	timer_characteristic_handler;	  /**< Characteristic handle */
@@ -29,6 +32,9 @@ typedef struct{
 
 PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Inhaler_Context_t inhaler_context;
 
+/**
+ * Chooses which LED to blink and initializes it.
+ */
 uint32_t pick_and_initialize_led(void){
 
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -62,7 +68,14 @@ uint32_t pick_and_initialize_led(void){
 
 }
 
+/**
+ * A counter of how many times the LED was toggled.
+ */
 static uint8_t led_counter = 0;
+
+/**
+ * Blinks one of the LEDs depending on the battery status.
+ */
 void blink_led(void){
 
 	static uint32_t pin = 0;
@@ -91,6 +104,9 @@ void blink_led(void){
 
 }
 
+/**
+ * Starts advertising the device.
+ */
 void adv_start(void){
 
 	if(!inhaler_context.inhaler_connected){
@@ -104,6 +120,9 @@ void adv_start(void){
 
 }
 
+/**
+ * Cancels advertising.
+ */
 void adv_cancel(){
 
 	// After experimenting, it seems okay to call aci_gap_set_non_discoverable after a connection was made.
@@ -128,10 +147,16 @@ void adv_cancel(){
 
 }
 
+/**
+ * Schedules a task to blink the LED
+ */
 void blink_led_req(){
 	UTIL_SEQ_SetTask( 1<<CFG_TASK_BLINK_LED, CFG_SCH_PRIO_0);
 }
 
+/**
+ * Schedules a task to cancel advertisement.
+ */
 void adv_cancel_req(void){
 	UTIL_SEQ_SetTask( 1<<CFG_TASK_ADV_CANCEL_ID, CFG_SCH_PRIO_0);
 }
@@ -312,17 +337,25 @@ static SVCCTL_EvtAckStatus_t gatt_event_handler(void *Event)
   return(return_value);
 }/* end SVCCTL_EvtAckStatus_t */
 
+/**
+ * Called when the inhaler establishes a BLE connection.
+ */
 void Inhaler_On_Connect(void){
 	inhaler_context.inhaler_connected = TRUE;
 	HW_TS_Stop(inhaler_context.advertisement_timer_handler);
 }
 
+/**
+ * Called when the inhaler loses its BLE connection.
+ */
 void Inhaler_On_Disconnect(void){
 	inhaler_context.inhaler_connected = FALSE;
 	inhaler_context.iue_indications_enabled = FALSE; // Also disable indications.
 }
 
-
+/**
+ * Converts char to its BCD
+ */
 static uint8_t charToInt(char c){
 
 	if( c >= '0' && c <= '9') return c - '0';
@@ -332,6 +365,9 @@ static uint8_t charToInt(char c){
 	return 0xff; //error;
 }
 
+/**
+ * Converts a string into its BCD and reverses it.
+ */
 static void Char_Array_To_128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
 	uint8_t maxSize = 16;
@@ -347,13 +383,17 @@ static void Char_Array_To_128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
 }
 
+/**
+ * Populated the inhaler service UUID in the provided pointer.
+ */
 uint8_t Get_Inhaler_Service_UUID(uint8_t* uuidPtr){
 	Char_Array_To_128UUID(SERVICE_UUID, uuidPtr);
 	return 16;
 }
 
 /**
- * @brief  Service initialization
+ * @brief  Initializes the inhaler GATT server, the PVD, the fram, and
+ * the timers and tasks necessary for the inhaler to function.
  * @param  None
  * @retval None
  */

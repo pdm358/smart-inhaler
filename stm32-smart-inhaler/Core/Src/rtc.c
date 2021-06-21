@@ -7,19 +7,10 @@
 
 #include "rtc.h"
 
-
-struct tm currTime;
-RTC_TimeTypeDef currentTime;
-RTC_DateTypeDef currentDate;
-uint32_t theTimestamp;
-
-
 //TODO: Organize this later:
 // RTC is initialized in main
 // Timeserver is initialized in app_entry and uses the rtc
 // Prescaler is defined in app_conf.h
-// Is the RTC powered by the LSE? This is necessary for it to function correctly in standby mode
-// Todo: 32-bit timestamp is not ideal.
 
 extern RTC_HandleTypeDef hrtc; //TODO: Consider passing this as a parameter rather than using extern.
 
@@ -27,15 +18,19 @@ extern RTC_HandleTypeDef hrtc; //TODO: Consider passing this as a parameter rath
 /**
   * @brief  This function creates a timestamp using the RTC
   * @param  None
-  * @retval 32 bit integer (decimal) timestamp in epoch time
+  * @retval 64 bit integer (decimal) timestamp in epoch time
   */
-uint32_t get_timestamp( void )
+int64_t get_timestamp( void )
 {
-	// TODO: fix so that it returns a 64 bit integer
-	// TODO: Check this is the correct way to read the rtc.
-	// TODO: Check the prescaler is configured correctly.
+	struct tm currTime;
+	RTC_TimeTypeDef currentTime;
+	RTC_DateTypeDef currentDate;
+
+
 	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
 	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
+
+	//[(SecondFraction-SubSeconds)/(SecondFraction+1)] * time_unit
 
 	currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
 	currTime.tm_mday = currentDate.Date;
@@ -45,7 +40,12 @@ uint32_t get_timestamp( void )
 	currTime.tm_min  = currentTime.Minutes;
 	currTime.tm_sec  = currentTime.Seconds;
 
-	theTimestamp = (uint32_t) mktime(&currTime);
+	int64_t theTimestamp = (int64_t) mktime(&currTime);
+
+	// convert to epoch milliseconds
+	theTimestamp *= 1000;
+	theTimestamp += (currentTime.SecondFraction - currentTime.SubSeconds) * 1000 / (currentTime.SecondFraction + 1);
+
 	return (theTimestamp);
 }
 

@@ -1,5 +1,5 @@
-#include <fram.h>
 #include "inhaler_ble.h"
+#include "fram.h"
 #include "common_blesvc.h"
 #include "app_ble.h"
 #include "pvd.h"
@@ -7,7 +7,7 @@
 #include "stm32wbxx_hal.h"
 #include "stm32_seq.h"
 #include "inhaler_utilities.h"
-#include "rtc.h" // TODO: Move all of the includes somewhere else.
+#include "rtc.h"
 
 #define SERVICE_UUID			 	"e814c25d7107459eb25d23fec96d49da"
 #define TIME_CHARACTERISTIC_UUID 	"015529f7554c4138a71e40a2dfede10a"
@@ -93,7 +93,6 @@ void blink_led(void){
 
 void adv_start(void){
 
-	//fixme:
 	if(!inhaler_context.inhaler_connected){
 		Adv_Request(APP_BLE_FAST_ADV);
 		HW_TS_Start(inhaler_context.advertisement_timer_handler, (uint32_t)ADV_TIMOUT);
@@ -101,16 +100,11 @@ void adv_start(void){
 	}
 
 	led_counter = 0; //reset the LED blinks
-	blink_led(); // fixme: May misbehave with the sequencer.
+	blink_led();
 
 }
 
 void adv_cancel(){
-
-	// FIXME: what if a connection happens right as the adv_cancel timer is set?
-	// and the adv_cancel function is called before the on_connect function?
-	// Will calling aci_gap_set_non_discoverable cut the connection or will it be ignored?
-
 
 	// After experimenting, it seems okay to call aci_gap_set_non_discoverable after a connection was made.
 	if (!inhaler_context.inhaler_connected)
@@ -183,8 +177,7 @@ void send_iue(void){
 								(uint8_t*) (&iue));
 
 
-	// FIXME: This function can be optimized to avoid waking the FRAM unnecessarily.
-
+// FIXME: This function can be optimized to avoid waking the FRAM unnecessarily.
 }
 
 void pop_iue(){
@@ -323,12 +316,12 @@ static SVCCTL_EvtAckStatus_t gatt_event_handler(void *Event)
   return(return_value);
 }/* end SVCCTL_EvtAckStatus_t */
 
-void Wearable_On_Connect(void){
+void Inhaler_On_Connect(void){
 	inhaler_context.inhaler_connected = TRUE;
 	HW_TS_Stop(inhaler_context.advertisement_timer_handler);
 }
 
-void Wearable_On_Disconnect(void){
+void Inhaler_On_Disconnect(void){
 	inhaler_context.inhaler_connected = FALSE;
 	inhaler_context.iue_indications_enabled = FALSE; // Also disable indications.
 }
@@ -358,7 +351,7 @@ static void Char_Array_To_128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
 }
 
-uint8_t Get_Wearable_Service_UUID(uint8_t* uuidPtr){
+uint8_t Get_Inhaler_Service_UUID(uint8_t* uuidPtr){
 	Char_Array_To_128UUID(SERVICE_UUID, uuidPtr);
 	return 16;
 }
@@ -368,12 +361,12 @@ uint8_t Get_Wearable_Service_UUID(uint8_t* uuidPtr){
  * @param  None
  * @retval None
  */
-void Wearable_Sensor_Init(void)
+void Inhaler_Init(void)
 {
 
-	// TODO: Make an init function that sets up everything other than BLE and have it called called first.
-
 	init_pvd();
+
+	hibernate_fram();
 
 	/**
 	 * Register tasks in the sequencer
@@ -405,11 +398,12 @@ void Wearable_Sensor_Init(void)
 	SVCCTL_RegisterSvcHandler(gatt_event_handler);
 
     /**
-     *  Wearable Data Service
+     *  Inhaler Service
      *
      * Max_Attribute_Records = 2*no_of_char + 1
      * service_max_attribute_record = 1 for service
-     *                                2 for data characteristic
+     *                                2 for iue characteristic
+     *                                2 for clk/timer characteristic
      *                                3 because I don't know what this is.
      *
      */
@@ -418,7 +412,7 @@ void Wearable_Sensor_Init(void)
     aci_gatt_add_service(UUID_TYPE_128,
                       (Service_UUID_t *) &uuid128,
                       PRIMARY_SERVICE,
-                      6,
+                      8,
                       &(inhaler_context.service_handler));
 
     /** TODO: this characteristic can be updated and used later to set the inhaler calendar through the phone.
@@ -432,7 +426,7 @@ void Wearable_Sensor_Init(void)
 					  ATTR_PERMISSION_AUTHEN_READ,
 					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
                       10, /* encryKeySize */
-                      1, /* isVariable */ // TODO: consider making this 0 to represent it is not variable.
+                      1, /* isVariable */
                       &(inhaler_context.timer_characteristic_handler));
 
     /**
@@ -446,7 +440,7 @@ void Wearable_Sensor_Init(void)
   						  ATTR_PERMISSION_AUTHEN_READ | ATTR_PERMISSION_AUTHEN_WRITE, // Authentication will also be required to enable the indications
 						  GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
   	                      10, /* encryKeySize */
-  	                      1, /* isVariable */ // TODO: consider making this 0 to represent it is not variable.
+  	                      1, /* isVariable */
   	                      &(inhaler_context.iue_characteristic_handler));
 
 }

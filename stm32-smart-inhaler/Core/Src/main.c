@@ -539,8 +539,8 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE(); //TODO: consider deleting unnecessary port initializations.
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE(); //Unfortunately, with the current hardware, all of these ports are used
+  __HAL_RCC_GPIOB_CLK_ENABLE(); //It is possible to optimize Port B's initialization because it only controls LEDs.
 
   
 

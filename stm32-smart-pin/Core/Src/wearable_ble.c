@@ -223,7 +223,7 @@ void Wearable_Sensor_Init(void)
      *
      * Max_Attribute_Records = 2*no_of_char + 1
      * service_max_attribute_record = 1 for service
-     *                                2 for data characteristic
+     *                                2 for weather data characteristic
      *                                3 because I don't know what this is.
      *
      */
@@ -236,7 +236,7 @@ void Wearable_Sensor_Init(void)
                       &(wearable_context.service_handler));
 
     /**
-     *  Add LED Characteristic
+     *  Wearable Data Characteristic
      */
   	Char_Array_To_128UUID( WEARABLE_DATA_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_char(wearable_context.service_handler,

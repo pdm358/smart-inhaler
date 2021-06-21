@@ -343,12 +343,12 @@ void APP_BLE_Init( void )
 // TODO: consider moving those statements somewhere else.
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 0;
 
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = 0x07; // TODO: use Macro
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = AD_TYPE_128_BIT_SERV_UUID_CMPLT_LIST;
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
 
   // Advertise the wearable service
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen +=
-  Get_Wearable_Service_UUID((uint8_t*) BleApplicationContext.BleApplicationContext_legacy.advtServUUID + BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen);
+  Get_Inhaler_Service_UUID((uint8_t*) BleApplicationContext.BleApplicationContext_legacy.advtServUUID + BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen);
 
   /// Add a terminating zero just for cleanliness
   BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = 0;
@@ -398,7 +398,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
        */
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
-      Wearable_On_Disconnect();
+      Inhaler_On_Disconnect();
       /* USER CODE END EVT_DISCONN_COMPLETE */
     }
 
@@ -478,7 +478,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
            * SPECIFIC to P2P Server APP
            */
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-          Wearable_On_Connect();
+          Inhaler_On_Connect();
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
         break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
@@ -796,11 +796,10 @@ void Adv_Request(APP_BLE_ConnStatus_t New_Status)
     char local_name[] = {0, AD_TYPE_COMPLETE_LOCAL_NAME, 'S', 'T', 'M', '3', '2', ' ', 'S', 'm', 'a', 'r', 't', ' ', 'I', 'n', 'h', 'a', 'l', 'e', 'r'};
     local_name[0] = sizeof(local_name) -1;
 
-    // TODO: clean
-    // the advertising is packet is too small to contain both the device name
-    // and service UUID.
-    // So we use the scan response too.
-    // However, the app could not find the wearable when the service UUID was in the
+
+    // The advertising packet is too small to contain both the device name
+    // and service UUID. So we use the scan response too.
+    // However, the app could not find the wearable/inhaler when the service UUID was in the
     // the scan response. The app uses the service UUID to filter the devices.
     // I thought it might be better to have the service UUID in the advertising data itself rather
     // than the scan response data.

@@ -78,7 +78,7 @@ void APPE_Init( void )
 {
   SystemPower_Config(); /**< Configure the system Power Mode */
 
-  //TODO: Is this the best place to put this?
+  //TODO: Consider moving this to the inhaler files.
   HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
 
 /* USER CODE BEGIN APPE_Init_1 */

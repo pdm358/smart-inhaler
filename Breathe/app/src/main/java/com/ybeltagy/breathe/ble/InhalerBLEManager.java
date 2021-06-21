@@ -109,9 +109,9 @@ public class InhalerBLEManager extends BleManager {
                     //fixme: be aware that this is a signed epoch.
                     ByteBuffer buf = ByteBuffer.wrap(data.getValue()).order(ByteOrder.LITTLE_ENDIAN);
 
-                    int num = buf.getInt();
+                    long num = buf.getLong();
 
-                    Instant iueTimestamp = Instant.ofEpochSecond((long)num);
+                    Instant iueTimestamp = Instant.ofEpochMilli((long)num);
 
                     Context curContext = getContext();
                     BreatheRepository.startDataCollection(iueTimestamp, curContext); // TODO: find a better place to call this
@@ -122,7 +122,7 @@ public class InhalerBLEManager extends BleManager {
                         sb.append(String.format("%02X-", b));
                     }
                     Log.d(tag, sb.toString());
-                    Log.d(tag, Integer.toString(num));
+                    Log.d(tag, Long.toString(num));
                     Log.d(tag, iueTimestamp.toString());
 
             });

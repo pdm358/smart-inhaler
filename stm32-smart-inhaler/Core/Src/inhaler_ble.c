@@ -354,18 +354,6 @@ void Inhaler_On_Disconnect(void){
 }
 
 /**
- * Converts char to its BCD
- */
-static uint8_t charToInt(char c){
-
-	if( c >= '0' && c <= '9') return c - '0';
-	if( c >= 'a' && c <= 'f') return c - 'a' + 10;
-	if( c >= 'A' && c <= 'F') return c - 'A' + 10;
-
-	return 0xff; //error;
-}
-
-/**
  * Converts a string into its BCD and reverses it.
  */
 static void Char_Array_To_128UUID(char * charArrayPtr, uint8_t* uuidPtr){

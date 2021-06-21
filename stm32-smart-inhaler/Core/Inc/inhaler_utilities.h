@@ -27,6 +27,11 @@ typedef struct{
 } IUE_t;
 
 /**
+ * Converts char to its BCD
+ */
+uint8_t charToInt(char c);
+
+/**
  * Prints an array of bytes give a pointer to the array and its size.
  */
 void print_bytes(uint8_t *buffer_to_print,uint16_t buffer_to_print_size);

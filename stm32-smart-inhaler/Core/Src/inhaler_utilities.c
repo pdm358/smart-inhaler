@@ -3,6 +3,18 @@
 extern UART_HandleTypeDef huart1;
 
 /**
+ * Converts char to its BCD
+ */
+uint8_t charToInt(char c){
+
+	if( c >= '0' && c <= '9') return c - '0';
+	if( c >= 'a' && c <= 'f') return c - 'a' + 10;
+	if( c >= 'A' && c <= 'F') return c - 'A' + 10;
+
+	return 0xff; //error;
+}
+
+/**
  * Prints an array of bytes give a pointer to the array and its size.
  */
 void print_bytes(uint8_t *buf,uint16_t size) {

@@ -48,6 +48,7 @@
 #include "hw_conf.h"
 #include "otp.h"
 #include "fram.h"
+#include "rtc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -405,7 +406,6 @@ static void MX_RTC_Init(void)
   /* USER CODE END RTC_Init 1 */
   /** Initialize RTC Only
   */
- //TODO: is this the best place to put this?
   hrtc.Instance = RTC;
   hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
   hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
@@ -424,14 +424,14 @@ static void MX_RTC_Init(void)
   	/* Read the Back Up Register 0 Data */
   	if (HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0) != 0x32F2)
   	{
-  		/* USER CODE END Check_RTC_BKUP */
-
   		/** Initialize RTC and set the Time and Date
   		 */
-  		sTime.Hours = 0x12;
-  		sTime.Minutes = 0x48;
-  		sTime.Seconds = 0x50;
-  		sTime.SubSeconds = 0x0;
+  		//FIXME: BE AWARE THAT YOU MAY NEED TO MANUALLY MODIFY THE DATEQ
+  		get_compile_time(&sDate, &sTime);
+  		sTime.Hours += 7;
+//  		sTime.Minutes = 0x48;
+//  		sTime.Seconds = 0x50;
+//  		sTime.SubSeconds = 0x0;
   		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
 
@@ -439,11 +439,11 @@ static void MX_RTC_Init(void)
   			Error_Handler();
   		}
 
-  		sDate.WeekDay = RTC_WEEKDAY_TUESDAY;
-  		sDate.Month = RTC_MONTH_JUNE;
-  		sDate.Date = 0x21;
-  		sDate.Year = 0x21;
 
+  		sDate.WeekDay = RTC_WEEKDAY_TUESDAY; // I can't know the week day from the Macro.
+//  		sDate.Month = RTC_MONTH_JUNE;
+//  		sDate.Date = 0x21;
+//  		sDate.Year = 0x21;
   		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)   {
   			Error_Handler();
   		}

@@ -65,9 +65,14 @@ static uint32_t time_to_signal(GPIO_PinState waitFor, uint32_t timoutInTicks){
  */
 static uint8_t init_timer(uint8_t set_counter)
 {
+	static uint32_t demcr_copy = 0;
 	static uint32_t dwt_ctrl_copy = 0;
 
 	if(set_counter){ // Initialize
+
+		/* Enable TRC */
+		demcr_copy = CoreDebug->DEMCR;
+		CoreDebug->DEMCR |=  CoreDebug_DEMCR_TRCENA_Msk; // 0x01000000;
 
 		/* Enable  clock cycle counter */
 		dwt_ctrl_copy = DWT->CTRL;
@@ -93,8 +98,11 @@ static uint8_t init_timer(uint8_t set_counter)
 
 	// Restore the status of the register.
 	// Assumes this function was called first with set_counter == TRUE
-	//CoreDebug->DEMCR = demcr_copy;
+	CoreDebug->DEMCR = demcr_copy;
+
 	DWT->CTRL = dwt_ctrl_copy;
+
+
 
 	return TRUE;
 

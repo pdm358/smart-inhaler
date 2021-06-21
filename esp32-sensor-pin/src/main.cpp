@@ -42,6 +42,7 @@
 // This preprocessor allows the compiler to compile debugging print statements.
 // Comment the preprocessor line before releasing.
 #define WEARABLE_SENSOR_DEBUG
+#define DEFAULT_PM25_VALUE INT_MIN
 
 // Global variables
 
@@ -69,6 +70,7 @@ DHT dht(5, DHT11);
 struct WearableData{
   float temperature;// 4 bytes - little endian
   float humidity;   // 4 bytes - little endian
+  int32_t  particle_0_5_count; 	// 4 bytes - little endian
   char  character;   // 1 byte
   char  digit;      // 1 byte
 };
@@ -80,6 +82,8 @@ WearableData* wearableDataPtr;
 void updateWearableData(WearableData* wearableDataPtr){
   wearableDataPtr->temperature = dht.readTemperature(); // float in little Endian.
   wearableDataPtr->humidity = dht.readHumidity();
+
+  wearableDataPtr->particle_0_5_count = DEFAULT_PM25_VALUE;
 
   //Set Digit
   //Loop through '0'-'9' and back again to '0'

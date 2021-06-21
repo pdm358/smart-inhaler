@@ -179,5 +179,5 @@ public interface BreatheDao {
      * This deletes all InhalerUsageEvents from the InhalerUsageEvent_table
      */
     @Query("DELETE FROM InhalerUsageEvent_table")
-    void deleteAll();
+    void deleteAllIues();
 }

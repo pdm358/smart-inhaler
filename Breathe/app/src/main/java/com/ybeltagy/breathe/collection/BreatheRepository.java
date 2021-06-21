@@ -149,7 +149,7 @@ public class BreatheRepository {
         //   from the smart wearable
         Instant now = Instant.now();
         Instant wearableLimit = now.minus(10, ChronoUnit.MINUTES); // TODO: remove hardcoded variable and move to resources file
-        if (!timestamp.isBefore(wearableLimit)) {
+        if (timestamp.isAfter(wearableLimit)) {
             wearableDataHelper(timestamp, context);
         }
 
@@ -161,7 +161,7 @@ public class BreatheRepository {
         //   because then we won't be able to get weather data for it
         Instant weatherLimit = now.minus(6, ChronoUnit.HOURS)
                 .plus(5, ChronoUnit.MINUTES);
-        if (!timestamp.isBefore(weatherLimit) && timestamp.isBefore(now)) {
+        if (timestamp.isAfter(weatherLimit)) {
             getAndSaveWeatherDataHelper(timestamp, context);
         }
     }
@@ -216,7 +216,7 @@ public class BreatheRepository {
     public void clearIUEs(){
 
         BreatheRoomDatabase.dbWriteExecutor.execute(() ->
-                breatheDao.deleteAll());
+                breatheDao.deleteAllIues());
 
     }
 }

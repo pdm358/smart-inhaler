@@ -53,7 +53,7 @@ public class BreatheDaoTest {
 
     @After
     public void closeDB() {
-        tBreatheDao.deleteAll(); // delete the records in the test database
+        tBreatheDao.deleteAllIues(); // delete the records in the test database
         tBreatheRoomDatabase.close();
     }
 
@@ -79,7 +79,7 @@ public class BreatheDaoTest {
                 testTemp,
                 0);
 
-        tBreatheDao.deleteAll();
+        tBreatheDao.deleteAllIues();
     }
 
     @Test
@@ -110,7 +110,7 @@ public class BreatheDaoTest {
                 testTemp,
                 0);
         assertEquals(allEvents.get(0).getDiaryEntry().getTag(), Tag.PREVENTATIVE);
-        tBreatheDao.deleteAll();
+        tBreatheDao.deleteAllIues();
     }
 
     @Test
@@ -155,7 +155,7 @@ public class BreatheDaoTest {
         // was the diary entry data preserved?
         assertEquals(allEvents.get(0).getDiaryEntry().getTag(), Tag.PREVENTATIVE);
         assertEquals(allEvents.get(0).getDiaryEntry().getMessage(), "test test");
-        tBreatheDao.deleteAll();
+        tBreatheDao.deleteAllIues();
     }
 
     @Test
@@ -210,7 +210,7 @@ public class BreatheDaoTest {
 
     @Test
     public void getAnySingleInhalerUsageEventTest() {
-        tBreatheDao.deleteAll();
+        tBreatheDao.deleteAllIues();
         assertEquals(tBreatheDao.getAnySingleInhalerUsageEvent().size(), 0);
 
         Instant now = Instant.now();
@@ -245,6 +245,6 @@ public class BreatheDaoTest {
         assertEquals(thisPastWeek.size(),
                 week + 1); // note: the range is inclusive
 
-        tBreatheDao.deleteAll();
+        tBreatheDao.deleteAllIues();
     }
 }

@@ -81,6 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void onSimulateIUEButtonClick(View view) {
+
         breatheViewModel.simulateIUE(this);
     }
 

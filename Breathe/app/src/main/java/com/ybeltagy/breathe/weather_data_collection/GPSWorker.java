@@ -62,7 +62,7 @@ public class GPSWorker extends ListenableWorker {
                         exception -> {
                             Log.e(GPS_WORKER_LOG_TAG, "Exception occurred : "
                                     + exception.getMessage());
-                            completer.set(Result.retry());
+                            completer.set(Result.failure()); // GPS calls only execute once.
                         }
                 ));
     }

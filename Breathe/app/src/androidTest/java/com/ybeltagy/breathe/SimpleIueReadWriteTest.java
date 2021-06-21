@@ -38,7 +38,7 @@ public class SimpleIueReadWriteTest {
 
     @After
     public void closeDB() {
-        tBreatheDao.deleteAll(); // delete the records in the test database
+        tBreatheDao.deleteAllIues(); // delete the records in the test database
         tBreatheRoomDatabase.close();
     }
 

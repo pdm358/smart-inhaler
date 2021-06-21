@@ -7,8 +7,6 @@
 
 #include "PM_Sensor.h"
 
-//TODO: USE TRUE/FALSE MACROS
-
 // must have this defined in main.c
 extern I2C_HandleTypeDef hi2c1;
 
@@ -22,7 +20,7 @@ extern UART_HandleTypeDef huart1;
  */
 uint8_t static parse_pm_sensor_data(uint8_t *input_buffer_ptr, struct PMS_AQI_data *output_pm_data_ptr) {
 
-	if(input_buffer_ptr[0] != 0x42 || input_buffer_ptr[1] != 0x4d) return 0;
+	if(input_buffer_ptr[0] != 0x42 || input_buffer_ptr[1] != 0x4d) return FALSE;
 
 	// Re-arrange bytes to fit exactly in our PMSAQIdata struct
 	// - The data comes in big endian, this solves it so it works on all platforms
@@ -39,10 +37,10 @@ uint8_t static parse_pm_sensor_data(uint8_t *input_buffer_ptr, struct PMS_AQI_da
 	}
 
 	// does the checksum make sense?
-	if (sum != output_pm_data_ptr->checksum) return 0;
+	if (sum != output_pm_data_ptr->checksum) return FALSE;
 
 
-	return 1;
+	return TRUE;
 }
 
 /**
@@ -57,12 +55,12 @@ uint8_t read_pm_sensor_data(struct PMS_AQI_data *pm_data_output_ptr) {
 	buf[0] = PMS_REG;
 	ret = HAL_I2C_Master_Transmit(&hi2c1, PMS_ADDR, buf, 1, 5);
 
-	if(ret != HAL_OK) return 0;
+	if(ret != HAL_OK) return FALSE;
 
 	// Read PMS_BUF_LENGTH bytes (PMS_BUF_LENGTH = 32 is the standard Plantower packet size) from PM sensor
 	ret = HAL_I2C_Master_Receive(&hi2c1, PMS_ADDR, buf, PMS_BUF_LENGTH, 5);
 
-	if ( ret != HAL_OK ) return 0;
+	if ( ret != HAL_OK ) return FALSE;
 
 	return parse_pm_sensor_data(buf, pm_data_output_ptr);
 

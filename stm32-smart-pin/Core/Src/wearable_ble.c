@@ -6,12 +6,14 @@
 #include "PM_Sensor.h"
 #include <math.h>
 
-
 #define SERVICE_UUID 						"25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID 	"c3856cfa4af64d0da9a05ed875d937cc"
 
 #define RETRY_TIMES 2
 
+/**
+ * The packet send to the phone.
+ */
 typedef struct{
 	float temperature;				// 4 bytes - little endian
 	float humidity;   				// 4 bytes - little endian
@@ -20,6 +22,9 @@ typedef struct{
 	char  digit;      				// 1 byte
 } wearable_data_t;
 
+/**
+ * Contains important state information for the wearable device.
+ */
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
   uint16_t	data_characteristic_handler;	  /**< Characteristic handle */
@@ -28,11 +33,14 @@ typedef struct{
 PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_context;
 
 
+/**
+ * Queries sensors for information and returns a wearable data object.
+ */
 static wearable_data_t getWearableData(){
 
 	uint8_t ret_code = 0;
 
-	wearable_data_t data;
+	wearable_data_t data = {0}; // initialize to zeros
 
 	{ // Get dht 11 sensor data
 		//DHT 11 Data
@@ -53,8 +61,8 @@ static wearable_data_t getWearableData(){
 
 	}
 
-	{
-		// PM2.5 sensor data
+	{// PM2.5 sensor data
+
 		struct PMS_AQI_data pm_data;
 		for(uint8_t i = 0; i < RETRY_TIMES ; i++){ // Linear retry logic
 			ret_code = read_pm_sensor_data(&pm_data);
@@ -65,7 +73,7 @@ static wearable_data_t getWearableData(){
 		if(ret_code){ // success
 			data.particle_0_5_count = pm_data.particles_05um;
 		}else{
-			data.particle_0_5_count = 0xFFFFFFFF;
+			data.particle_0_5_count = -2147483648; // INT_MIN
 		}
 	}
 
@@ -83,7 +91,7 @@ static wearable_data_t getWearableData(){
 }
 
 /**
- * @brief  Event handler
+ * @brief  Handles BLE events like read requests
  * @param  Event: Address of the buffer holding the Event
  * @retval Ack: Return whether the Event has been managed or not
  */
@@ -100,7 +108,7 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
     	  evt_blecore_aci *blecore_evt = (evt_blecore_aci*)event_pckt->data;
       switch(blecore_evt->ecode)
       {
-        case ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE:
+        case ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE: // BLE GATT read request.
         {
         	aci_gatt_read_permit_req_event_rp0* read_permit_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
 			if(read_permit_req->Attribute_Handle == (wearable_context.data_characteristic_handler + 1))
@@ -111,7 +119,6 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
 
 				data = getWearableData();
 
-				//todo: I want to confirm whether this is synchronous or asynchronous. Could be a problem with two asynch calls right after each other.
 				aci_gatt_update_char_value(wearable_context.service_handler,
 						wearable_context.data_characteristic_handler,
 															0, /* charValOffset */
@@ -139,19 +146,32 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
   return(return_value);
 }/* end SVCCTL_EvtAckStatus_t */
 
+/**
+ * This function loads the 16 byte service uuid into the uuidPtr
+ */
 uint8_t isWearableConnected(void){
 	return APP_BLE_Get_Server_Connection_Status() == APP_BLE_CONNECTED_SERVER;
 }
 
+/**
+ * This function is called when the device establishes a BLE connection.
+ * It is not currently used, but future teams may want it.
+ */
 void Wearable_On_Connect(void){
 
 }
 
+/**
+ * This function is called when the device loses a BLE connection.
+ * It is not currently used, but future teams may want it.
+ */
 void Wearable_On_Disconnect(void){
 
 }
 
-
+/**
+ * Converts an ascii character to a number.
+ */
 static uint8_t charToInt(char c){
 
 	if( c >= '0' && c <= '9') return c - '0';
@@ -161,6 +181,9 @@ static uint8_t charToInt(char c){
 	return 0xff; //error;
 }
 
+/**
+ * Converts an ascii array representing UUID bytes into an array of bytes.
+ */
 static void Char_Array_To_128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
 	uint8_t maxSize = 16;
@@ -176,15 +199,16 @@ static void Char_Array_To_128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
 }
 
+/**
+ * This function loads the 16 byte service uuid into the uuidPtr
+ */
 uint8_t Get_Wearable_Service_UUID(uint8_t* uuidPtr){
 	Char_Array_To_128UUID(SERVICE_UUID, uuidPtr);
 	return 16;
 }
 
 /**
- * @brief  Service initialization
- * @param  None
- * @retval None
+ * Intializes the wearable sensor.
  */
 void Wearable_Sensor_Init(void)
 {

@@ -17,10 +17,13 @@
 #include "stdio.h"
 
 #include "stm32wbxx_hal.h"
+#include "app_common.h"
+
 
 #define PMS_ADDR 0x12 << 1 // Use 8-bit address
 #define PMS_REG 0x00
 #define PMS_BUF_LENGTH 32  // number of bytes in the standard PMS packet sent by the Plantower sensor
+
 
 /**! Structure holding Plantower's standard packet **/
 // IMPORTANT: DO NOT CHANGE - these variables must stay the same to match the packet
@@ -44,7 +47,7 @@ typedef struct PMS_AQI_data {
 
 /**
  * Reads PM sensor and populates input PM data struct
- * - returns false if some kind of error happened, true if everything went fine
+ * - returns FALSE if some kind of error happened, TRUE if everything went fine
  */
 uint8_t read_pm_sensor_data(struct PMS_AQI_data *PM_data);
 

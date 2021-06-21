@@ -1,12 +1,15 @@
 #include "dht_11.h"
 
 #define ERROR_CODE 0xFFFFFFFFU
-#define TRUE 1
-#define FALSE 0
 
 #define DHT_PORT 		GPIOA
 #define DHT_PIN 		GPIO_PIN_1
 #define DHT_DATA_SIZE 5
+
+/**
+ * Please read the dht11 datasheet and checkout the Adafruit dht11 library for reference.
+ * https://github.com/adafruit/DHT-sensor-library
+ */
 
 /**
  * Sets the DHT pin as an output pin.
@@ -58,17 +61,7 @@ static uint32_t time_to_signal(GPIO_PinState waitFor, uint32_t timoutInTicks){
 /**
  * This function intializes/deinitializes the clk cycle counter: DWT->CYCCNT
  *
- * It is already initialized, so this fucntion doesn't do anything.
- *
- * I left it because maybe after changing some build/debug/project parameters, DWT-> CYCNT
- * will no longer be initialized.
- *
- * I commented out the calls to it rather than deleting them.
- *
- * If the smart-pin freezes every time the dht sensor is queried, especially in a release built, then consider
- * using this function.
- *
- * The smart-pin would freeze because the counter doesn't increment.
+ * This counter counts the number of clk cycles of the MCU.
  */
 static uint8_t init_timer(uint8_t set_counter)
 {
@@ -107,7 +100,11 @@ static uint8_t init_timer(uint8_t set_counter)
 
 }
 
-
+/**
+ * Sends a request to the dht11 sensor to start sending data.
+ *
+ * Please check the datasheet.
+ */
 static uint8_t query_dht11_sensor (uint32_t timeout_per_operation)
 {
 	Set_Pin_Output (DHT_PORT, DHT_PIN);  // set the pin as output
@@ -127,7 +124,7 @@ static uint8_t query_dht11_sensor (uint32_t timeout_per_operation)
 
 /**
  * Reads 8 bits from the DHT11 sensor. Must be called immediately after the DHT11 sensor is queried.
- * Must be called consequetively until all 40 bits are read.
+ * Must be called consecutively until all 40 bits are read.
  */
 static uint8_t read_dht11_data_byte (uint8_t* result_ptr, uint32_t timeout_per_operation)
 {
@@ -152,6 +149,11 @@ static uint8_t read_dht11_data_byte (uint8_t* result_ptr, uint32_t timeout_per_o
 	return TRUE;
 }
 
+/**
+ * Parses the data read from the dht11 sensor into meaningful temp/humidity data.
+ *
+ * Strangely, the datasheet didn't specify this procedure, so please refer to the adafruit library.
+ */
 static uint8_t parse_data(uint8_t* input_ptr, DHT_11_Data *dht_data_ptr){
 	uint8_t sum = 0;
 
@@ -179,13 +181,13 @@ static uint8_t parse_data(uint8_t* input_ptr, DHT_11_Data *dht_data_ptr){
 /**
  * To get the DHT11 data, you only need to call this function,
  *
- * Returns 1 on success and 0 on failure.
+ * Returns TRUE on success and FALSE on failure.
  */
 uint8_t get_dht11_data (DHT_11_Data *DHT_Data)
 {
 
 
-	if(!init_timer(TRUE)) return FALSE; // Please checkout the init_timer function to understand why it is commented out.
+	if(!init_timer(TRUE)) return FALSE;
 
 	//500 us * (freq/1M) = 500 us * num clk cycles in us = number of clk cycles in 500us.
 
@@ -198,7 +200,7 @@ uint8_t get_dht11_data (DHT_11_Data *DHT_Data)
 		if(!read_dht11_data_byte((dht_buffer + i), cyc_timout_per_operation)) return FALSE;
 	}
 
-	if(!init_timer(FALSE)) return FALSE; // Please checkout the init_timer function to understand why it is commented out.
+	if(!init_timer(FALSE)) return FALSE;
 
 	if(!parse_data(dht_buffer, DHT_Data)) return FALSE;
 

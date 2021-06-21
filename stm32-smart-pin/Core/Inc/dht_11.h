@@ -11,7 +11,11 @@
 #define DHT_11_H_
 
 #include "stm32wbxx_hal.h"
+#include "app_common.h"
 
+/**
+ * DHT11 sensor data
+ */
 typedef struct
 {
 	float Temperature;

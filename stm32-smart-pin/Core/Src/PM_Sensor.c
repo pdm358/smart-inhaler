@@ -53,12 +53,12 @@ uint8_t read_pm_sensor_data(struct PMS_AQI_data *pm_data_output_ptr) {
 
 	// Tell PM sensor that we want to read
 	buf[0] = PMS_REG;
-	ret = HAL_I2C_Master_Transmit(&hi2c1, PMS_ADDR, buf, 1, 5);
+	ret = HAL_I2C_Master_Transmit(&hi2c1, PMS_ADDR, buf, 1, 10);
 
 	if(ret != HAL_OK) return FALSE;
 
 	// Read PMS_BUF_LENGTH bytes (PMS_BUF_LENGTH = 32 is the standard Plantower packet size) from PM sensor
-	ret = HAL_I2C_Master_Receive(&hi2c1, PMS_ADDR, buf, PMS_BUF_LENGTH, 5);
+	ret = HAL_I2C_Master_Receive(&hi2c1, PMS_ADDR, buf, PMS_BUF_LENGTH, 10);
 
 	if ( ret != HAL_OK ) return FALSE;
 

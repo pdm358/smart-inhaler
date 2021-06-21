@@ -142,10 +142,6 @@ void record_iue(void){
 
 	iue.timestamp = get_timestamp();
 
-	static uint32_t num = 0; // TODO: delete
-	num++;
-	iue.count = num << 24;
-
 	wakeup_fram();
 
 	push(iue);
@@ -226,7 +222,7 @@ static SVCCTL_EvtAckStatus_t inhaler_handler(evt_blecore_aci * blecore_evt){
 															sizeof(IUE_t), /* charValueLen */
 															(uint8_t*) (&data));
 
-				aci_gatt_allow_read(read_permit_req->Connection_Handle); // todo: consider switching the order.
+				aci_gatt_allow_read(read_permit_req->Connection_Handle);
 
 				 return_value = SVCCTL_EvtNotAck;
 			}
@@ -421,7 +417,7 @@ void Inhaler_Init(void)
   	Char_Array_To_128UUID( TIME_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_char(inhaler_context.service_handler,
                       UUID_TYPE_128, &uuid128,
-                      sizeof(IUE_t), //TODO: Consider updating this later.
+                      sizeof(IUE_t),
                       CHAR_PROP_READ,
 					  ATTR_PERMISSION_AUTHEN_READ,
 					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */

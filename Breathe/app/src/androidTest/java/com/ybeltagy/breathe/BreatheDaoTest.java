@@ -126,10 +126,11 @@ public class BreatheDaoTest {
         // simulating we gathered the wearableData 3 minutes later
         float testTemp = 100;
         float testHumidity = 50;
+        int testPM = 150;
         char testChar1 = 'A';
         char testChar2 = '2';
         tBreatheDao.updateWearableData(
-                rightNow, rightNow.plusSeconds(180), testTemp, testHumidity, testChar1, testChar2);
+                rightNow, rightNow.plusSeconds(180), testTemp, testHumidity, testPM, testChar1, testChar2);
 
         List<InhalerUsageEvent> allEvents = tBreatheDao.getAllIUEsTest();
         assert allEvents != null;
@@ -145,6 +146,7 @@ public class BreatheDaoTest {
         assertEquals(allEvents.get(0).getWearableData().getHumidity(),
                 testHumidity,
                 0);
+        assertEquals(allEvents.get(0).getWearableData().getPm_count(), testPM);
         assertEquals(allEvents.get(0).getWearableData().getCharacter(),
                 testChar1);
         assertEquals(allEvents.get(0).getWearableData().getDigit(),

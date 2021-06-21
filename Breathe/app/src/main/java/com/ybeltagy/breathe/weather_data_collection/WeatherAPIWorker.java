@@ -50,10 +50,12 @@ public class WeatherAPIWorker extends Worker {
 
         // Input data - timestamp string
         String timestampInputString = getInputData().getString(TaskDataFinals.KEY_TIMESTAMP);
+
         if (timestampInputString == null) {
             Log.d(tag, "timestamp input string as null");
-            Result.failure(); // we can't retry at this point
+            return Result.failure(); // we can't retry at this point
         }
+
         Instant timestamp = Instant.parse(timestampInputString);
 
         // Input data - latitude and longitude
@@ -61,7 +63,7 @@ public class WeatherAPIWorker extends Worker {
 
         if (latLongArray == null) {
             Log.d(tag, "latitude/longitude were null for " + timestamp.toString());
-            Result.failure(); // we can't retry at this point
+            return Result.failure(); // we can't retry at this point
         }
 
         Log.d(tag,
@@ -74,36 +76,42 @@ public class WeatherAPIWorker extends Worker {
                 CollectWeatherData.syncGetWeatherDataJSONString(timestamp,
                         latLongArray[0], latLongArray[1]);
 
-        if (apiResponse != null) {
-            // should we save to the database? or is this request for the UI?
-            boolean saveToDB = getInputData().getBoolean(KEY_SAVE_WEATHER, false);
+        if (apiResponse == null) {
 
-            if (saveToDB) {
-                WeatherData weatherData = CollectWeatherData.responseJSONToWeatherData(apiResponse);
-
-                if (weatherData != null && weatherData.isDataValid()) {
-                    saveToDB(timestamp, weatherData);
-                    return Result.success(); // no need to return a JSON string
-                }
-                // weather data wasn't parsed/was invalid, log an error statement and retry
-                Log.d(tag, "weather data wasn't parsed/was invalid.  Retrying for timestamp " +
-                        timestamp.toString());
-                return Result.retry();
-            }
-            // this is for the UI, send back a JSON string
-            Log.d(tag, "JSON weather data response -> " + apiResponse);
-
-            // set output
-            Data weatherDataOutput = new Data.Builder()
-                    .putString(KEY_WEATHER_DATA_RESULT, apiResponse)
-                    .build();
-            return Result.success(weatherDataOutput);
+            // we didn't get an API response; we should retry
+            Log.d(tag,
+                    "Weather data API response was null for timestamp " + timestamp.toString());
+            return Result.retry();
 
         }
-        // we didn't get an API response; we should retry
-        Log.d(tag,
-                "Weather data API response was null for timestamp " + timestamp.toString());
-        return Result.retry();
+
+        WeatherData weatherData = CollectWeatherData.responseJSONToWeatherData(apiResponse);
+
+        if(weatherData == null){
+            Log.d(tag, "weather data wasn't parsed/was invalid.  Retrying for timestamp " +
+                    timestamp.toString());
+            return Result.retry();
+        }
+
+
+        // should we save to the database? or is this request for the UI?
+        boolean saveToDB = getInputData().getBoolean(KEY_SAVE_WEATHER, false);
+
+        if (saveToDB) {
+
+            saveToDB(timestamp, weatherData);
+
+        }
+
+        // this is for the UI, send back a JSON string
+        Log.d(tag, "JSON weather data response -> " + apiResponse);
+
+        // set output
+        Data weatherDataOutput = new Data.Builder()
+                .putString(KEY_WEATHER_DATA_RESULT, apiResponse)
+                .build();
+        return Result.success(weatherDataOutput);
+
     }
 
     private void saveToDB(Instant timestamp, WeatherData weatherData) {

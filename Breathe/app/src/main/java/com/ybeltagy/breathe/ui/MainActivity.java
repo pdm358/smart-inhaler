@@ -148,36 +148,29 @@ public class MainActivity extends AppCompatActivity {
      */
     private void displayWeatherData(WeatherData weatherData) {
         // check if weatherData request came back valid or not
-        if (!weatherData.isDataValid()) {
-            return;
-        }
+
+        // temperature in Celsius
+        TextView temperatureText = findViewById(R.id.temperature_textview);
+        if(weatherData.isWeatherTemperatureValid()) temperatureText.setText(String.format("%s °C",
+                weatherData.getWeatherTemperature()));
 
         TextView humidityText = findViewById(R.id.humidity_textview);
-        humidityText.setText(String.format("%s%%", weatherData.getWeatherHumidity()));
+        if(weatherData.isWeatherHumidityValid()) humidityText.setText(String.format("%s%%", weatherData.getWeatherHumidity()));
+
+        // precipitation (mm/hr)
+        TextView precipitationText = findViewById(R.id.precipitation_textview);
+        if(weatherData.isWeatherPrecipitationIntensityValid()) precipitationText
+                .setText(String.format("%s mm/hr", weatherData.getWeatherPrecipitationIntensity()));
 
         // max level between tree and grass pollen (for display simplicity)
         TextView pollen = findViewById(R.id.pollen_textview);
         Level maxPollen = Level.maxLevelOfTwo(
                 weatherData.getWeatherGrassIndex(), weatherData.getWeatherTreeIndex());
-        pollen.setText(maxPollen.toString());
-
-        // precipitation (mm/hr)
-        TextView precipitationText = findViewById(R.id.precipitation_textview);
-        precipitationText
-                .setText(String.format("%s mm/hr", weatherData.getWeatherPrecipitationIntensity()));
-        Log.d(tag, "Set precipitation to -> " + precipitationText.getText());
-
-        // temperature in Celsius
-        TextView temperatureText = findViewById(R.id.temperature_textview);
-        temperatureText.setText(String.format("%s °C",
-                weatherData.getWeatherTemperature()));
+        if(weatherData.isWeatherGrassIndexValid() || weatherData.isWeatherTreeIndexValid()) pollen.setText(maxPollen.toString());
 
         // AQI(a.k.a. EPA Index)
         TextView aqiText = findViewById(R.id.aqi_textview);
-        Log.d(tag, "AQI was -> " + weatherData.getWeatherEPAIndex());
-        // Note: setText() fails if the input is not a String (a plain old int
-        // or something)
-        aqiText.setText(String.format("Index : %d", weatherData.getWeatherEPAIndex()));
+        if(weatherData.isWeatherEPAIndexValid()) aqiText.setText(String.format("Index : %d", weatherData.getWeatherEPAIndex()));
     }
 
     @Override

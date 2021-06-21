@@ -189,26 +189,28 @@ public class IUEListAdapter
             diaryMessage.setText(current.getDiaryEntry().getMessage());
 
             // Wearable Data
-            if(current.getWearableData().isDataValid()){
+            {
                 WearableData wearableData = current.getWearableData();
                 wearableLabel.setText("Pin\nData:");
-                wearableTemperature.setText(String.format(Locale.US, "T:\n%.0f°C", wearableData.getTemperature()));
-                wearableHumidity.setText(String.format(Locale.US,"H:\n%.0f %%", wearableData.getHumidity()));
-                wearablePm.setText(String.format(Locale.US,"PM:\n %d", wearableData.getPm_count()));
-                wearableCharacter.setText(String.format("C:\n%c", wearableData.getCharacter()));
-                wearableDigit.setText(String.format("D:\n%c", wearableData.getDigit()));
+                if(wearableData.isTemperatureValid()) wearableTemperature.setText(String.format(Locale.US, "T:\n%.0f°C", wearableData.getTemperature()));
+                if(wearableData.isHumidityValid()) wearableHumidity.setText(String.format(Locale.US,"H:\n%.0f %%", wearableData.getHumidity()));
+                if(wearableData.isPm_countValid()) wearablePm.setText(String.format(Locale.US,"PM:\n %d", wearableData.getPm_count()));
+                if(wearableData.isCharacterValid()) wearableCharacter.setText(String.format("C:\n%c", wearableData.getCharacter()));
+                if(wearableData.isDigitValid()) wearableDigit.setText(String.format("D:\n%c", wearableData.getDigit()));
+
+
             }
 
             // Weather Data
-            if(current.getWeatherData().isDataValid()){
+            {
                 WeatherData weatherData = current.getWeatherData();
                 weatherLabel.setText("Weather\nData:");
-                weatherTemperature.setText(String.format(Locale.US, "T:\n%.0f°C", weatherData.getWeatherTemperature()));
-                weatherHumidity.setText(String.format(Locale.US,"H:\n%.0f", weatherData.getWeatherHumidity()));
-                weatherPrecipitationIntensity.setText(String.format(Locale.US,"P:\n%.0f", weatherData.getWeatherPrecipitationIntensity()));
-                weatherTreePollen.setText(String.format(Locale.US, "Tree Pollen\n%s", weatherData.getWeatherTreeIndex().toString()));
-                weatherGrassPollen.setText(String.format(Locale.US, "Grass Pollen:\n%s", weatherData.getWeatherGrassIndex().toString()));
-                weatherEPAIndex.setText(String.format(Locale.US,"AQI:\n%d", weatherData.getWeatherEPAIndex()));
+                if(weatherData.isWeatherTemperatureValid()) weatherTemperature.setText(String.format(Locale.US, "T:\n%.0f°C", weatherData.getWeatherTemperature()));
+                if(weatherData.isWeatherHumidityValid()) weatherHumidity.setText(String.format(Locale.US,"H:\n%.0f", weatherData.getWeatherHumidity()));
+                if(weatherData.isWeatherPrecipitationIntensityValid()) weatherPrecipitationIntensity.setText(String.format(Locale.US,"P:\n%.0f", weatherData.getWeatherPrecipitationIntensity()));
+                if(weatherData.isWeatherTreeIndexValid()) weatherTreePollen.setText(String.format(Locale.US, "Tree Pollen\n%s", weatherData.getWeatherTreeIndex().toString()));
+                if(weatherData.isWeatherGrassIndexValid()) weatherGrassPollen.setText(String.format(Locale.US, "Grass Pollen:\n%s", weatherData.getWeatherGrassIndex().toString()));
+                if(weatherData.isWeatherEPAIndexValid()) weatherEPAIndex.setText(String.format(Locale.US,"AQI:\n%d", weatherData.getWeatherEPAIndex()));
             }
         }
 

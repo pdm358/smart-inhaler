@@ -64,6 +64,8 @@ public class WearableBLEManager extends BleManager {
                         // get the humidity in little endian
                         wearableData.setHumidity(buf.getFloat());
 
+                        wearableData.setPm_count(buf.getInt());
+
                         // get the character (converts from UTF-8 in the message to Java's UTF-16)
                         wearableData.setCharacter(
                                 (char) buf.get()
@@ -77,6 +79,7 @@ public class WearableBLEManager extends BleManager {
                         Log.d(tag, "Wearable Data!");
                         Log.d(tag, "Temperature: " + wearableData.getTemperature());
                         Log.d(tag, "Humidity: " + wearableData.getHumidity());
+                        Log.d(tag, "PM Count: " + wearableData.getPm_count());
                         Log.d(tag, "Character: " + wearableData.getCharacter());
                         Log.d(tag, "Digit: " + wearableData.getDigit());
                     }).await();

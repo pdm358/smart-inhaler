@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
  * - contains the Inhaler_Usage_Event_table with InhalerUsageEvent entities
  * - contains the Wearable_Data_table with WearableData entities
  */
-@Database(entities = {InhalerUsageEvent.class, WearableData.class}, version = 2)
+@Database(entities = {InhalerUsageEvent.class, WearableData.class}, version = 3)
 @TypeConverters({Converters.class})
 public abstract class BreatheRoomDatabase extends RoomDatabase {
 

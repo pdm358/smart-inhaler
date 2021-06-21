@@ -29,6 +29,7 @@ public class WearableData {
 
     private float temperature; // The default null values should not make sense.
     private float humidity; //fixme: these variable names are asymmetric compared to weather data.
+    private int   pm_count;
     private char character; // they are also confusing.
     private char digit;
 
@@ -44,6 +45,7 @@ public class WearableData {
         this(Instant.now(),
                 DataFinals.DEFAULT_FLOAT,
                 DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_INTEGER,
                 DataFinals.DEFAULT_CHAR,
                 DataFinals.DEFAULT_CHAR);
 
@@ -53,6 +55,7 @@ public class WearableData {
         this(wearableDataTimeStamp,
                 DataFinals.DEFAULT_FLOAT,
                 DataFinals.DEFAULT_FLOAT,
+                DataFinals.DEFAULT_INTEGER,
                 DataFinals.DEFAULT_CHAR,
                 DataFinals.DEFAULT_CHAR);
     }
@@ -61,11 +64,13 @@ public class WearableData {
     public WearableData(@NonNull Instant wearableDataTimeStamp,
                         float temperature,
                         float humidity,
+                        int pm_count,
                         char character,
                         char digit){
 
         setWearableDataTimeStamp(wearableDataTimeStamp);
         setTemperature(temperature);
+        setPm_count(pm_count);
         setHumidity(humidity);
         setCharacter(character);
         setDigit(digit);
@@ -77,6 +82,7 @@ public class WearableData {
     public boolean isDataValid(){
         return isTemperatureValid() &&
                 isHumidityValid() &&
+                isPm_countValid() &&
                 isCharacterValid() &&
                 isDigitValid();
     }
@@ -89,9 +95,9 @@ public class WearableData {
         return humidity != DataFinals.DEFAULT_FLOAT;
     }
 
-    public boolean isCharacterValid(){
-        return character != DataFinals.DEFAULT_CHAR;
-    }
+    public boolean isPm_countValid(){return pm_count != DataFinals.DEFAULT_INTEGER;}
+
+    public boolean isCharacterValid(){ return character != DataFinals.DEFAULT_CHAR; }
 
     public boolean isDigitValid(){
         return digit != DataFinals.DEFAULT_CHAR;
@@ -121,6 +127,16 @@ public class WearableData {
     public void setHumidity(float humidity) {
         this.humidity = DataUtilities.nanGuard(humidity);
     }
+
+    public int getPm_count() {
+        return pm_count;
+    }
+
+    public void setPm_count(int pm_count) {
+        if(pm_count < 0) pm_count = DataFinals.DEFAULT_INTEGER; // invalid data.
+        this.pm_count = pm_count;
+    }
+
 
     public char getCharacter() {
         return character;

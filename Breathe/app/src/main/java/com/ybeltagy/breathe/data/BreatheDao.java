@@ -94,11 +94,12 @@ public interface BreatheDao {
             "Wearable_Data_UTC_ISO_8601_date_time = :wearableDataTimeStamp," +
             "temperature = :temp, " +
             "humidity = :humid," +
+            "pm_count = :pm_count, " +
             "character = :character, " +
             "digit = :digit " +
             "WHERE Inhaler_Usage_Event_UTC_ISO_8601_date_time = :inhalerUsageTimeStamp")
     int updateWearableData(Instant inhalerUsageTimeStamp, Instant wearableDataTimeStamp,
-                           float temp, float humid, char character, char digit);
+                           float temp, float humid, int pm_count, char character, char digit);
 
     /**
      * Note: Use this one to update an existing inhalerUsageEvent with Weatherdata so the

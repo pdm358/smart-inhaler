@@ -98,6 +98,7 @@ public class BreatheRepository {
                         wearableData.getWearableDataTimeStamp(),
                         wearableData.getTemperature(),
                         wearableData.getHumidity(),
+                        wearableData.getPm_count(),
                         wearableData.getCharacter(),
                         wearableData.getDigit()));
     }
@@ -138,17 +139,16 @@ public class BreatheRepository {
 
         // fixme: replace back after changing from static
         //insertIUE(iue);
-        (new Thread() {
-            public void run() {
-                BreatheRoomDatabase.getDatabase(context).breatheDao().insert(iue);
-            }
-        }).start();
+        BreatheRoomDatabase.getDatabase(context).dbWriteExecutor.execute(
+                () -> BreatheRoomDatabase.getDatabase(context).breatheDao().insert(iue)
+        );
+
 
         // Get WearableData
         // - check if timestamp is <= 5 minutes old - if it is, get environmental data
         //   from the smart wearable
         Instant now = Instant.now();
-        Instant wearableLimit = now.minus(5, ChronoUnit.MINUTES);
+        Instant wearableLimit = now.minus(10, ChronoUnit.MINUTES); // TODO: remove hardcoded variable and move to resources file
         if (!timestamp.isBefore(wearableLimit)) {
             wearableDataHelper(timestamp, context);
         }

@@ -18,6 +18,7 @@ public class DataUtilities {
             // ignores the wearable data timestamp
             "Wearable Temperature",
             "Wearable Humidity",
+            "Wearable PM Count",
             "Wearable Character",
             "Wearable Digit",
 
@@ -82,6 +83,10 @@ public class DataUtilities {
 
             if (wearableData.isHumidityValid())
                 sb.append(wearableData.getHumidity());
+            sb.append(comma);
+
+            if (wearableData.isPm_countValid())
+                sb.append(wearableData.getPm_count());
             sb.append(comma);
 
             if (wearableData.isCharacterValid())

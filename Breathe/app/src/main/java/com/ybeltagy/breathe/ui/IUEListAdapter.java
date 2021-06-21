@@ -19,6 +19,9 @@ import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,8 +29,14 @@ import java.util.Locale;
  * This class prepares and updates the IUE data to be displayed in the RecyclerView in the Main
  * Activity.
  */
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class IUEListAdapter
         extends RecyclerView.Adapter<IUEListAdapter.IUEViewHolder> {
+
+    protected final static DateTimeFormatter formatter =
+            DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+                    .withLocale( Locale.US )
+                    .withZone( ZoneId.systemDefault() );
 
     // Cached copy of InhalerUsageEvents
     private List<InhalerUsageEvent> iueEntries;
@@ -114,6 +123,7 @@ public class IUEListAdapter
         public final TextView wearableHumidity;
         public final TextView wearableCharacter;
         public final TextView wearableDigit;
+        public final TextView wearablePm;
 
         // Weather Data
         public final TextView weatherLabel;
@@ -149,6 +159,7 @@ public class IUEListAdapter
             wearableHumidity = itemView.findViewById(R.id.wearable_humid_textview);
             wearableCharacter = itemView.findViewById(R.id.wearable_char_textview);
             wearableDigit = itemView.findViewById(R.id.wearable_digit_textview);
+            wearablePm = itemView.findViewById(R.id.wearable_pm_textview);
 
             // WeatherData Textviews
             weatherLabel = itemView.findViewById(R.id.weather_label_textview);
@@ -167,7 +178,7 @@ public class IUEListAdapter
             clearTextViews();
 
             // timestamp
-            iueTimeStamp.setText(current.getInhalerUsageEventTimeStamp().toString());
+            iueTimeStamp.setText(formatter.format(current.getInhalerUsageEventTimeStamp()));
 
             // show tag
             if (current.getDiaryEntry().getTag() != DataFinals.DEFAULT_TAG) { // only print user-chosen tags
@@ -183,6 +194,7 @@ public class IUEListAdapter
                 wearableLabel.setText("Pin\nData:");
                 wearableTemperature.setText(String.format(Locale.US, "T:\n%.0f°C", wearableData.getTemperature()));
                 wearableHumidity.setText(String.format(Locale.US,"H:\n%.0f %%", wearableData.getHumidity()));
+                wearablePm.setText(String.format(Locale.US,"PM:\n %d", wearableData.getPm_count()));
                 wearableCharacter.setText(String.format("C:\n%c", wearableData.getCharacter()));
                 wearableDigit.setText(String.format("D:\n%c", wearableData.getDigit()));
             }
@@ -214,6 +226,7 @@ public class IUEListAdapter
             wearableHumidity.setText("");
             wearableCharacter.setText("");
             wearableDigit.setText("");
+            wearablePm.setText("");
 
             weatherLabel.setText("");
             weatherTemperature.setText("");

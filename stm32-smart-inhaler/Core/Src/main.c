@@ -427,24 +427,23 @@ static void MX_RTC_Init(void)
   		/** Initialize RTC and set the Time and Date
   		 */
   		//FIXME: BE AWARE THAT YOU MAY NEED TO MANUALLY MODIFY THE DATEQ
-  		get_compile_time(&sDate, &sTime);
-  		sTime.Hours += 7;
-//  		sTime.Minutes = 0x48;
-//  		sTime.Seconds = 0x50;
-//  		sTime.SubSeconds = 0x0;
+  		get_compile_time(&sDate, &sTime, 7);
+//  		sTime.Minutes = 48;
+//  		sTime.Seconds = 50;
+//  		sTime.SubSeconds = 0;
   		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
 
-  		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
+  		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK) {
   			Error_Handler();
   		}
 
 
-  		sDate.WeekDay = RTC_WEEKDAY_TUESDAY; // I can't know the week day from the Macro.
-//  		sDate.Month = RTC_MONTH_JUNE;
-//  		sDate.Date = 0x21;
-//  		sDate.Year = 0x21;
-  		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)   {
+//  		sDate.WeekDay = RTC_WEEKDAY_TUESDAY; // I can't know the week day from the Macro.
+//  		sDate.Month = 6;
+//  		sDate.Date = 21;
+//  		sDate.Year = 21;
+  		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)   {
   			Error_Handler();
   		}
 

@@ -3,7 +3,7 @@
 extern UART_HandleTypeDef huart1;
 
 /**
- * Converts char to its BCD
+ * Converts char to its hex
  */
 uint8_t charToInt(char c){
 

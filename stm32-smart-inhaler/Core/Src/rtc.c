@@ -1,10 +1,3 @@
-/*
- * rtc.c
- *
- *  Created on: Jun 14, 2021
- *      Author: youss
- */
-
 #include "rtc.h"
 #include "inhaler_utilities.h"
 #include "main.h"
@@ -17,133 +10,183 @@
 extern RTC_HandleTypeDef hrtc; //TODO: Consider passing this as a parameter rather than using extern.
 
 /**
+ * Populates sDate and sTime using the timestamp.
+ *
+ * The format is Binary and not BCD.
+ */
+void timestamp_to_rtc_datetime(RTC_DateTypeDef * date_ptr, RTC_TimeTypeDef * time_ptr, time_t timestamp){
+
+    struct tm ts = {0};
+
+	ts = *(gmtime(&timestamp));
+
+	ts.tm_year -= 100; // convert from date year from the 1900 to years from 2000
+	ts.tm_mon += 1; // convert from 0-indexing for the months to 1-indexing
+
+	date_ptr->Year = ts.tm_year;
+	date_ptr->Month = ts.tm_mon;
+	date_ptr->Date = ts.tm_mday;
+	date_ptr->WeekDay = ts.tm_wday;
+
+	time_ptr->Hours = ts.tm_hour;
+	time_ptr->Minutes = ts.tm_min;
+	time_ptr->Seconds = ts.tm_sec;
+
+}
+
+/**
+ * Convert RTC date and time to a utc timestamp.
+ *
+ * The format of the input must be binary and not BCD.
+ */
+time_t rtc_datetime_to_timestamp(RTC_DateTypeDef date, RTC_TimeTypeDef time, int8_t hr_offset){
+
+	struct tm datetime = {0};
+
+	datetime.tm_year = date.Year + 100;  // In fact: + 2000 - 1900 -- convert from date year from 2000 to date year from 1900
+	datetime.tm_mday = date.Date;
+	datetime.tm_mon  = date.Month - 1; // convert from 1-indexing to 0-indexing
+
+	datetime.tm_hour = time.Hours + hr_offset;
+	datetime.tm_min  = time.Minutes;
+	datetime.tm_sec  = time.Seconds;
+
+	datetime.tm_isdst = 0;
+
+	time_t curTime = mktime(&datetime); // get the timestamp.
+
+	return curTime;
+
+}
+
+static void parse_datetime_macros(RTC_DateTypeDef * date_ptr, RTC_TimeTypeDef * time_ptr){
+	char * date = __DATE__;
+		switch(date[0]){
+		case 'J':
+			if(date[1] == 'a'){// Jan
+				date_ptr->Month = 1;
+			}else if (date[2] == 'n'){ // Jun
+				date_ptr->Month = 6;
+			}else{
+				date_ptr->Month = 7; // Jul
+			}
+			break;
+		case 'F':
+			date_ptr->Month = 2; // Feb
+			break;
+		case 'M':
+			if(date[2] == 'r'){ // Mar
+				date_ptr->Month = 3;
+			}else{
+				date_ptr->Month = 5; // May
+			}
+			break;
+		case 'A':
+			if(date[2] == 'g'){ // Aug
+				date_ptr->Month = 8;
+			}else{
+				date_ptr->Month = 4; // Apr
+			}
+			break;
+		case 'S':
+			date_ptr->Month = 9; // Sep
+			break;
+		case 'O':
+			date_ptr->Month = 10; //Oct
+			break;
+		case 'N':
+			date_ptr->Month = 11; // Nov
+			break;
+		case 'D':
+			date_ptr->Month = 12; //Dec
+			break;
+		default:
+		Error_Handler();
+		}
+
+		int i = 4;
+		date_ptr->Date = charToInt(date[i]);
+		i++;
+		if(date[i] != ' '){
+			date_ptr->Date *= 10;
+			date_ptr->Date += charToInt(date[i]);
+			i++;
+		}
+		i += 2;
+		date_ptr->Year = charToInt(date[i]) * 100;
+		i++;
+		date_ptr->Year += charToInt(date[i]) * 10;
+		i++;
+		date_ptr->Year += charToInt(date[i]);
+		i++;
+
+
+		// Time
+		char * ctime = __TIME__;
+		i = 0;
+		time_ptr->Hours = charToInt(ctime[i]) * 10;
+		i++;
+		time_ptr->Hours += charToInt(ctime[i]);
+		i++;
+
+		i++; // colon
+
+		time_ptr->Minutes = charToInt(ctime[i]) * 10;
+		i++;
+		time_ptr->Minutes += charToInt(ctime[i]);
+		i++;
+
+		i++; // colon
+
+		time_ptr->Seconds = charToInt(ctime[i]) * 10;
+		i++;
+		time_ptr->Seconds += charToInt(ctime[i]);
+		i++;
+}
+
+/**
 * This was an attempt to automatically load the compile time into the rtc.
 *
 * However, as it turns out, DATE and TIME don't represent UNIX time in this environment.
 *
-* But simply  the system time (computer time).
-*
-* As such, this function alone is insufficient.
+* But simply  the system time (computer time). As such, you need to manually specifiy the offset from UTC.
 */
-void get_compile_time(RTC_DateTypeDef * sDate, RTC_TimeTypeDef * sTime){
-	char * date = __DATE__;
-	switch(date[0]){
-	case 'J':
-		if(date[1] == 'a'){// Jan
-			sDate->Month = 1;
-		}else if (date[2] == 'n'){ // Jun
-			sDate->Month = 6;
-		}else{
-			sDate->Month = 7; // Jul
-		}
-		break;
-	case 'F':
-		sDate->Month = 2; // Feb
-		break;
-	case 'M':
-		if(date[2] == 'r'){ // Mar
-			sDate->Month = 3;
-		}else{
-			sDate->Month = 5; // May
-		}
-		break;
-	case 'A':
-		if(date[2] == 'g'){ // Aug
-			sDate->Month = 8;
-		}else{
-			sDate->Month = 4; // Apr
-		}
-		break;
-	case 'S':
-		sDate->Month = 9; // Sep
-		break;
-	case 'O':
-		sDate->Month = 10; //Oct
-		break;
-	case 'N':
-		sDate->Month = 11; // Nov
-		break;
-	case 'D':
-		sDate->Month = 12; //Dec
-		break;
-	default:
-	Error_Handler();
-	}
+void get_compile_time(RTC_DateTypeDef * date_ptr, RTC_TimeTypeDef * time_ptr, int8_t hr_offset){
 
-	int i = 4;
-	sDate->Date = charToInt(date[i]);
-	i++;
-	if(date[i] != ' '){
-		sDate->Date <<= 4;
-		sDate->Date += charToInt(date[i]);
-		i++;
-	}
-	i += 3;
-	sDate->Year = charToInt(date[i]) << 4;
-	i++;
-	sDate->Year += charToInt(date[i]);
-	i++;
+	parse_datetime_macros(date_ptr, time_ptr);
 
+	time_t curTime = rtc_datetime_to_timestamp(*date_ptr, *time_ptr, hr_offset); // convert to timestamp.
 
-	// Time
-	char * time = __TIME__;
-	i = 0;
-	sTime->Hours = charToInt(time[i]) << 4;
-	i++;
-	sTime->Hours += charToInt(time[i]);
-	i++;
-
-	i++; // colon
-
-	sTime->Minutes = charToInt(time[i]) << 4;
-	i++;
-	sTime->Minutes += charToInt(time[i]);
-	i++;
-
-	i++; // colon
-
-	sTime->Seconds = charToInt(time[i]) << 4;
-	i++;
-	sTime->Seconds += charToInt(time[i]);
-	i++;
+	timestamp_to_rtc_datetime(date_ptr, time_ptr, curTime); //convert timestamp back to RTC date time objects
 
 }
 
 
+
 /**
-  * @brief  This function creates a timestamp using the RTC
-  * @param  None
-  * @retval 64 bit integer (decimal) timestamp in epoch time
-  */
+ * Gets the current time from the RTC as an epoch timestamp.
+ */
 int64_t get_timestamp( void )
 {
 
 	//TODO: Confirm the sleep modes don't ruin the shadow registers.
 	// that when this function is called when the MCU wakes from sleep, it returns the time
 	// right now rather than when it went to sleep.
-	struct tm currTime;
-	RTC_TimeTypeDef currentTime;
-	RTC_DateTypeDef currentDate;
 
+	// If sleep mode does mess with the shadow registers, by-pass the shadow registers, read the time two times
+	// and only return it if it didn't change.
 
-	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
-	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
+	RTC_TimeTypeDef time;
+	RTC_DateTypeDef date;
 
-	//[(SecondFraction-SubSeconds)/(SecondFraction+1)] * time_unit
+	HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
 
-	currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
-	currTime.tm_mday = currentDate.Date;
-	currTime.tm_mon  = currentDate.Month - 1;
-
-	currTime.tm_hour = currentTime.Hours;
-	currTime.tm_min  = currentTime.Minutes;
-	currTime.tm_sec  = currentTime.Seconds;
-
-	int64_t theTimestamp = (int64_t) mktime(&currTime);
+	int64_t theTimestamp = rtc_datetime_to_timestamp(date, time, 0);
 
 	// convert to epoch milliseconds
 	theTimestamp *= 1000;
-	theTimestamp += (currentTime.SecondFraction - currentTime.SubSeconds) * 1000 / (currentTime.SecondFraction + 1);
+	theTimestamp += (time.SecondFraction - time.SubSeconds) * 1000 / (time.SecondFraction + 1);
 
 	return (theTimestamp);
 }

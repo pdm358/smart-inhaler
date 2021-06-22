@@ -27,7 +27,7 @@ typedef struct{
 } IUE_t;
 
 /**
- * Converts char to its BCD
+ * Converts char to its hex
  */
 uint8_t charToInt(char c);
 

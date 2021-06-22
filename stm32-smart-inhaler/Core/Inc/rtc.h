@@ -11,7 +11,24 @@
 #include <time.h>
 #include "stm32wbxx_hal.h"
 
+/**
+ * Gets the current time from the RTC as an epoch timestamp.
+ */
 int64_t get_timestamp();
+
+/**
+ * Populates sDate and sTime using the timestamp.
+ *
+ * The format is Binary and not BCD.
+ */
+void timestamp_to_rtc_datetime(RTC_DateTypeDef * date_ptr, RTC_TimeTypeDef * time_ptr, time_t timestamp);
+
+/**
+ * Convert RTC date and time to a utc seconds timestamp.
+ *
+ * The format of the input must be binary and not BCD.
+ */
+time_t rtc_datetime_to_timestamp(RTC_DateTypeDef date, RTC_TimeTypeDef time, int8_t hr_offset);
 
 /**
 * This was an attempt to automatically load the compile time into the rtc.
@@ -22,6 +39,6 @@ int64_t get_timestamp();
 *
 * As such, this function alone is insufficient.
 */
-void get_compile_time(RTC_DateTypeDef * sDate, RTC_TimeTypeDef * sTime);
+void get_compile_time(RTC_DateTypeDef * sDate, RTC_TimeTypeDef * sTime, int8_t hr_offset);
 
 #endif /* CORE_INC_RTC_H_ */

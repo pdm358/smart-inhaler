@@ -61,7 +61,7 @@ void EXTI0_IRQHandler(void);
 void DMA1_Channel4_IRQHandler(void);
 void USART1_IRQHandler(void);
 void LPUART1_IRQHandler(void);
-void EXTI15_10_IRQHandler(void);
+void EXTI1_IRQHandler(void);
 void IPCC_C1_RX_IRQHandler(void);
 void IPCC_C1_TX_IRQHandler(void);
 void HSEM_IRQHandler(void);

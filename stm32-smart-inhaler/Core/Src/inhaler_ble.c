@@ -44,18 +44,18 @@ uint32_t pick_and_initialize_led(void){
 	if(battery_status == BATTERY_DEAD){
 
 		/*Configure GPIO pin : PB12 -- RED LED */
-		GPIO_InitStruct.Pin = GPIO_PIN_12;
+		GPIO_InitStruct.Pin = GPIO_PIN_1;
 
 
 	}else if(battery_status == BATTERY_ALMOST_DEAD){
 
-		/*Configure GPIO pin : PB14 -- Yellow LED */
-		GPIO_InitStruct.Pin = GPIO_PIN_14;
+		/*Configure GPIO pin : PB14 -- Blue LED */
+		GPIO_InitStruct.Pin = GPIO_PIN_5;
 
 	}else{ 	// BATTERY_FULL
 
 		/*Configure GPIO pin : PB13 -- Green LED */
-		GPIO_InitStruct.Pin = GPIO_PIN_13;
+		GPIO_InitStruct.Pin = GPIO_PIN_0;
 	}
 
 
@@ -221,7 +221,7 @@ void pop_iue(){
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
-	if(GPIO_Pin == GPIO_PIN_12){
+	if(GPIO_Pin == GPIO_PIN_1){
 		//SW1 -- Inhaler button
 		UTIL_SEQ_SetTask(1 << CFG_TASK_RECORD_IUE, CFG_SCH_PRIO_0);
 		UTIL_SEQ_SetTask( 1<<CFG_TASK_ADV_START, CFG_SCH_PRIO_0);

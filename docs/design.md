@@ -4,7 +4,7 @@ By Youssef Beltagy
 
 This is a high-level design to guide our thinking, put it in context, and structure it. We haven't decided on which components to use for each specific part.
 
-![](https://smart-inhaler.ybeltagy.com/design.png)
+![](design.png)
 
 ## Challenges
 

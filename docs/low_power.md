@@ -57,7 +57,7 @@ All of the following measurements are inclusive of both the nucleo board and the
 
 You need to checkout the `inhaler-low-power` branch. If you updated the master branch, then you need to rebase the `inhaler-low-power` branch on top of the master branch. The `inhaler-low-power` branch disables debugging to allow the low power mode to run. It only changes few lines of **configuration** code. However, I don't recommend developing without debugging tools, so only use the `inhaler-low-power` branch when you want to deliver the inhaler or test its power consumption.
 
-### Idle nucleo board without a BLE connection
+### A) Idle nucleo board without a BLE connection
 
 This is the power consumption of the inhaler when it is not BLE connected and is not used. This is the state the inhaler is in almost all the time. This idle power consumption can be reduced down to 0.6uA (3 orders of magnitude).
 
@@ -65,7 +65,7 @@ File: "docs\measurements\100s + no uses + no connection.stpm"
 
 !["docs\measurements\100s + no uses + no connection.stpm"](pics/pwr_100s+no%20uses+no%20connection.png)
 
-### 5 uses of the inhaler without any successful connections
+### B) 5 uses of the inhaler without any successful connections
 
 Each plateau is an inhaler usage. The inhaler advertises for 10 seconds after every inhaler usage. An LED blinks a few times after the inhaler is used. The power consumption can be optimized by using lower power LEDs, blinking the LED for shorter durations, and advertising for a shorter amount of time.
 
@@ -73,7 +73,7 @@ File: "docs\measurements\100s + 5 uses + no connection.stpm"
 
 !["docs\measurements\100s + 5 uses + no connection.stpm"](pics/pwr_100s+5uses+no%20connection.png)
 
-### Idle nucleo board with a BLE connection
+### C) Idle nucleo board with a BLE connection
 
 This is the power consumption of inhaler when it is not used but is connected to a phone. This demonstrates that maintaining a BLE connection is a power intensive task.
 
@@ -81,21 +81,21 @@ File: "docs\measurements\100s + no uses + connection.stpm"
 
 !["docs\measurements\100s + no uses + connection.stpm"](pics/pwr_100s+no%20uses+connection.png)
 
-### 5 uses of the inhaler with a continuos BLE connection
+### D) 5 uses of the inhaler with a continuos BLE connection
 
 This is not how the inhaler currently behaves, but rather an overestimation of its power consumption.
 
-As demonstrated before, maintaining a BLE connection is a power intensive task. In this measurement, the inhaler never disconnects from a phone (which is not the actual case) but remains connected whether it is used or not.
+As demonstrated before, maintaining a BLE connection is a power intensive task. In this measurement, the inhaler never disconnects from a phone (which is not the actual case) but remains connected whether it is used or not. In reality, the inhaler disconnects as soon as it sends all IUEs.
 
 File: "docs\measurements\100s + 5 uses + continuos connection.stpm"
 
 !["docs\measurements\100s + 5 uses + continuos connection.stpm"](pics/pwr_100s+5uses+continuos%20connection.png)
 
-### 5 uses of the inhaler with disconnections after use
+### E) 5 uses of the inhaler with disconnections after use
 
 This is an accurate measurement of the system consumption. This was measured while the inhaler was working with our *Breathe* app. The inhaler sends an IUE and disconnects once there are no more IUEs to send to save power.
 
-It is still an overestimation because 5 uses in 100 seconds is way too much.
+It is still an overestimation because 5 uses in 100 seconds is too many.
 
 File: "docs\measurements\100s + 5 uses + disconnection optimization + app.stpm"
 
@@ -104,6 +104,43 @@ File: "docs\measurements\100s + 5 uses + disconnection optimization + app.stpm"
 ### Estimated battery life
 
 I will assume a battery capacity of 200 mAh which is an underestimation of [Farnell's 210mAh](stm32wb/datasheets/farnell_cr2032.pdf) and [Energizer's 235mAh](stm32wb/datasheets/energizer_cr2032.pdf).
+
+From **E**, we get the average power consumption as 170.8 uA. STM32CubeMonitor-Power integrates the graph to get an accurate average.
+
+```
+(200 mAh) / (0.1708 mA) = 1170.96 h
+
+(1170.96 h) / (24 h/d) = 48.79 days
+
+```
+
+The inhaler should be able to work off a battery for a month. And even that is an underestimation. Since the inhaler will remain idle most of the time, a battery should be able to power the inhaler for a few months.
+
+## Power Optimizations
+
+The inhaler has the potential to consume less power by up to three orders of magnitude. In this section, I explain current optimizations and possible future steps.
+
+### Current Optimizations
+- The FRAM consumes too much power when it is active, so it is always kept in hibernate mode. The "docs\measurements\without fram hibernation.stpm" file shows that the FRAM consumes at least 0.5 mA. From observation, I was its power consumption in active mode go up to 2.5mA or so.
+- As soon as an IUE is sent, the inhaler terminates BLE connections to save power.
+- Debugging features must be disabled to use the low power mode
+
+### Potential Optimizations
+- Rather than simply cutting BLE connection when there are no IUEs to sent, have the inhaler go into standby mode as shown in the **PWR_STANDBY_RTC** example
+  - Be aware the inhaler starts from the top of main every time it wakes from standby mode.
+- There is no need for a PCB
+  - There are 32KB of SRAM2A that are retained even during standby mode. Use those instead of an FRAM
+  - When the system is powered by a rechargeable batter, you can set it up so the MCU never loses power, so the data in SRAM2A should never be lost
+  - The debouncing IC is unnecessary and can be replaced with software.
+- Try to connect all the peripherals to the same port.
+  - Every port needs a clock, and this consumes power
+- Investigate other reasons the idle power consumption of the current inhaler is around 60uA rather than the 4uA of the **P2P_Server** example
+- Consider lowering the clock speed of the MCU
+  - There is a tradeoff between lowering the clock speed and keeping the clock speed high so the MCU finishes its computations quickly and goes into a low power mode
+  - This is one of the last optimizations you should worry about
+
+
+
 
 
 

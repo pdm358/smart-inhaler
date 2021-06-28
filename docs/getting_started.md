@@ -17,14 +17,16 @@ Congratulations! You now have the code on your local machine. Please remember to
 
 ## Getting Started with the Android app
 
-You need Android Studio and a tomorrow.io API key. Please be aware we configured the .gitignore file so the api key will be ignored. 
+You need a tomorrow.io API key and Android Studio to work on the app.
+
+### tomorrow.io API key
 
 Please follow the following steps to get the API key.
 
 1. Sign up for a [tomorrow.io](https://www.tomorrow.io/weather-api/) account
 2. Please go to the developer options and copy the api key ![tomorrow.io API key](pics/tomorrow.io.png)
-3. Make a `secrets.xml` file and put your api key in it as you can see below
-4. Put `secrets.xml` inside `Breathe\app\src\main\res\values\`
+3. Make an empty `secrets.xml` file inside `Breathe\app\src\main\res\values\`
+4. Copy the contents below into `secrets.xml` but remember to put your api key instead
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -32,6 +34,9 @@ Please follow the following steps to get the API key.
     <string name="clima_cell_api_key">your-api-key</string>
 </resources>
 ```
+Please be aware we configured the .gitignore file so the `secrets.xml` will be ignored by Git.
+
+### Android Studio
 
 Please follow the following steps to setup your Android development environment.
 
@@ -47,7 +52,7 @@ You need STM32CubeIDE to work on the inhaler or the wearable.
 
 1. Download and Install [STM32CubeIDE](https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-ides/stm32cubeide.html)
 2. Open STM32CubeIDE and go to `File > Open Projects From File System...` from the toolbar
-3. Click the directory button ![pics/Click the Directory Button](pics/stm32cubeide.png)
+3. Click the directory button ![Click the Directory Button](pics\stm32cubeide.png)
 4. Navigate to the stm32-smart-inhaler folder, select it, and finish the importing process
 5. The project should be added to your workspace and you can now build and run it on the nucleo board
 6. Repeat steps 2-5 but with stm32-smart-pin folder to import the smart pin project
@@ -57,7 +62,7 @@ You need STM32CubeIDE to work on the inhaler or the wearable.
 This wearable is no longer in use and not recommended to be used. It was built as a proof of concept. However, if you want to set it up, here are the steps. However, please be aware these steps were not tested.
 
 1. Download [VSCode](https://code.visualstudio.com/download)
-2. Add the PlatformIO extension through VSCode MarketPlace ![](pics/platformio.png)
+2. Add the PlatformIO extension through VSCode MarketPlace ![PlatformIO in VSCode MarketPlace](pics/platformio.png)
 3. Through your file system, navigate to the esp32-sensor-pin folder and open it in VSCode
 4. You should be able to build and run the project
 5.  If not, try making a new PlatformIO project with the board set as "esp32dev" and the framework as "Arduino", and PlatformIO should set up its own environment 

@@ -52,7 +52,7 @@ You need STM32CubeIDE to work on the inhaler or the wearable.
 
 1. Download and Install [STM32CubeIDE](https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-ides/stm32cubeide.html)
 2. Open STM32CubeIDE and go to `File > Open Projects From File System...` from the toolbar
-3. Click the directory button ![Click the Directory Button](pics\stm32cubeide.png)
+3. Click the directory button ![Click the Directory Button](pics/stm32cubeide.png)
 4. Navigate to the stm32-smart-inhaler folder, select it, and finish the importing process
 5. The project should be added to your workspace and you can now build and run it on the nucleo board
 6. Repeat steps 2-5 but with stm32-smart-pin folder to import the smart pin project

@@ -443,8 +443,14 @@ uint8_t Get_Inhaler_Service_UUID(uint8_t* uuidPtr){
 void Inhaler_Init(void)
 {
 
+	/**
+	 * The programmable voltage detector which is used to detect the status of the battery.
+	 */
 	init_pvd();
 
+	/**
+	 * Put the FRAM in a low power mode
+	 */
 	hibernate_fram();
 
 	/**
